@@ -1,0 +1,174 @@
+import penthouseImg from "@/assets/property-penthouse.jpg";
+import beachVillaImg from "@/assets/property-beach-villa.jpg";
+import modernHouseImg from "@/assets/property-modern-house.jpg";
+import estateImg from "@/assets/property-estate.jpg";
+import landImg from "@/assets/property-land.jpg";
+import heroImg from "@/assets/hero-mansion.jpg";
+
+export type PropertyType = "casa" | "apartamento" | "cobertura" | "terreno" | "fazenda" | "mansão";
+export type PropertyStatus = "venda" | "aluguel" | "lançamento";
+
+export interface Property {
+  id: string;
+  title: string;
+  type: PropertyType;
+  status: PropertyStatus;
+  price: number;
+  location: string;
+  city: string;
+  state: string;
+  bedrooms: number;
+  bathrooms: number;
+  parkingSpaces: number;
+  area: number;
+  landArea: number;
+  description: string;
+  features: string[];
+  image: string;
+  images: string[];
+  isHighlight: boolean;
+}
+
+export const properties: Property[] = [
+  {
+    id: "1",
+    title: "Mansão Contemporânea com Vista Panorâmica",
+    type: "mansão",
+    status: "venda",
+    price: 18500000,
+    location: "Jardim Europa",
+    city: "São Paulo",
+    state: "SP",
+    bedrooms: 7,
+    bathrooms: 9,
+    parkingSpaces: 8,
+    area: 1200,
+    landArea: 2500,
+    description: "Uma obra-prima da arquitetura contemporânea, esta mansão exclusiva oferece 1.200m² de área construída em um terreno de 2.500m². Projetada pelo renomado escritório de arquitetura Studio MK27, cada detalhe foi meticulosamente planejado para proporcionar o mais alto padrão de conforto e sofisticação. Amplos espaços integrados com pé-direito duplo, piscina de borda infinita com aquecimento solar, spa completo, adega climatizada para 2.000 garrafas, home theater com sistema Dolby Atmos, e jardim paisagístico assinado por Gilberto Elkis.",
+    features: ["Piscina Infinita", "Spa Completo", "Adega Climatizada", "Home Theater", "Elevador", "Automação Total", "Segurança 24h", "Heliponto"],
+    image: heroImg,
+    images: [heroImg],
+    isHighlight: true,
+  },
+  {
+    id: "2",
+    title: "Cobertura Duplex com Vista para o Skyline",
+    type: "cobertura",
+    status: "venda",
+    price: 12800000,
+    location: "Vila Nova Conceição",
+    city: "São Paulo",
+    state: "SP",
+    bedrooms: 5,
+    bathrooms: 7,
+    parkingSpaces: 6,
+    area: 680,
+    landArea: 0,
+    description: "Cobertura duplex espetacular no coração da Vila Nova Conceição, com vista privilegiada de 360° para o Parque Ibirapuera e o skyline paulistano. Projeto de interiores assinado por Patricia Anastassiadis, com acabamentos em mármore Calacatta, marcenaria em nogueira americana e metais em ouro escovado. Terraço gourmet com churrasqueira, piscina aquecida com raia de 15m, sauna seca e a vapor, e varanda panorâmica com jardim vertical.",
+    features: ["Vista Panorâmica", "Piscina com Raia", "Terraço Gourmet", "Sauna", "Lareira", "Wine Bar", "4 Vagas Cobertas"],
+    image: penthouseImg,
+    images: [penthouseImg],
+    isHighlight: true,
+  },
+  {
+    id: "3",
+    title: "Villa Mediterrânea à Beira-Mar",
+    type: "casa",
+    status: "venda",
+    price: 25000000,
+    location: "Jurerê Internacional",
+    city: "Florianópolis",
+    state: "SC",
+    bedrooms: 6,
+    bathrooms: 8,
+    parkingSpaces: 5,
+    area: 950,
+    landArea: 1800,
+    description: "Residência exclusiva pé-na-areia em Jurerê Internacional, o endereço mais cobiçado do sul do Brasil. Arquitetura mediterrânea contemporânea com amplos espaços de convivência voltados para o mar. Piscina de borda infinita que se funde com o horizonte oceânico, deck em madeira de demolição, suíte master com closet de 40m² e banheira de hidromassagem com vista para o mar. Cozinha gourmet equipada com eletrodomésticos Sub-Zero e Wolf, e área de lazer completa com quadra de tênis.",
+    features: ["Pé na Areia", "Piscina Infinita", "Quadra de Tênis", "Cozinha Gourmet", "Pier Privativo", "Jardim Tropical", "Segurança 24h"],
+    image: beachVillaImg,
+    images: [beachVillaImg],
+    isHighlight: true,
+  },
+  {
+    id: "4",
+    title: "Residência Moderna com Jardim Escultural",
+    type: "casa",
+    status: "venda",
+    price: 8900000,
+    location: "Alphaville",
+    city: "Barueri",
+    state: "SP",
+    bedrooms: 5,
+    bathrooms: 6,
+    parkingSpaces: 4,
+    area: 620,
+    landArea: 1200,
+    description: "Residência de alto padrão em condomínio fechado no Alphaville, com projeto arquitetônico arrojado que harmoniza concreto aparente, vidro e aço corten. Ampla sala de estar com lareira ecológica e pé-direito triplo, cozinha integrada com ilha central em granito preto São Gabriel, suíte master com terraço privativo e banheira vitoriana. Piscina aquecida com prainha, sauna, espaço fitness e jardim paisagístico com espécies nativas e sistema de irrigação automatizado.",
+    features: ["Condomínio Fechado", "Piscina Aquecida", "Sauna", "Fitness", "Lareira Ecológica", "Jardim Paisagístico", "Energia Solar"],
+    image: modernHouseImg,
+    images: [modernHouseImg],
+    isHighlight: false,
+  },
+  {
+    id: "5",
+    title: "Fazenda Premium com Vista para as Montanhas",
+    type: "fazenda",
+    status: "venda",
+    price: 35000000,
+    location: "Serra da Mantiqueira",
+    city: "Campos do Jordão",
+    state: "SP",
+    bedrooms: 10,
+    bathrooms: 12,
+    parkingSpaces: 10,
+    area: 2800,
+    landArea: 500000,
+    description: "Propriedade rural excepcional na Serra da Mantiqueira, com 50 hectares de paisagens deslumbrantes, mata nativa preservada e nascentes de água cristalina. A sede principal conta com 2.800m² de área construída em estilo colonial contemporâneo, com 10 suítes, salão de festas para 200 pessoas, adega subterrânea, e centro equestre completo com 20 baias, picadeiro coberto e pista de salto. Inclui casa de hóspedes independente, lago artificial com pedalinho e trilhas ecológicas demarcadas.",
+    features: ["50 Hectares", "Centro Equestre", "Adega Subterrânea", "Lago Artificial", "Casa de Hóspedes", "Mata Nativa", "Nascentes", "Heliponto"],
+    image: estateImg,
+    images: [estateImg],
+    isHighlight: true,
+  },
+  {
+    id: "6",
+    title: "Terreno Premium com Vista para o Oceano",
+    type: "terreno",
+    status: "venda",
+    price: 4500000,
+    location: "Praia do Rosa",
+    city: "Imbituba",
+    state: "SC",
+    bedrooms: 0,
+    bathrooms: 0,
+    parkingSpaces: 0,
+    area: 0,
+    landArea: 5000,
+    description: "Terreno exclusivo de 5.000m² em uma das praias mais bonitas do Brasil, com vista panorâmica de 270° para o Oceano Atlântico e a baía da Praia do Rosa. Topografia privilegiada em aclive suave, permitindo aproveitamento total da vista marítima. Vegetação nativa de restinga preservada, acesso privativo à praia por trilha, e infraestrutura completa de água, energia e esgoto já instalada. Projeto arquitetônico aprovado pela prefeitura incluso, assinado por Isay Weinfeld.",
+    features: ["Vista para o Mar", "5.000m²", "Projeto Aprovado", "Infraestrutura Completa", "Acesso à Praia", "Vegetação Preservada"],
+    image: landImg,
+    images: [landImg],
+    isHighlight: false,
+  },
+];
+
+export const propertyTypes: { value: PropertyType; label: string }[] = [
+  { value: "casa", label: "Casa" },
+  { value: "apartamento", label: "Apartamento" },
+  { value: "cobertura", label: "Cobertura" },
+  { value: "terreno", label: "Terreno" },
+  { value: "fazenda", label: "Fazenda" },
+  { value: "mansão", label: "Mansão" },
+];
+
+export const propertyStatuses: { value: PropertyStatus; label: string }[] = [
+  { value: "venda", label: "Venda" },
+  { value: "aluguel", label: "Aluguel" },
+  { value: "lançamento", label: "Lançamento" },
+];
+
+export const cities = [...new Set(properties.map((p) => p.city))];
+export const states = [...new Set(properties.map((p) => p.state))];
+
+export const formatPrice = (price: number) =>
+  new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 }).format(price);
