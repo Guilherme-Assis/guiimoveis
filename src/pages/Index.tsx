@@ -1,17 +1,55 @@
-import { useRef, useState, useMemo } from "react";
+import { useRef, useState, useMemo, useEffect } from "react";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import PropertyFilters, { FilterState, defaultFilters } from "@/components/PropertyFilters";
 import PropertyCard from "@/components/PropertyCard";
 import Footer from "@/components/Footer";
-import { properties } from "@/data/properties";
+import { supabase } from "@/integrations/supabase/client";
+import { Property } from "@/data/properties";
 
 const Index = () => {
   const listingsRef = useRef<HTMLDivElement>(null);
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
+  const [dbProperties, setDbProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase
+      .from("db_properties")
+      .select("*")
+      .eq("availability", "available")
+      .then(({ data }) => {
+        if (data) {
+          setDbProperties(
+            data.map((p: any) => ({
+              id: p.id,
+              slug: p.slug,
+              title: p.title,
+              type: p.type === "mansao" ? "mansão" : p.type,
+              status: p.status === "lancamento" ? "lançamento" : p.status,
+              price: Number(p.price),
+              location: p.location,
+              city: p.city,
+              state: p.state,
+              bedrooms: p.bedrooms,
+              bathrooms: p.bathrooms,
+              parkingSpaces: p.parking_spaces,
+              area: Number(p.area),
+              landArea: Number(p.land_area),
+              description: p.description || "",
+              features: p.features || [],
+              image: p.image_url || "/placeholder.svg",
+              images: p.images || [],
+              isHighlight: p.is_highlight,
+            }))
+          );
+        }
+        setLoading(false);
+      });
+  }, []);
 
   const filteredProperties = useMemo(() => {
-    let result = [...properties];
+    let result = [...dbProperties];
 
     if (filters.type) result = result.filter((p) => p.type === filters.type);
     if (filters.status) result = result.filter((p) => p.status === filters.status);
@@ -47,7 +85,7 @@ const Index = () => {
     }
 
     return result;
-  }, [filters]);
+  }, [filters, dbProperties]);
 
   const scrollToListings = () => {
     listingsRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -66,7 +104,11 @@ const Index = () => {
         />
 
         <section className="container mx-auto px-6 py-16">
-          {filteredProperties.length > 0 ? (
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <p className="font-body text-muted-foreground">Carregando imóveis...</p>
+            </div>
+          ) : filteredProperties.length > 0 ? (
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {filteredProperties.map((property, i) => (
                 <PropertyCard key={property.id} property={property} index={i} />
