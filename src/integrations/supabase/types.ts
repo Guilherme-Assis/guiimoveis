@@ -387,6 +387,11 @@ export type Database = {
         | "terreno"
         | "fazenda"
         | "mansao"
+        | "kitnet"
+        | "flat"
+        | "loft"
+        | "casa_condominio"
+        | "sitio_chacara"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -524,6 +529,11 @@ export const Constants = {
         "terreno",
         "fazenda",
         "mansao",
+        "kitnet",
+        "flat",
+        "loft",
+        "casa_condominio",
+        "sitio_chacara",
       ],
     },
   },
