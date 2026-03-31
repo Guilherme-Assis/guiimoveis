@@ -26,7 +26,7 @@ const Brokers = () => {
   const [brokers, setBrokers] = useState<Broker[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [form, setForm] = useState({ email: "", password: "", fullName: "", creci: "", companyName: "", commissionRate: 5 });
+  const [form, setForm] = useState({ email: "", password: "", fullName: "", creci: "", companyName: "", commissionRate: 5, slug: "" });
 
   const load = async () => {
     setLoading(true);
