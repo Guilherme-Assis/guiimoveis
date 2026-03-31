@@ -20,6 +20,7 @@ type Broker = {
   commission_rate: number;
   is_active: boolean;
   created_at: string;
+  slug: string | null;
 };
 
 const Brokers = () => {
