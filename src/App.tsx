@@ -13,6 +13,8 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Favorites from "./pages/Favorites";
 import MapSearch from "./pages/MapSearch";
+import CityProperties from "./pages/CityProperties";
+import Lancamentos from "./pages/Lancamentos";
 import AdminLayout from "./components/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
 import Properties from "./pages/admin/Properties";
