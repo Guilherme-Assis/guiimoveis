@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           .from("brokers")
           .select("id")
           .eq("user_id", userId)
-          .single();
+          .maybeSingle();
         setBrokerId(brokerData?.id || null);
       }
     } else {
