@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Phone, Mail, Menu, X, Heart, MapPin as MapPinIcon, BookOpen } from "lucide-react";
+import { Phone, Mail, Menu, X, Heart, MapPin as MapPinIcon, BookOpen, Building2 } from "lucide-react";
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
