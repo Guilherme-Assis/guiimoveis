@@ -16,11 +16,14 @@ const BrokerProfile = () => {
 
   useEffect(() => {
     const load = async () => {
-      const { data: brokerData } = await supabase.from("brokers").select("*").eq("id", id).single();
-      if (brokerData) {
-        setBroker(brokerData);
-        const { data: profileData } = await supabase.from("profiles").select("*").eq("user_id", brokerData.user_id).single();
-        setProfile(profileData);
+      // Use security definer function for public broker access
+      const { data: brokerData } = await supabase.rpc("get_active_broker", { _broker_id: id });
+      const broker = brokerData?.[0];
+      if (broker) {
+        setBroker(broker);
+        // Use security definer function for public profile access
+        const { data: profileData } = await supabase.rpc("get_public_profile", { _user_id: broker.user_id });
+        setProfile(profileData?.[0] || null);
         const { data: propData } = await supabase.from("db_properties").select("*").eq("broker_id", id).eq("availability", "available");
         setProperties(propData || []);
       }
