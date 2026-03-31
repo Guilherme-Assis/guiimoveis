@@ -13,6 +13,8 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Favorites from "./pages/Favorites";
 import MapSearch from "./pages/MapSearch";
+import CityProperties from "./pages/CityProperties";
+import Lancamentos from "./pages/Lancamentos";
 import AdminLayout from "./components/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
 import Properties from "./pages/admin/Properties";
@@ -48,6 +50,8 @@ const App = () => (
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/favoritos" element={<Favorites />} />
             <Route path="/mapa" element={<MapSearch />} />
+            <Route path="/imoveis/:citySlug" element={<CityProperties />} />
+            <Route path="/lancamentos" element={<Lancamentos />} />
             <Route path="/admin" element={<ProtectedRoute><AdminLayout><Dashboard /></AdminLayout></ProtectedRoute>} />
             <Route path="/admin/properties" element={<ProtectedRoute><AdminLayout><Properties /></AdminLayout></ProtectedRoute>} />
             <Route path="/admin/brokers" element={<ProtectedRoute allowedRoles={["admin"]}><AdminLayout><Brokers /></AdminLayout></ProtectedRoute>} />

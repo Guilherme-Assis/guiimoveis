@@ -68,7 +68,7 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
             </span>
           </div>
 
-          {property.type !== "terreno" && (
+          {property.type !== "terreno" && property.type !== "sitio_chacara" && (
             <div className="flex items-center gap-4 border-t border-border pt-4">
               {property.bedrooms > 0 && (
                 <div className="flex items-center gap-1.5 text-muted-foreground">

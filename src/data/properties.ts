@@ -5,7 +5,7 @@ import estateImg from "@/assets/property-estate.jpg";
 import landImg from "@/assets/property-land.jpg";
 import heroImg from "@/assets/hero-mansion.jpg";
 
-export type PropertyType = "casa" | "apartamento" | "cobertura" | "terreno" | "fazenda" | "mansão";
+export type PropertyType = "casa" | "apartamento" | "cobertura" | "terreno" | "fazenda" | "mansão" | "kitnet" | "flat" | "loft" | "casa_condominio" | "sitio_chacara";
 export type PropertyStatus = "venda" | "aluguel" | "lançamento";
 
 export interface Property {
@@ -159,6 +159,11 @@ export const propertyTypes: { value: PropertyType; label: string }[] = [
   { value: "terreno", label: "Terreno" },
   { value: "fazenda", label: "Fazenda" },
   { value: "mansão", label: "Mansão" },
+  { value: "kitnet", label: "Kitnet / Studio" },
+  { value: "flat", label: "Flat" },
+  { value: "loft", label: "Loft" },
+  { value: "casa_condominio", label: "Casa em Condomínio" },
+  { value: "sitio_chacara", label: "Sítio / Chácara" },
 ];
 
 export const propertyStatuses: { value: PropertyStatus; label: string }[] = [
@@ -167,8 +172,57 @@ export const propertyStatuses: { value: PropertyStatus; label: string }[] = [
   { value: "lançamento", label: "Lançamento" },
 ];
 
+export const amenityOptions = [
+  "Piscina",
+  "Mobiliado",
+  "Varanda",
+  "Quintal",
+  "Churrasqueira",
+  "Sauna",
+  "Academia",
+  "Elevador",
+  "Segurança 24h",
+  "Condomínio Fechado",
+  "Vista para o Mar",
+  "Jardim",
+  "Energia Solar",
+  "Ar Condicionado",
+  "Lareira",
+  "Home Theater",
+  "Playground",
+  "Salão de Festas",
+  "Automação",
+  "Pet Friendly",
+];
+
 export const cities = [...new Set(properties.map((p) => p.city))];
 export const states = [...new Set(properties.map((p) => p.state))];
 
 export const formatPrice = (price: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 }).format(price);
+
+export const typeLabelsMap: Record<string, string> = {
+  casa: "Casa",
+  apartamento: "Apartamento",
+  cobertura: "Cobertura",
+  terreno: "Terreno",
+  fazenda: "Fazenda",
+  mansao: "Mansão",
+  "mansão": "Mansão",
+  kitnet: "Kitnet / Studio",
+  flat: "Flat",
+  loft: "Loft",
+  casa_condominio: "Casa em Condomínio",
+  sitio_chacara: "Sítio / Chácara",
+};
+
+export const slugifyCity = (city: string, state: string) => {
+  const text = `${state}-${city}`.toLowerCase();
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .trim();
+};

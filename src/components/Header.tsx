@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Phone, Mail, Menu, X, Heart, MapPin as MapPinIcon, BookOpen } from "lucide-react";
+import { Phone, Mail, Menu, X, Heart, MapPin as MapPinIcon, BookOpen, Building2 } from "lucide-react";
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -37,6 +37,9 @@ const Header = () => {
           <Link to="/blog" className="flex items-center gap-1 font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
             <BookOpen className="h-3.5 w-3.5" /> Blog
           </Link>
+          <Link to="/lancamentos" className="flex items-center gap-1 font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
+            <Building2 className="h-3.5 w-3.5" /> Lançamentos
+          </Link>
           <Link to="/favoritos" className="flex items-center gap-1 font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
             <Heart className="h-3.5 w-3.5" /> Favoritos
           </Link>
@@ -65,6 +68,9 @@ const Header = () => {
             </Link>
             <Link to="/blog" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground">
               <BookOpen className="h-3.5 w-3.5 text-primary" /> Blog
+            </Link>
+            <Link to="/lancamentos" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground">
+              <Building2 className="h-3.5 w-3.5 text-primary" /> Lançamentos
             </Link>
             <Link to="/favoritos" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground">
               <Heart className="h-3.5 w-3.5 text-primary" /> Favoritos

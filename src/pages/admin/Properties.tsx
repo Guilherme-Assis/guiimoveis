@@ -40,7 +40,7 @@ type DbProperty = {
 };
 
 const emptyProperty = {
-  title: "", type: "casa" as "casa" | "apartamento" | "cobertura" | "terreno" | "fazenda" | "mansao", status: "venda" as "venda" | "aluguel" | "lancamento",
+  title: "", type: "casa" as "casa" | "apartamento" | "cobertura" | "terreno" | "fazenda" | "mansao" | "kitnet" | "flat" | "loft" | "casa_condominio" | "sitio_chacara", status: "venda" as "venda" | "aluguel" | "lancamento",
   price: 0, location: "", city: "", state: "SP",
   bedrooms: 0, bathrooms: 0, parking_spaces: 0,
   area: 0, land_area: 0, description: "",
@@ -141,6 +141,8 @@ const Properties = () => {
   const typeLabels: Record<string, string> = {
     casa: "Casa", apartamento: "Apartamento", cobertura: "Cobertura",
     terreno: "Terreno", fazenda: "Fazenda", mansao: "Mansão",
+    kitnet: "Kitnet / Studio", flat: "Flat", loft: "Loft",
+    casa_condominio: "Casa em Condomínio", sitio_chacara: "Sítio / Chácara",
   };
 
   return (
@@ -228,6 +230,11 @@ const Properties = () => {
                     <SelectItem value="terreno">Terreno</SelectItem>
                     <SelectItem value="fazenda">Fazenda</SelectItem>
                     <SelectItem value="mansao">Mansão</SelectItem>
+                    <SelectItem value="kitnet">Kitnet / Studio</SelectItem>
+                    <SelectItem value="flat">Flat</SelectItem>
+                    <SelectItem value="loft">Loft</SelectItem>
+                    <SelectItem value="casa_condominio">Casa em Condomínio</SelectItem>
+                    <SelectItem value="sitio_chacara">Sítio / Chácara</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
