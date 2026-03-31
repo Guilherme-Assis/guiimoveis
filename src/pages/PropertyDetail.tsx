@@ -47,7 +47,12 @@ const PropertyDetail = () => {
   }
 
   const statusLabels: Record<string, string> = { venda: "Venda", aluguel: "Aluguel", lancamento: "Lançamento" };
-  const typeLabels: Record<string, string> = { casa: "Casa", apartamento: "Apartamento", cobertura: "Cobertura", terreno: "Terreno", fazenda: "Fazenda", mansao: "Mansão" };
+  const typeLabels: Record<string, string> = {
+    casa: "Casa", apartamento: "Apartamento", cobertura: "Cobertura",
+    terreno: "Terreno", fazenda: "Fazenda", mansao: "Mansão",
+    kitnet: "Kitnet / Studio", flat: "Flat", loft: "Loft",
+    casa_condominio: "Casa em Condomínio", sitio_chacara: "Sítio / Chácara",
+  };
 
   return (
     <div className="min-h-screen bg-background">

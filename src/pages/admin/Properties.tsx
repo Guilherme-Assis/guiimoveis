@@ -230,6 +230,11 @@ const Properties = () => {
                     <SelectItem value="terreno">Terreno</SelectItem>
                     <SelectItem value="fazenda">Fazenda</SelectItem>
                     <SelectItem value="mansao">Mansão</SelectItem>
+                    <SelectItem value="kitnet">Kitnet / Studio</SelectItem>
+                    <SelectItem value="flat">Flat</SelectItem>
+                    <SelectItem value="loft">Loft</SelectItem>
+                    <SelectItem value="casa_condominio">Casa em Condomínio</SelectItem>
+                    <SelectItem value="sitio_chacara">Sítio / Chácara</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
