@@ -69,11 +69,13 @@ const Brokers = () => {
     }
 
     // Create broker record
+    const brokerSlug = form.slug.trim() || slugify(form.fullName || form.email);
     const { error: brokerError } = await supabase.from("brokers").insert({
       user_id: userId,
       creci: form.creci.trim(),
       company_name: form.companyName.trim() || null,
       commission_rate: form.commissionRate,
+      slug: brokerSlug,
     });
 
     if (brokerError) {
