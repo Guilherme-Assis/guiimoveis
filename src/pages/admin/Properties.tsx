@@ -222,7 +222,7 @@ const Properties = () => {
               </div>
               <div className="space-y-2">
                 <Label className="font-body text-sm">Status</Label>
-                <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
+                <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v as typeof emptyProperty.status })}>
                   <SelectTrigger className="border-border bg-secondary"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="venda">Venda</SelectItem>
