@@ -1,0 +1,2 @@
+UPDATE auth.users SET email_confirmed_at = now() WHERE id = 'cd363430-d5d1-4702-912e-f06c3f23eb79' AND email_confirmed_at IS NULL;
+UPDATE public.brokers SET is_active = true WHERE user_id = 'cd363430-d5d1-4702-912e-f06c3f23eb79';
