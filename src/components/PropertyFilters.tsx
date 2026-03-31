@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SlidersHorizontal, X, ChevronDown } from "lucide-react";
-import { propertyTypes, propertyStatuses, cities, states, PropertyType, PropertyStatus } from "@/data/properties";
+import { SlidersHorizontal, X, ChevronDown, Check } from "lucide-react";
+import { propertyTypes, propertyStatuses, amenityOptions, PropertyType, PropertyStatus } from "@/data/properties";
 
 export interface FilterState {
   type: PropertyType | "";
@@ -14,6 +14,8 @@ export interface FilterState {
   minArea: string;
   maxArea: string;
   sortBy: string;
+  amenities: string[];
+  neighborhood: string;
 }
 
 export const defaultFilters: FilterState = {
@@ -27,16 +29,23 @@ export const defaultFilters: FilterState = {
   minArea: "",
   maxArea: "",
   sortBy: "relevance",
+  amenities: [],
+  neighborhood: "",
 };
 
 interface PropertyFiltersProps {
   filters: FilterState;
   onChange: (filters: FilterState) => void;
   resultCount: number;
+  availableCities?: string[];
+  availableStates?: string[];
+  availableNeighborhoods?: string[];
 }
 
 const priceOptions = [
   { value: "", label: "Qualquer" },
+  { value: "200000", label: "R$ 200K" },
+  { value: "500000", label: "R$ 500K" },
   { value: "1000000", label: "R$ 1M" },
   { value: "3000000", label: "R$ 3M" },
   { value: "5000000", label: "R$ 5M" },
@@ -96,15 +105,34 @@ const SelectField = ({
   </div>
 );
 
-const PropertyFilters = ({ filters, onChange, resultCount }: PropertyFiltersProps) => {
+const PropertyFilters = ({
+  filters,
+  onChange,
+  resultCount,
+  availableCities = [],
+  availableStates = [],
+  availableNeighborhoods = [],
+}: PropertyFiltersProps) => {
   const [expanded, setExpanded] = useState(false);
 
   const update = (key: keyof FilterState, value: string) => {
     onChange({ ...filters, [key]: value });
   };
 
+  const toggleAmenity = (amenity: string) => {
+    const current = filters.amenities || [];
+    const updated = current.includes(amenity)
+      ? current.filter((a) => a !== amenity)
+      : [...current, amenity];
+    onChange({ ...filters, amenities: updated });
+  };
+
   const activeCount = Object.entries(filters).filter(
-    ([key, val]) => val !== "" && key !== "sortBy"
+    ([key, val]) => {
+      if (key === "sortBy") return false;
+      if (key === "amenities") return (val as string[]).length > 0;
+      return val !== "";
+    }
   ).length;
 
   const clearAll = () => onChange({ ...defaultFilters });
@@ -180,13 +208,19 @@ const PropertyFilters = ({ filters, onChange, resultCount }: PropertyFiltersProp
                   label="Cidade"
                   value={filters.city}
                   onChange={(v) => update("city", v)}
-                  options={[{ value: "", label: "Todas" }, ...cities.map((c) => ({ value: c, label: c }))]}
+                  options={[
+                    { value: "", label: "Todas" },
+                    ...availableCities.map((c) => ({ value: c, label: c })),
+                  ]}
                 />
                 <SelectField
                   label="Estado"
                   value={filters.state}
                   onChange={(v) => update("state", v)}
-                  options={[{ value: "", label: "Todos" }, ...states.map((s) => ({ value: s, label: s }))]}
+                  options={[
+                    { value: "", label: "Todos" },
+                    ...availableStates.map((s) => ({ value: s, label: s })),
+                  ]}
                 />
                 <SelectField
                   label="Quartos (mín.)"
@@ -212,6 +246,7 @@ const PropertyFilters = ({ filters, onChange, resultCount }: PropertyFiltersProp
                   onChange={(v) => update("minArea", v)}
                   options={[
                     { value: "", label: "Qualquer" },
+                    { value: "50", label: "50m²" },
                     { value: "100", label: "100m²" },
                     { value: "300", label: "300m²" },
                     { value: "500", label: "500m²" },
@@ -230,6 +265,43 @@ const PropertyFilters = ({ filters, onChange, resultCount }: PropertyFiltersProp
                     { value: "5000", label: "5.000m²" },
                   ]}
                 />
+                {availableNeighborhoods.length > 0 && (
+                  <SelectField
+                    label="Bairro"
+                    value={filters.neighborhood}
+                    onChange={(v) => update("neighborhood", v)}
+                    options={[
+                      { value: "", label: "Todos" },
+                      ...availableNeighborhoods.map((n) => ({ value: n, label: n })),
+                    ]}
+                  />
+                )}
+              </div>
+
+              {/* Amenities Filter */}
+              <div className="mt-4 pb-2">
+                <label className="mb-2 block font-body text-xs uppercase tracking-wider text-muted-foreground">
+                  Comodidades
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {amenityOptions.map((amenity) => {
+                    const isActive = (filters.amenities || []).includes(amenity);
+                    return (
+                      <button
+                        key={amenity}
+                        onClick={() => toggleAmenity(amenity)}
+                        className={`flex items-center gap-1.5 border px-3 py-1.5 font-body text-xs transition-all ${
+                          isActive
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"
+                        }`}
+                      >
+                        {isActive && <Check className="h-3 w-3" />}
+                        {amenity}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </motion.div>
           )}
