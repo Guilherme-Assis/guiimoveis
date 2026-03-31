@@ -53,6 +53,12 @@ const Header = () => {
           >
             Contato
           </a>
+          <Link
+            to="/login"
+            className="font-body text-sm uppercase tracking-wider text-primary transition-colors hover:text-primary/80"
+          >
+            Área Restrita
+          </Link>
         </nav>
 
         {/* Contact */}
