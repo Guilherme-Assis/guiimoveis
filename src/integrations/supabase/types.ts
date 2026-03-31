@@ -203,6 +203,42 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_broker_by_slug: {
+        Args: { _slug: string }
+        Returns: {
+          company_name: string
+          creci: string
+          id: string
+          is_active: boolean
+          user_id: string
+        }[]
+      }
+      get_property_by_slug: {
+        Args: { _slug: string }
+        Returns: {
+          area: number
+          availability: Database["public"]["Enums"]["property_availability"]
+          bathrooms: number
+          bedrooms: number
+          broker_id: string
+          city: string
+          description: string
+          features: string[]
+          id: string
+          image_url: string
+          images: string[]
+          is_highlight: boolean
+          land_area: number
+          location: string
+          parking_spaces: number
+          price: number
+          slug: string
+          state: string
+          status: Database["public"]["Enums"]["property_status"]
+          title: string
+          type: Database["public"]["Enums"]["property_type"]
+        }[]
+      }
       get_public_profile: {
         Args: { _user_id: string }
         Returns: {
