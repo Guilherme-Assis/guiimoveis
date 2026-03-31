@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { slugify } from "@/lib/slugify";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +35,7 @@ type DbProperty = {
   features: string[];
   image_url: string | null;
   is_highlight: boolean;
+  slug: string | null;
   broker_id: string | null;
 };
 
@@ -42,7 +44,7 @@ const emptyProperty = {
   price: 0, location: "", city: "", state: "SP",
   bedrooms: 0, bathrooms: 0, parking_spaces: 0,
   area: 0, land_area: 0, description: "",
-  features: [] as string[], image_url: "", is_highlight: false,
+  features: [] as string[], image_url: "", is_highlight: false, slug: "",
 };
 
 const Properties = () => {
@@ -83,6 +85,7 @@ const Properties = () => {
       bedrooms: p.bedrooms, bathrooms: p.bathrooms, parking_spaces: p.parking_spaces,
       area: p.area, land_area: p.land_area, description: p.description || "",
       features: p.features || [], image_url: p.image_url || "", is_highlight: p.is_highlight,
+      slug: p.slug || "",
     });
     setFeaturesInput((p.features || []).join(", "));
     setDialogOpen(true);
@@ -95,9 +98,11 @@ const Properties = () => {
     }
 
     const features = featuresInput.split(",").map((f) => f.trim()).filter(Boolean);
+    const generatedSlug = form.slug.trim() || slugify(`${form.title}-${form.city}`);
     const payload = {
       ...form,
       features,
+      slug: generatedSlug,
       broker_id: role === "broker" ? brokerId : (editing?.broker_id || null),
     };
 
@@ -246,6 +251,11 @@ const Properties = () => {
                 <Label className="font-body text-sm">Estado</Label>
                 <Input value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })} className="border-border bg-secondary" />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="font-body text-sm">Slug (URL amigável)</Label>
+              <Input value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} placeholder="auto-gerado se vazio" className="border-border bg-secondary" />
             </div>
 
             <div className="space-y-2">

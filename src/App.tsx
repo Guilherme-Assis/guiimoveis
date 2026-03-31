@@ -36,8 +36,8 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/imovel/:id" element={<PropertyDetail />} />
-            <Route path="/corretor/:id" element={<BrokerProfile />} />
+            <Route path="/imovel/:slug" element={<PropertyDetail />} />
+            <Route path="/corretor/:slug" element={<BrokerProfile />} />
             <Route path="/login" element={<Login />} />
             <Route path="/admin" element={<ProtectedRoute><AdminLayout><Dashboard /></AdminLayout></ProtectedRoute>} />
             <Route path="/admin/properties" element={<ProtectedRoute><AdminLayout><Properties /></AdminLayout></ProtectedRoute>} />

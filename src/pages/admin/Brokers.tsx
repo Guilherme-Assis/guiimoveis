@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { slugify } from "@/lib/slugify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,7 +26,7 @@ const Brokers = () => {
   const [brokers, setBrokers] = useState<Broker[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [form, setForm] = useState({ email: "", password: "", fullName: "", creci: "", companyName: "", commissionRate: 5 });
+  const [form, setForm] = useState({ email: "", password: "", fullName: "", creci: "", companyName: "", commissionRate: 5, slug: "" });
 
   const load = async () => {
     setLoading(true);
@@ -68,11 +69,13 @@ const Brokers = () => {
     }
 
     // Create broker record
+    const brokerSlug = form.slug.trim() || slugify(form.fullName || form.email);
     const { error: brokerError } = await supabase.from("brokers").insert({
       user_id: userId,
       creci: form.creci.trim(),
       company_name: form.companyName.trim() || null,
       commission_rate: form.commissionRate,
+      slug: brokerSlug,
     });
 
     if (brokerError) {
@@ -82,7 +85,7 @@ const Brokers = () => {
 
     toast({ title: "Corretor cadastrado com sucesso!" });
     setDialogOpen(false);
-    setForm({ email: "", password: "", fullName: "", creci: "", companyName: "", commissionRate: 5 });
+    setForm({ email: "", password: "", fullName: "", creci: "", companyName: "", commissionRate: 5, slug: "" });
     load();
   };
 
@@ -161,6 +164,10 @@ const Brokers = () => {
             <div className="space-y-2">
               <Label className="font-body text-sm">CRECI *</Label>
               <Input value={form.creci} onChange={(e) => setForm({ ...form, creci: e.target.value })} className="border-border bg-secondary" />
+            </div>
+            <div className="space-y-2">
+              <Label className="font-body text-sm">Slug (URL amigável)</Label>
+              <Input value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} placeholder="auto-gerado se vazio" className="border-border bg-secondary" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">

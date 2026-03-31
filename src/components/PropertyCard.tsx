@@ -4,7 +4,7 @@ import { Property, formatPrice } from "@/data/properties";
 import { Link } from "react-router-dom";
 
 interface PropertyCardProps {
-  property: Property;
+  property: Property & { slug?: string };
   index: number;
 }
 
@@ -15,6 +15,8 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
     lançamento: "Lançamento",
   };
 
+  const linkTo = property.slug ? `/imovel/${property.slug}` : `/imovel/${property.id}`;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -23,10 +25,9 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
       transition={{ duration: 0.6, delay: index * 0.1 }}
     >
       <Link
-        to={`/imovel/${property.id}`}
+        to={linkTo}
         className="group block overflow-hidden border border-border bg-card transition-all duration-500 hover:border-primary/30 hover:shadow-[var(--shadow-gold)]"
       >
-        {/* Image */}
         <div className="relative aspect-[4/3] overflow-hidden">
           <img
             src={property.image}
@@ -37,15 +38,11 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
             height={768}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
-
-          {/* Status Badge */}
           <div className="absolute left-4 top-4">
             <span className="bg-gradient-gold px-3 py-1 font-body text-xs font-semibold uppercase tracking-wider text-primary-foreground">
               {statusLabels[property.status]}
             </span>
           </div>
-
-          {/* Price */}
           <div className="absolute bottom-4 left-4">
             <p className="font-display text-2xl font-semibold text-foreground">
               {formatPrice(property.price)}
@@ -53,12 +50,10 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
           </div>
         </div>
 
-        {/* Content */}
         <div className="p-5">
           <h3 className="mb-2 font-display text-lg font-semibold text-foreground transition-colors group-hover:text-primary">
             {property.title}
           </h3>
-
           <div className="mb-4 flex items-center gap-1 text-muted-foreground">
             <MapPin className="h-3.5 w-3.5 text-primary" />
             <span className="font-body text-sm">
@@ -66,7 +61,6 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
             </span>
           </div>
 
-          {/* Stats */}
           {property.type !== "terreno" && (
             <div className="flex items-center gap-4 border-t border-border pt-4">
               {property.bedrooms > 0 && (

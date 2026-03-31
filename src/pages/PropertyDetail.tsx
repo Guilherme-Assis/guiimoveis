@@ -1,13 +1,34 @@
 import { useParams, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Bed, Bath, Car, Maximize, MapPin, Check, Phone, Mail } from "lucide-react";
-import { properties, formatPrice } from "@/data/properties";
+import { formatPrice } from "@/data/properties";
+import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 const PropertyDetail = () => {
-  const { id } = useParams();
-  const property = properties.find((p) => p.id === id);
+  const { slug } = useParams();
+  const [property, setProperty] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      if (!slug) return;
+      const { data } = await supabase.rpc("get_property_by_slug", { _slug: slug });
+      setProperty(data?.[0] || null);
+      setLoading(false);
+    };
+    load();
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <p className="font-body text-muted-foreground">Carregando...</p>
+      </div>
+    );
+  }
 
   if (!property) {
     return (
@@ -24,7 +45,7 @@ const PropertyDetail = () => {
   const statusLabels: Record<string, string> = {
     venda: "Venda",
     aluguel: "Aluguel",
-    lançamento: "Lançamento",
+    lancamento: "Lançamento",
   };
 
   const typeLabels: Record<string, string> = {
@@ -33,7 +54,7 @@ const PropertyDetail = () => {
     cobertura: "Cobertura",
     terreno: "Terreno",
     fazenda: "Fazenda",
-    mansão: "Mansão",
+    mansao: "Mansão",
   };
 
   return (
@@ -43,7 +64,7 @@ const PropertyDetail = () => {
       {/* Hero Image */}
       <section className="relative h-[60vh] w-full overflow-hidden">
         <img
-          src={property.image}
+          src={property.image_url || "/placeholder.svg"}
           alt={property.title}
           className="h-full w-full object-cover"
           width={1920}
@@ -67,7 +88,6 @@ const PropertyDetail = () => {
       {/* Content */}
       <section className="container mx-auto px-6 py-12">
         <div className="grid gap-12 lg:grid-cols-3">
-          {/* Main content */}
           <div className="lg:col-span-2">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -95,7 +115,7 @@ const PropertyDetail = () => {
               </div>
 
               <p className="font-display text-3xl font-semibold text-gradient-gold md:text-4xl">
-                {formatPrice(property.price)}
+                {formatPrice(Number(property.price))}
               </p>
 
               {/* Stats */}
@@ -104,9 +124,7 @@ const PropertyDetail = () => {
                   <div className="flex items-center gap-2">
                     <Bed className="h-5 w-5 text-primary" />
                     <div>
-                      <p className="font-display text-xl font-semibold text-foreground">
-                        {property.bedrooms}
-                      </p>
+                      <p className="font-display text-xl font-semibold text-foreground">{property.bedrooms}</p>
                       <p className="font-body text-xs text-muted-foreground">Quartos</p>
                     </div>
                   </div>
@@ -115,41 +133,35 @@ const PropertyDetail = () => {
                   <div className="flex items-center gap-2">
                     <Bath className="h-5 w-5 text-primary" />
                     <div>
-                      <p className="font-display text-xl font-semibold text-foreground">
-                        {property.bathrooms}
-                      </p>
+                      <p className="font-display text-xl font-semibold text-foreground">{property.bathrooms}</p>
                       <p className="font-body text-xs text-muted-foreground">Banheiros</p>
                     </div>
                   </div>
                 )}
-                {property.parkingSpaces > 0 && (
+                {property.parking_spaces > 0 && (
                   <div className="flex items-center gap-2">
                     <Car className="h-5 w-5 text-primary" />
                     <div>
-                      <p className="font-display text-xl font-semibold text-foreground">
-                        {property.parkingSpaces}
-                      </p>
+                      <p className="font-display text-xl font-semibold text-foreground">{property.parking_spaces}</p>
                       <p className="font-body text-xs text-muted-foreground">Vagas</p>
                     </div>
                   </div>
                 )}
-                {property.area > 0 && (
+                {Number(property.area) > 0 && (
                   <div className="flex items-center gap-2">
                     <Maximize className="h-5 w-5 text-primary" />
                     <div>
-                      <p className="font-display text-xl font-semibold text-foreground">
-                        {property.area}m²
-                      </p>
+                      <p className="font-display text-xl font-semibold text-foreground">{property.area}m²</p>
                       <p className="font-body text-xs text-muted-foreground">Área Construída</p>
                     </div>
                   </div>
                 )}
-                {property.landArea > 0 && (
+                {Number(property.land_area) > 0 && (
                   <div className="flex items-center gap-2">
                     <Maximize className="h-5 w-5 text-primary" />
                     <div>
                       <p className="font-display text-xl font-semibold text-foreground">
-                        {property.landArea.toLocaleString("pt-BR")}m²
+                        {Number(property.land_area).toLocaleString("pt-BR")}m²
                       </p>
                       <p className="font-body text-xs text-muted-foreground">Terreno</p>
                     </div>
@@ -158,36 +170,31 @@ const PropertyDetail = () => {
               </div>
 
               {/* Description */}
-              <div className="mb-10">
-                <h2 className="mb-4 font-display text-2xl font-semibold text-foreground">
-                  Sobre o Imóvel
-                </h2>
-                <p className="font-body text-base leading-relaxed text-muted-foreground">
-                  {property.description}
-                </p>
-              </div>
+              {property.description && (
+                <div className="mb-10">
+                  <h2 className="mb-4 font-display text-2xl font-semibold text-foreground">Sobre o Imóvel</h2>
+                  <p className="font-body text-base leading-relaxed text-muted-foreground">{property.description}</p>
+                </div>
+              )}
 
               {/* Features */}
-              <div>
-                <h2 className="mb-4 font-display text-2xl font-semibold text-foreground">
-                  Características
-                </h2>
-                <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-                  {property.features.map((feature) => (
-                    <div
-                      key={feature}
-                      className="flex items-center gap-2 font-body text-sm text-muted-foreground"
-                    >
-                      <Check className="h-4 w-4 text-primary" />
-                      {feature}
-                    </div>
-                  ))}
+              {property.features && property.features.length > 0 && (
+                <div>
+                  <h2 className="mb-4 font-display text-2xl font-semibold text-foreground">Características</h2>
+                  <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+                    {property.features.map((feature: string) => (
+                      <div key={feature} className="flex items-center gap-2 font-body text-sm text-muted-foreground">
+                        <Check className="h-4 w-4 text-primary" />
+                        {feature}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </motion.div>
           </div>
 
-          {/* Sidebar — Contact */}
+          {/* Sidebar */}
           <div className="lg:col-span-1">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -195,13 +202,10 @@ const PropertyDetail = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="sticky top-24 border border-border bg-card p-8"
             >
-              <h3 className="mb-2 font-display text-xl font-semibold text-foreground">
-                Agende uma Visita
-              </h3>
+              <h3 className="mb-2 font-display text-xl font-semibold text-foreground">Agende uma Visita</h3>
               <p className="mb-6 font-body text-sm text-muted-foreground">
                 Entre em contato com nossos consultores especializados para conhecer este imóvel exclusivo.
               </p>
-
               <div className="flex flex-col gap-3">
                 <a
                   href="tel:+5511999999999"
@@ -218,9 +222,7 @@ const PropertyDetail = () => {
                   Enviar E-mail
                 </a>
               </div>
-
               <div className="luxury-divider my-6" />
-
               <p className="font-body text-xs text-center text-muted-foreground">
                 Atendimento exclusivo e personalizado
               </p>
