@@ -22,6 +22,7 @@ export type Database = {
           creci: string
           id: string
           is_active: boolean
+          slug: string | null
           updated_at: string
           user_id: string
         }
@@ -32,6 +33,7 @@ export type Database = {
           creci: string
           id?: string
           is_active?: boolean
+          slug?: string | null
           updated_at?: string
           user_id: string
         }
@@ -42,6 +44,7 @@ export type Database = {
           creci?: string
           id?: string
           is_active?: boolean
+          slug?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -66,6 +69,7 @@ export type Database = {
           location: string
           parking_spaces: number
           price: number
+          slug: string | null
           state: string
           status: Database["public"]["Enums"]["property_status"]
           title: string
@@ -90,6 +94,7 @@ export type Database = {
           location: string
           parking_spaces?: number
           price: number
+          slug?: string | null
           state?: string
           status?: Database["public"]["Enums"]["property_status"]
           title: string
@@ -114,6 +119,7 @@ export type Database = {
           location?: string
           parking_spaces?: number
           price?: number
+          slug?: string | null
           state?: string
           status?: Database["public"]["Enums"]["property_status"]
           title?: string
@@ -186,6 +192,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_slug: { Args: { input: string }; Returns: string }
       get_active_broker: {
         Args: { _broker_id: string }
         Returns: {
