@@ -141,6 +141,8 @@ const Properties = () => {
   const typeLabels: Record<string, string> = {
     casa: "Casa", apartamento: "Apartamento", cobertura: "Cobertura",
     terreno: "Terreno", fazenda: "Fazenda", mansao: "Mansão",
+    kitnet: "Kitnet / Studio", flat: "Flat", loft: "Loft",
+    casa_condominio: "Casa em Condomínio", sitio_chacara: "Sítio / Chácara",
   };
 
   return (
