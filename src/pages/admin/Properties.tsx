@@ -78,7 +78,7 @@ const Properties = () => {
   const openEdit = (p: DbProperty) => {
     setEditing(p);
     setForm({
-      title: p.title, type: p.type, status: p.status,
+      title: p.title, type: p.type as typeof emptyProperty.type, status: p.status as typeof emptyProperty.status,
       price: p.price, location: p.location, city: p.city, state: p.state,
       bedrooms: p.bedrooms, bathrooms: p.bathrooms, parking_spaces: p.parking_spaces,
       area: p.area, land_area: p.land_area, description: p.description || "",
