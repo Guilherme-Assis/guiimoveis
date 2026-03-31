@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 import MortgageCalculator from "@/components/MortgageCalculator";
 import VirtualTourViewer from "@/components/VirtualTourViewer";
 import FavoriteButton from "@/components/FavoriteButton";
+import PropertyLocationMap from "@/components/PropertyLocationMap";
 
 const PropertyDetail = () => {
   const { slug } = useParams();
