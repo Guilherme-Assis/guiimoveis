@@ -38,7 +38,7 @@ type DbProperty = {
 };
 
 const emptyProperty = {
-  title: "", type: "casa" as string, status: "venda" as string,
+  title: "", type: "casa" as "casa" | "apartamento" | "cobertura" | "terreno" | "fazenda" | "mansao", status: "venda" as "venda" | "aluguel" | "lancamento",
   price: 0, location: "", city: "", state: "SP",
   bedrooms: 0, bathrooms: 0, parking_spaces: 0,
   area: 0, land_area: 0, description: "",
