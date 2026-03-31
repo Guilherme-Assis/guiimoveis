@@ -14,6 +14,86 @@ export type Database = {
   }
   public: {
     Tables: {
+      blog_posts: {
+        Row: {
+          author_id: string
+          content: string
+          cover_image_url: string | null
+          created_at: string
+          excerpt: string | null
+          id: string
+          is_published: boolean
+          published_at: string | null
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          content: string
+          cover_image_url?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          is_published?: boolean
+          published_at?: string | null
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          cover_image_url?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          is_published?: boolean
+          published_at?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      broker_reviews: {
+        Row: {
+          broker_id: string
+          comment: string | null
+          created_at: string
+          id: string
+          rating: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          broker_id: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          broker_id?: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "broker_reviews_broker_id_fkey"
+            columns: ["broker_id"]
+            isOneToOne: false
+            referencedRelation: "brokers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       brokers: {
         Row: {
           commission_rate: number | null
@@ -66,7 +146,9 @@ export type Database = {
           images: string[] | null
           is_highlight: boolean
           land_area: number
+          latitude: number | null
           location: string
+          longitude: number | null
           parking_spaces: number
           price: number
           slug: string | null
@@ -75,6 +157,7 @@ export type Database = {
           title: string
           type: Database["public"]["Enums"]["property_type"]
           updated_at: string
+          virtual_tour_url: string | null
         }
         Insert: {
           area?: number
@@ -91,7 +174,9 @@ export type Database = {
           images?: string[] | null
           is_highlight?: boolean
           land_area?: number
+          latitude?: number | null
           location: string
+          longitude?: number | null
           parking_spaces?: number
           price: number
           slug?: string | null
@@ -100,6 +185,7 @@ export type Database = {
           title: string
           type?: Database["public"]["Enums"]["property_type"]
           updated_at?: string
+          virtual_tour_url?: string | null
         }
         Update: {
           area?: number
@@ -116,7 +202,9 @@ export type Database = {
           images?: string[] | null
           is_highlight?: boolean
           land_area?: number
+          latitude?: number | null
           location?: string
+          longitude?: number | null
           parking_spaces?: number
           price?: number
           slug?: string | null
@@ -125,6 +213,7 @@ export type Database = {
           title?: string
           type?: Database["public"]["Enums"]["property_type"]
           updated_at?: string
+          virtual_tour_url?: string | null
         }
         Relationships: [
           {
@@ -132,6 +221,35 @@ export type Database = {
             columns: ["broker_id"]
             isOneToOne: false
             referencedRelation: "brokers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      favorites: {
+        Row: {
+          created_at: string
+          id: string
+          property_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          property_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          property_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorites_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "db_properties"
             referencedColumns: ["id"]
           },
         ]
