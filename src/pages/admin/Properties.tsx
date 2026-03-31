@@ -87,6 +87,8 @@ const Properties = () => {
       area: p.area, land_area: p.land_area, description: p.description || "",
       features: p.features || [], image_url: p.image_url || "", is_highlight: p.is_highlight,
       slug: p.slug || "",
+      latitude: (p as any).latitude || "", longitude: (p as any).longitude || "",
+      virtual_tour_url: (p as any).virtual_tour_url || "",
     });
     setFeaturesInput((p.features || []).join(", "));
     setDialogOpen(true);
