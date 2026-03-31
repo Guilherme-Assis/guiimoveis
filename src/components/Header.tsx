@@ -37,6 +37,9 @@ const Header = () => {
           <Link to="/blog" className="flex items-center gap-1 font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
             <BookOpen className="h-3.5 w-3.5" /> Blog
           </Link>
+          <Link to="/lancamentos" className="flex items-center gap-1 font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
+            <Building2 className="h-3.5 w-3.5" /> Lançamentos
+          </Link>
           <Link to="/favoritos" className="flex items-center gap-1 font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
             <Heart className="h-3.5 w-3.5" /> Favoritos
           </Link>
