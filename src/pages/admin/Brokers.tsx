@@ -165,6 +165,10 @@ const Brokers = () => {
               <Label className="font-body text-sm">CRECI *</Label>
               <Input value={form.creci} onChange={(e) => setForm({ ...form, creci: e.target.value })} className="border-border bg-secondary" />
             </div>
+            <div className="space-y-2">
+              <Label className="font-body text-sm">Slug (URL amigável)</Label>
+              <Input value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} placeholder="auto-gerado se vazio" className="border-border bg-secondary" />
+            </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="font-body text-sm">Empresa</Label>
