@@ -102,10 +102,13 @@ const Properties = () => {
 
     const features = featuresInput.split(",").map((f) => f.trim()).filter(Boolean);
     const generatedSlug = form.slug.trim() || slugify(`${form.title}-${form.city}`);
-    const payload = {
+    const payload: any = {
       ...form,
       features,
       slug: generatedSlug,
+      latitude: form.latitude ? Number(form.latitude) : null,
+      longitude: form.longitude ? Number(form.longitude) : null,
+      virtual_tour_url: form.virtual_tour_url.trim() || null,
       broker_id: role === "broker" ? brokerId : (editing?.broker_id || null),
     };
 
