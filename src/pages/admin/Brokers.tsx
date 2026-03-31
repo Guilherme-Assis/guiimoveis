@@ -9,7 +9,8 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Pencil, Trash2, UserCheck, UserX } from "lucide-react";
+import { Plus, Pencil, Trash2, UserCheck, UserX, ExternalLink } from "lucide-react";
+import { Link } from "react-router-dom";
 
 type Broker = {
   id: string;
@@ -19,6 +20,7 @@ type Broker = {
   commission_rate: number;
   is_active: boolean;
   created_at: string;
+  slug: string | null;
 };
 
 const Brokers = () => {
@@ -131,6 +133,11 @@ const Brokers = () => {
                 </p>
               </div>
               <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" asChild title="Ver perfil público">
+                  <Link to={`/corretor/${b.slug || b.id}`} target="_blank">
+                    <ExternalLink className="h-4 w-4 text-primary" />
+                  </Link>
+                </Button>
                 <Button variant="ghost" size="icon" onClick={() => toggleActive(b)} title={b.is_active ? "Desativar" : "Ativar"}>
                   {b.is_active ? <UserCheck className="h-4 w-4 text-green-500" /> : <UserX className="h-4 w-4 text-destructive" />}
                 </Button>
