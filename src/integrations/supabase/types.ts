@@ -347,7 +347,9 @@ export type Database = {
           images: string[]
           is_highlight: boolean
           land_area: number
+          latitude: number
           location: string
+          longitude: number
           parking_spaces: number
           price: number
           slug: string
@@ -355,6 +357,7 @@ export type Database = {
           status: Database["public"]["Enums"]["property_status"]
           title: string
           type: Database["public"]["Enums"]["property_type"]
+          virtual_tour_url: string
         }[]
       }
       get_public_profile: {
