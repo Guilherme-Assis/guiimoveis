@@ -309,6 +309,21 @@ const Properties = () => {
               <Input value={featuresInput} onChange={(e) => setFeaturesInput(e.target.value)} placeholder="Piscina, Churrasqueira, Sauna" className="border-border bg-secondary" />
             </div>
 
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="font-body text-sm">Latitude</Label>
+                <Input type="number" step="any" value={form.latitude} onChange={(e) => setForm({ ...form, latitude: e.target.value })} placeholder="-23.5505" className="border-border bg-secondary" />
+              </div>
+              <div className="space-y-2">
+                <Label className="font-body text-sm">Longitude</Label>
+                <Input type="number" step="any" value={form.longitude} onChange={(e) => setForm({ ...form, longitude: e.target.value })} placeholder="-46.6333" className="border-border bg-secondary" />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="font-body text-sm">URL Tour Virtual 360°</Label>
+              <Input value={form.virtual_tour_url} onChange={(e) => setForm({ ...form, virtual_tour_url: e.target.value })} placeholder="https://..." className="border-border bg-secondary" />
+
             <div className="flex items-center gap-3">
               <Switch checked={form.is_highlight} onCheckedChange={(v) => setForm({ ...form, is_highlight: v })} />
               <Label className="font-body text-sm">Destaque na página inicial</Label>
