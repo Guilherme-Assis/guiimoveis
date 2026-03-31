@@ -14,16 +14,197 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      brokers: {
+        Row: {
+          commission_rate: number | null
+          company_name: string | null
+          created_at: string
+          creci: string
+          id: string
+          is_active: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          commission_rate?: number | null
+          company_name?: string | null
+          created_at?: string
+          creci: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          commission_rate?: number | null
+          company_name?: string | null
+          created_at?: string
+          creci?: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      db_properties: {
+        Row: {
+          area: number
+          availability: Database["public"]["Enums"]["property_availability"]
+          bathrooms: number
+          bedrooms: number
+          broker_id: string | null
+          city: string
+          created_at: string
+          description: string | null
+          features: string[] | null
+          id: string
+          image_url: string | null
+          images: string[] | null
+          is_highlight: boolean
+          land_area: number
+          location: string
+          parking_spaces: number
+          price: number
+          state: string
+          status: Database["public"]["Enums"]["property_status"]
+          title: string
+          type: Database["public"]["Enums"]["property_type"]
+          updated_at: string
+        }
+        Insert: {
+          area?: number
+          availability?: Database["public"]["Enums"]["property_availability"]
+          bathrooms?: number
+          bedrooms?: number
+          broker_id?: string | null
+          city: string
+          created_at?: string
+          description?: string | null
+          features?: string[] | null
+          id?: string
+          image_url?: string | null
+          images?: string[] | null
+          is_highlight?: boolean
+          land_area?: number
+          location: string
+          parking_spaces?: number
+          price: number
+          state?: string
+          status?: Database["public"]["Enums"]["property_status"]
+          title: string
+          type?: Database["public"]["Enums"]["property_type"]
+          updated_at?: string
+        }
+        Update: {
+          area?: number
+          availability?: Database["public"]["Enums"]["property_availability"]
+          bathrooms?: number
+          bedrooms?: number
+          broker_id?: string | null
+          city?: string
+          created_at?: string
+          description?: string | null
+          features?: string[] | null
+          id?: string
+          image_url?: string | null
+          images?: string[] | null
+          is_highlight?: boolean
+          land_area?: number
+          location?: string
+          parking_spaces?: number
+          price?: number
+          state?: string
+          status?: Database["public"]["Enums"]["property_status"]
+          title?: string
+          type?: Database["public"]["Enums"]["property_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "db_properties_broker_id_fkey"
+            columns: ["broker_id"]
+            isOneToOne: false
+            referencedRelation: "brokers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "broker"
+      property_availability: "available" | "unavailable"
+      property_status: "venda" | "aluguel" | "lancamento"
+      property_type:
+        | "casa"
+        | "apartamento"
+        | "cobertura"
+        | "terreno"
+        | "fazenda"
+        | "mansao"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +331,18 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "broker"],
+      property_availability: ["available", "unavailable"],
+      property_status: ["venda", "aluguel", "lancamento"],
+      property_type: [
+        "casa",
+        "apartamento",
+        "cobertura",
+        "terreno",
+        "fazenda",
+        "mansao",
+      ],
+    },
   },
 } as const
