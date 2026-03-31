@@ -323,6 +323,7 @@ const Properties = () => {
             <div className="space-y-2">
               <Label className="font-body text-sm">URL Tour Virtual 360°</Label>
               <Input value={form.virtual_tour_url} onChange={(e) => setForm({ ...form, virtual_tour_url: e.target.value })} placeholder="https://..." className="border-border bg-secondary" />
+            </div>
 
             <div className="flex items-center gap-3">
               <Switch checked={form.is_highlight} onCheckedChange={(v) => setForm({ ...form, is_highlight: v })} />
