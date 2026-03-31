@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 import MortgageCalculator from "@/components/MortgageCalculator";
 import VirtualTourViewer from "@/components/VirtualTourViewer";
 import FavoriteButton from "@/components/FavoriteButton";
+import PropertyLocationMap from "@/components/PropertyLocationMap";
 
 const PropertyDetail = () => {
   const { slug } = useParams();
@@ -161,6 +162,16 @@ const PropertyDetail = () => {
                   <VirtualTourViewer url={property.virtual_tour_url} title={property.title} />
                 </div>
               )}
+
+              {/* Location Map */}
+              <PropertyLocationMap
+                latitude={property.latitude ? Number(property.latitude) : null}
+                longitude={property.longitude ? Number(property.longitude) : null}
+                address={property.location}
+                city={property.city}
+                state={property.state}
+                title={property.title}
+              />
             </motion.div>
           </div>
 
