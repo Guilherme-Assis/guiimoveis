@@ -186,6 +186,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_active_broker: {
+        Args: { _broker_id: string }
+        Returns: {
+          company_name: string
+          creci: string
+          id: string
+          is_active: boolean
+          user_id: string
+        }[]
+      }
+      get_public_profile: {
+        Args: { _user_id: string }
+        Returns: {
+          avatar_url: string
+          bio: string
+          display_name: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
