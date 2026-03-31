@@ -9,7 +9,8 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Pencil, Trash2, UserCheck, UserX } from "lucide-react";
+import { Plus, Pencil, Trash2, UserCheck, UserX, ExternalLink } from "lucide-react";
+import { Link } from "react-router-dom";
 
 type Broker = {
   id: string;
