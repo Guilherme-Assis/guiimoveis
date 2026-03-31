@@ -98,9 +98,11 @@ const Properties = () => {
     }
 
     const features = featuresInput.split(",").map((f) => f.trim()).filter(Boolean);
+    const generatedSlug = form.slug.trim() || slugify(`${form.title}-${form.city}`);
     const payload = {
       ...form,
       features,
+      slug: generatedSlug,
       broker_id: role === "broker" ? brokerId : (editing?.broker_id || null),
     };
 
