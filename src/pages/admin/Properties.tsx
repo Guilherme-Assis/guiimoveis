@@ -45,6 +45,7 @@ const emptyProperty = {
   bedrooms: 0, bathrooms: 0, parking_spaces: 0,
   area: 0, land_area: 0, description: "",
   features: [] as string[], image_url: "", is_highlight: false, slug: "",
+  latitude: "" as string | number, longitude: "" as string | number, virtual_tour_url: "",
 };
 
 const Properties = () => {
@@ -86,6 +87,8 @@ const Properties = () => {
       area: p.area, land_area: p.land_area, description: p.description || "",
       features: p.features || [], image_url: p.image_url || "", is_highlight: p.is_highlight,
       slug: p.slug || "",
+      latitude: (p as any).latitude || "", longitude: (p as any).longitude || "",
+      virtual_tour_url: (p as any).virtual_tour_url || "",
     });
     setFeaturesInput((p.features || []).join(", "));
     setDialogOpen(true);
@@ -99,10 +102,13 @@ const Properties = () => {
 
     const features = featuresInput.split(",").map((f) => f.trim()).filter(Boolean);
     const generatedSlug = form.slug.trim() || slugify(`${form.title}-${form.city}`);
-    const payload = {
+    const payload: any = {
       ...form,
       features,
       slug: generatedSlug,
+      latitude: form.latitude ? Number(form.latitude) : null,
+      longitude: form.longitude ? Number(form.longitude) : null,
+      virtual_tour_url: form.virtual_tour_url.trim() || null,
       broker_id: role === "broker" ? brokerId : (editing?.broker_id || null),
     };
 
@@ -301,6 +307,22 @@ const Properties = () => {
             <div className="space-y-2">
               <Label className="font-body text-sm">Características (separadas por vírgula)</Label>
               <Input value={featuresInput} onChange={(e) => setFeaturesInput(e.target.value)} placeholder="Piscina, Churrasqueira, Sauna" className="border-border bg-secondary" />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="font-body text-sm">Latitude</Label>
+                <Input type="number" step="any" value={form.latitude} onChange={(e) => setForm({ ...form, latitude: e.target.value })} placeholder="-23.5505" className="border-border bg-secondary" />
+              </div>
+              <div className="space-y-2">
+                <Label className="font-body text-sm">Longitude</Label>
+                <Input type="number" step="any" value={form.longitude} onChange={(e) => setForm({ ...form, longitude: e.target.value })} placeholder="-46.6333" className="border-border bg-secondary" />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="font-body text-sm">URL Tour Virtual 360°</Label>
+              <Input value={form.virtual_tour_url} onChange={(e) => setForm({ ...form, virtual_tour_url: e.target.value })} placeholder="https://..." className="border-border bg-secondary" />
             </div>
 
             <div className="flex items-center gap-3">

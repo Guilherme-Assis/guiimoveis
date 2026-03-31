@@ -9,11 +9,16 @@ import PropertyDetail from "./pages/PropertyDetail";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import BrokerProfile from "./pages/BrokerProfile";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
+import Favorites from "./pages/Favorites";
+import MapSearch from "./pages/MapSearch";
 import AdminLayout from "./components/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
 import Properties from "./pages/admin/Properties";
 import Brokers from "./pages/admin/Brokers";
 import Profile from "./pages/admin/Profile";
+import BlogAdmin from "./pages/admin/BlogAdmin";
 import { ReactNode } from "react";
 
 const queryClient = new QueryClient();
@@ -39,10 +44,15 @@ const App = () => (
             <Route path="/imovel/:slug" element={<PropertyDetail />} />
             <Route path="/corretor/:slug" element={<BrokerProfile />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
+            <Route path="/favoritos" element={<Favorites />} />
+            <Route path="/mapa" element={<MapSearch />} />
             <Route path="/admin" element={<ProtectedRoute><AdminLayout><Dashboard /></AdminLayout></ProtectedRoute>} />
             <Route path="/admin/properties" element={<ProtectedRoute><AdminLayout><Properties /></AdminLayout></ProtectedRoute>} />
             <Route path="/admin/brokers" element={<ProtectedRoute allowedRoles={["admin"]}><AdminLayout><Brokers /></AdminLayout></ProtectedRoute>} />
             <Route path="/admin/profile" element={<ProtectedRoute><AdminLayout><Profile /></AdminLayout></ProtectedRoute>} />
+            <Route path="/admin/blog" element={<ProtectedRoute allowedRoles={["admin"]}><AdminLayout><BlogAdmin /></AdminLayout></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

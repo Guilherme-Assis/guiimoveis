@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import {
-  Building2, Users, Home, LogOut, LayoutDashboard, UserCircle, ChevronRight,
+  Building2, Users, Home, LogOut, LayoutDashboard, UserCircle, ChevronRight, BookOpen,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -10,6 +10,7 @@ const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/admin", roles: ["admin", "broker"] },
   { label: "Imóveis", icon: Building2, path: "/admin/properties", roles: ["admin", "broker"] },
   { label: "Corretores", icon: Users, path: "/admin/brokers", roles: ["admin"] },
+  { label: "Blog", icon: BookOpen, path: "/admin/blog", roles: ["admin"] },
   { label: "Meu Perfil", icon: UserCircle, path: "/admin/profile", roles: ["admin", "broker"] },
 ];
 

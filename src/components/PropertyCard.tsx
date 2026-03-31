@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Bed, Bath, Car, Maximize, MapPin } from "lucide-react";
 import { Property, formatPrice } from "@/data/properties";
 import { Link } from "react-router-dom";
+import FavoriteButton from "@/components/FavoriteButton";
 
 interface PropertyCardProps {
   property: Property & { slug?: string };
@@ -38,10 +39,16 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
             height={768}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
-          <div className="absolute left-4 top-4">
+          <div className="absolute left-4 top-4 flex items-center gap-2">
             <span className="bg-gradient-gold px-3 py-1 font-body text-xs font-semibold uppercase tracking-wider text-primary-foreground">
               {statusLabels[property.status]}
             </span>
+          </div>
+          <div className="absolute right-4 top-4">
+            <FavoriteButton
+              propertyId={property.id}
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-background/60 backdrop-blur-sm"
+            />
           </div>
           <div className="absolute bottom-4 left-4">
             <p className="font-display text-2xl font-semibold text-foreground">

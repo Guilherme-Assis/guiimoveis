@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
+import BrokerReviews from "@/components/BrokerReviews";
 import { formatPrice } from "@/data/properties";
 import { ArrowLeft, Phone, Mail, Building2 } from "lucide-react";
 
@@ -35,25 +36,12 @@ const BrokerProfile = () => {
   if (!broker) return <div className="flex min-h-screen flex-col items-center justify-center bg-background"><p className="font-display text-2xl text-foreground">Corretor não encontrado</p><Link to="/" className="mt-4 font-body text-primary hover:underline">Voltar</Link></div>;
 
   const adaptProperty = (p: any) => ({
-    id: p.id,
-    slug: p.slug,
-    title: p.title,
-    type: p.type,
-    status: p.status,
-    price: Number(p.price),
-    location: p.location,
-    city: p.city,
-    state: p.state,
-    bedrooms: p.bedrooms,
-    bathrooms: p.bathrooms,
-    parkingSpaces: p.parking_spaces,
-    area: Number(p.area),
-    landArea: Number(p.land_area),
-    description: p.description || "",
-    features: p.features || [],
-    image: p.image_url || "/placeholder.svg",
-    images: p.images || [],
-    isHighlight: p.is_highlight,
+    id: p.id, slug: p.slug, title: p.title, type: p.type, status: p.status,
+    price: Number(p.price), location: p.location, city: p.city, state: p.state,
+    bedrooms: p.bedrooms, bathrooms: p.bathrooms, parkingSpaces: p.parking_spaces,
+    area: Number(p.area), landArea: Number(p.land_area), description: p.description || "",
+    features: p.features || [], image: p.image_url || "/placeholder.svg",
+    images: p.images || [], isHighlight: p.is_highlight,
   });
 
   return (
@@ -80,6 +68,11 @@ const BrokerProfile = () => {
             </div>
           </div>
           {profile?.bio && <p className="mt-6 font-body text-sm leading-relaxed text-muted-foreground">{profile.bio}</p>}
+        </div>
+
+        {/* Reviews */}
+        <div className="mb-12">
+          <BrokerReviews brokerId={broker.id} />
         </div>
 
         <h2 className="mb-6 font-display text-2xl font-semibold text-foreground">
