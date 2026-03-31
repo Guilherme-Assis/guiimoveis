@@ -132,6 +132,11 @@ const Brokers = () => {
                 </p>
               </div>
               <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" asChild title="Ver perfil público">
+                  <Link to={`/corretor/${b.slug || b.id}`} target="_blank">
+                    <ExternalLink className="h-4 w-4 text-primary" />
+                  </Link>
+                </Button>
                 <Button variant="ghost" size="icon" onClick={() => toggleActive(b)} title={b.is_active ? "Desativar" : "Ativar"}>
                   {b.is_active ? <UserCheck className="h-4 w-4 text-green-500" /> : <UserX className="h-4 w-4 text-destructive" />}
                 </Button>
