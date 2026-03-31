@@ -8,7 +8,7 @@ import { formatPrice } from "@/data/properties";
 import { ArrowLeft, Phone, Mail, Building2 } from "lucide-react";
 
 const BrokerProfile = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const [broker, setBroker] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [properties, setProperties] = useState<any[]>([]);
@@ -16,27 +16,27 @@ const BrokerProfile = () => {
 
   useEffect(() => {
     const load = async () => {
-      // Use security definer function for public broker access
-      const { data: brokerData } = await supabase.rpc("get_active_broker", { _broker_id: id });
+      if (!slug) return;
+      const { data: brokerData } = await supabase.rpc("get_broker_by_slug", { _slug: slug });
       const broker = brokerData?.[0];
       if (broker) {
         setBroker(broker);
-        // Use security definer function for public profile access
         const { data: profileData } = await supabase.rpc("get_public_profile", { _user_id: broker.user_id });
         setProfile(profileData?.[0] || null);
-        const { data: propData } = await supabase.from("db_properties").select("*").eq("broker_id", id).eq("availability", "available");
+        const { data: propData } = await supabase.from("db_properties").select("*").eq("broker_id", broker.id).eq("availability", "available");
         setProperties(propData || []);
       }
       setLoading(false);
     };
     load();
-  }, [id]);
+  }, [slug]);
 
   if (loading) return <div className="flex min-h-screen items-center justify-center bg-background"><p className="font-body text-muted-foreground">Carregando...</p></div>;
   if (!broker) return <div className="flex min-h-screen flex-col items-center justify-center bg-background"><p className="font-display text-2xl text-foreground">Corretor não encontrado</p><Link to="/" className="mt-4 font-body text-primary hover:underline">Voltar</Link></div>;
 
   const adaptProperty = (p: any) => ({
     id: p.id,
+    slug: p.slug,
     title: p.title,
     type: p.type,
     status: p.status,
@@ -77,11 +77,6 @@ const BrokerProfile = () => {
               <h1 className="font-display text-3xl font-bold text-foreground">{profile?.display_name || "Corretor"}</h1>
               <p className="font-body text-sm text-primary">CRECI: {broker.creci}</p>
               {broker.company_name && <p className="font-body text-sm text-muted-foreground">{broker.company_name}</p>}
-              {profile?.phone && (
-                <a href={`tel:${profile.phone}`} className="mt-2 flex items-center gap-1 font-body text-sm text-muted-foreground hover:text-primary">
-                  <Phone className="h-3 w-3" /> {profile.phone}
-                </a>
-              )}
             </div>
           </div>
           {profile?.bio && <p className="mt-6 font-body text-sm leading-relaxed text-muted-foreground">{profile.bio}</p>}
