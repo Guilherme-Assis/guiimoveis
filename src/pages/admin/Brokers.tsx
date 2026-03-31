@@ -85,7 +85,7 @@ const Brokers = () => {
 
     toast({ title: "Corretor cadastrado com sucesso!" });
     setDialogOpen(false);
-    setForm({ email: "", password: "", fullName: "", creci: "", companyName: "", commissionRate: 5 });
+    setForm({ email: "", password: "", fullName: "", creci: "", companyName: "", commissionRate: 5, slug: "" });
     load();
   };
 

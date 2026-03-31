@@ -254,6 +254,11 @@ const Properties = () => {
             </div>
 
             <div className="space-y-2">
+              <Label className="font-body text-sm">Slug (URL amigável)</Label>
+              <Input value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} placeholder="auto-gerado se vazio" className="border-border bg-secondary" />
+            </div>
+
+            <div className="space-y-2">
               <Label className="font-body text-sm">Localização (bairro) *</Label>
               <Input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} className="border-border bg-secondary" />
             </div>
