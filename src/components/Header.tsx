@@ -69,6 +69,9 @@ const Header = () => {
             <Link to="/blog" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground">
               <BookOpen className="h-3.5 w-3.5 text-primary" /> Blog
             </Link>
+            <Link to="/lancamentos" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground">
+              <Building2 className="h-3.5 w-3.5 text-primary" /> Lançamentos
+            </Link>
             <Link to="/favoritos" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground">
               <Heart className="h-3.5 w-3.5 text-primary" /> Favoritos
             </Link>
