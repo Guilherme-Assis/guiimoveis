@@ -85,6 +85,7 @@ const Properties = () => {
       bedrooms: p.bedrooms, bathrooms: p.bathrooms, parking_spaces: p.parking_spaces,
       area: p.area, land_area: p.land_area, description: p.description || "",
       features: p.features || [], image_url: p.image_url || "", is_highlight: p.is_highlight,
+      slug: p.slug || "",
     });
     setFeaturesInput((p.features || []).join(", "));
     setDialogOpen(true);
