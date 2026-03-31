@@ -35,6 +35,7 @@ type DbProperty = {
   features: string[];
   image_url: string | null;
   is_highlight: boolean;
+  slug: string | null;
   broker_id: string | null;
 };
 
