@@ -23,7 +23,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { notifications, count } = useNotifications();
+  const { notifications, count, markAsRead, markAllAsRead } = useNotifications();
 
   const handleSignOut = async () => {
     await signOut();
