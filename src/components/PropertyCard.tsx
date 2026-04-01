@@ -30,7 +30,7 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
     >
       <Link
         to={linkTo}
-        className="group block overflow-hidden border border-border bg-card transition-all duration-500 hover:border-primary/30 hover:shadow-[var(--shadow-gold)]"
+        className="group flex h-full flex-col overflow-hidden border border-border bg-card transition-all duration-500 hover:border-primary/30 hover:shadow-[var(--shadow-gold)]"
       >
         <div className="relative aspect-[4/3] overflow-hidden">
           <img
