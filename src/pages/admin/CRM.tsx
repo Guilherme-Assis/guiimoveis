@@ -154,14 +154,14 @@ const CRM = () => {
               { label: "Fechados", value: stats.fechados, icon: UserCheck, gradient: "from-primary/20 to-primary/5", iconColor: "text-primary" },
             ].map((stat) => (
               <Card key={stat.label} className="overflow-hidden border-border/40 transition-all hover:border-border/60">
-                <CardContent className="p-5">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-body text-xs font-medium uppercase tracking-wider text-muted-foreground">{stat.label}</p>
-                      <p className="mt-2 font-display text-3xl font-bold text-foreground">{stat.value}</p>
+                <CardContent className="p-3 sm:p-5">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="font-body text-[10px] sm:text-xs font-medium uppercase tracking-wider text-muted-foreground truncate">{stat.label}</p>
+                      <p className="mt-1 sm:mt-2 font-display text-xl sm:text-3xl font-bold text-foreground">{stat.value}</p>
                     </div>
-                    <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${stat.gradient}`}>
-                      <stat.icon className={`h-6 w-6 ${stat.iconColor}`} />
+                    <div className={`flex h-9 w-9 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${stat.gradient}`}>
+                      <stat.icon className={`h-4 w-4 sm:h-6 sm:w-6 ${stat.iconColor}`} />
                     </div>
                   </div>
                 </CardContent>
