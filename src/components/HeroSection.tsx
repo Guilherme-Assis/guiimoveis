@@ -35,7 +35,7 @@ const HeroSection = ({ onScrollToListings }: HeroSectionProps) => {
           <p className="mb-4 text-sm font-body uppercase tracking-[0.3em] text-primary">
             Imóveis de Alto Padrão
           </p>
-          <h1 className="mb-6 font-display text-5xl font-semibold leading-tight text-foreground md:text-7xl lg:text-8xl">
+          <h1 className="mb-4 sm:mb-6 font-display text-3xl sm:text-5xl font-semibold leading-tight text-foreground md:text-7xl lg:text-8xl">
             Onde o Luxo{" "}
             <span className="text-gradient-gold italic">Encontra</span>
             <br />
