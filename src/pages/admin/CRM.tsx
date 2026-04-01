@@ -14,13 +14,16 @@ import { toast } from "@/hooks/use-toast";
 import {
   Plus, Search, Phone, Mail, DollarSign, MapPin,
   Trash2, Edit, Eye, Filter, Users, TrendingUp, UserCheck, UserX,
-  Sparkles, Clock, CheckSquare, CalendarDays, FileText, Calendar
+  Sparkles, Clock, CheckSquare, CalendarDays, FileText, Calendar,
+  BarChart3, Columns3
 } from "lucide-react";
 import LeadDetail from "@/components/crm/LeadDetail";
 import TasksTab from "@/components/crm/TasksTab";
 import VisitsTab from "@/components/crm/VisitsTab";
 import ProposalsTab from "@/components/crm/ProposalsTab";
 import CalendarTab from "@/components/crm/CalendarTab";
+import DashboardTab from "@/components/crm/DashboardTab";
+import KanbanTab from "@/components/crm/KanbanTab";
 
 const statusLabels: Record<string, string> = {
   novo: "Novo", em_contato: "Em Contato", qualificado: "Qualificado",
@@ -42,10 +45,12 @@ const sourceLabels: Record<string, string> = {
 };
 const formatCurrency = (v: number | null) => v ? v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "—";
 
-type CRMTab = "leads" | "tasks" | "visits" | "proposals" | "calendar";
+type CRMTab = "leads" | "tasks" | "visits" | "proposals" | "calendar" | "dashboard" | "kanban";
 
 const tabs: { id: CRMTab; label: string; icon: any }[] = [
+  { id: "dashboard", label: "Dashboard", icon: BarChart3 },
   { id: "leads", label: "Leads", icon: Users },
+  { id: "kanban", label: "Kanban", icon: Columns3 },
   { id: "tasks", label: "Tarefas", icon: CheckSquare },
   { id: "visits", label: "Visitas", icon: CalendarDays },
   { id: "proposals", label: "Propostas", icon: FileText },
@@ -55,7 +60,7 @@ const tabs: { id: CRMTab; label: string; icon: any }[] = [
 const CRM = () => {
   const { brokerId, role } = useAuth();
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<CRMTab>("leads");
+  const [activeTab, setActiveTab] = useState<CRMTab>("dashboard");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [showForm, setShowForm] = useState(false);
@@ -243,6 +248,8 @@ const CRM = () => {
         </div>
       )}
 
+      {activeTab === "dashboard" && <DashboardTab />}
+      {activeTab === "kanban" && <KanbanTab />}
       {activeTab === "tasks" && <TasksTab />}
       {activeTab === "visits" && <VisitsTab />}
       {activeTab === "proposals" && <ProposalsTab />}

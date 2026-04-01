@@ -15,6 +15,7 @@ import {
   Plus, DollarSign, FileText, Calendar, Trash2, Edit,
   CheckCircle2, XCircle, Clock, Send, Eye
 } from "lucide-react";
+import PdfProposalButton from "./PdfProposalButton";
 
 const proposalStatusLabels: Record<string, string> = {
   rascunho: "Rascunho", enviada: "Enviada", em_analise: "Em Análise",
@@ -160,6 +161,16 @@ const ProposalsTab = () => {
                     </div>
                   </div>
                   <div className="flex shrink-0 gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+                    <PdfProposalButton data={{
+                      leadName: proposal.broker_leads?.name || "Cliente",
+                      propertyTitle: proposal.db_properties?.title || "Imóvel",
+                      propertyCity: proposal.db_properties?.city,
+                      propertyPrice: proposal.db_properties?.price,
+                      proposedValue: proposal.proposed_value,
+                      counterValue: proposal.counter_value,
+                      conditions: proposal.conditions,
+                      validUntil: proposal.valid_until,
+                    }} />
                     <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={() => { setEditProposal(proposal); setShowForm(true); }}><Edit className="h-4 w-4" /></Button>
                     <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => { if (confirm("Excluir?")) deleteMutation.mutate(proposal.id); }}><Trash2 className="h-4 w-4" /></Button>
                   </div>
