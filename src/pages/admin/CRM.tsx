@@ -262,6 +262,10 @@ const CRM = () => {
       {activeTab === "visits" && <VisitsTab />}
       {activeTab === "proposals" && <ProposalsTab />}
       {activeTab === "calendar" && <CalendarTab />}
+      {activeTab === "notifications" && <NotificationsTab />}
+      {activeTab === "reports" && <ReportsTab />}
+      {activeTab === "commissions" && <CommissionsTab />}
+      {activeTab === "templates" && <MessageTemplatesTab />}
     </div>
   );
 };
