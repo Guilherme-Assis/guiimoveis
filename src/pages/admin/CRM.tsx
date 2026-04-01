@@ -60,7 +60,7 @@ const tabs: { id: CRMTab; label: string; icon: any }[] = [
 const CRM = () => {
   const { brokerId, role } = useAuth();
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<CRMTab>("leads");
+  const [activeTab, setActiveTab] = useState<CRMTab>("dashboard");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [showForm, setShowForm] = useState(false);
