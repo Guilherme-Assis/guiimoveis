@@ -326,7 +326,7 @@ const LeadForm = ({ brokerId, lead, onSuccess, isAdmin }: { brokerId: string | n
         <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Nome *</Label>
         <Input value={form.name} onChange={(e) => update("name", e.target.value)} placeholder="Nome completo do lead" className="border-border/40" />
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-1.5"><Label className="text-xs text-muted-foreground">Email</Label><Input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} placeholder="email@exemplo.com" className="border-border/40" /></div>
         <div className="space-y-1.5"><Label className="text-xs text-muted-foreground">Telefone</Label><Input value={form.phone} onChange={(e) => update("phone", e.target.value)} placeholder="(11) 99999-9999" className="border-border/40" /></div>
       </div>
