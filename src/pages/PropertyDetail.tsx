@@ -10,7 +10,7 @@ import MortgageCalculator from "@/components/MortgageCalculator";
 import VirtualTourViewer from "@/components/VirtualTourViewer";
 import FavoriteButton from "@/components/FavoriteButton";
 import PropertyLocationMap from "@/components/PropertyLocationMap";
-import { useS3Image } from "@/hooks/useS3Image";
+import PropertyImageGallery from "@/components/PropertyImageGallery";
 
 const PropertyDetail = () => {
   const { slug } = useParams();
