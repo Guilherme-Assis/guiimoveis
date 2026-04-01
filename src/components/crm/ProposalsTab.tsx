@@ -15,6 +15,7 @@ import {
   Plus, DollarSign, FileText, Calendar, Trash2, Edit,
   CheckCircle2, XCircle, Clock, Send, Eye
 } from "lucide-react";
+import PdfProposalButton from "./PdfProposalButton";
 
 const proposalStatusLabels: Record<string, string> = {
   rascunho: "Rascunho", enviada: "Enviada", em_analise: "Em Análise",
