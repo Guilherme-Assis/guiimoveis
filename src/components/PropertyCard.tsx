@@ -60,8 +60,8 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
           </div>
         </div>
 
-        <div className="p-5">
-          <h3 className="mb-2 font-display text-lg font-semibold text-foreground transition-colors group-hover:text-primary">
+        <div className="flex flex-1 flex-col p-5">
+          <h3 className="mb-2 line-clamp-2 font-display text-lg font-semibold text-foreground transition-colors group-hover:text-primary">
             {property.title}
           </h3>
           <div className="mb-4 flex items-center gap-1 text-muted-foreground">
