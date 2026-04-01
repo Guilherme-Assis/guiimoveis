@@ -4,27 +4,42 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
+import { lazy, Suspense, ReactNode } from "react";
+
+// Eager load: home page
 import Index from "./pages/Index";
-import PropertyDetail from "./pages/PropertyDetail";
-import NotFound from "./pages/NotFound";
-import Login from "./pages/Login";
-import BrokerProfile from "./pages/BrokerProfile";
-import BrokerCard from "./pages/BrokerCard";
-import Blog from "./pages/Blog";
-import BlogPost from "./pages/BlogPost";
-import Favorites from "./pages/Favorites";
-import MapSearch from "./pages/MapSearch";
-import CityProperties from "./pages/CityProperties";
-import Lancamentos from "./pages/Lancamentos";
-import AdminLayout from "./components/AdminLayout";
-import Dashboard from "./pages/admin/Dashboard";
-import Properties from "./pages/admin/Properties";
-import Brokers from "./pages/admin/Brokers";
-import Profile from "./pages/admin/Profile";
-import BlogAdmin from "./pages/admin/BlogAdmin";
-import CRM from "./pages/admin/CRM";
-import { ReactNode } from "react";
-import PropertyChatWidget from "./components/PropertyChatWidget";
+
+// Lazy load: all other pages
+const PropertyDetail = lazy(() => import("./pages/PropertyDetail"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const Login = lazy(() => import("./pages/Login"));
+const BrokerProfile = lazy(() => import("./pages/BrokerProfile"));
+const BrokerCard = lazy(() => import("./pages/BrokerCard"));
+const Blog = lazy(() => import("./pages/Blog"));
+const BlogPost = lazy(() => import("./pages/BlogPost"));
+const Favorites = lazy(() => import("./pages/Favorites"));
+const MapSearch = lazy(() => import("./pages/MapSearch"));
+const CityProperties = lazy(() => import("./pages/CityProperties"));
+const Lancamentos = lazy(() => import("./pages/Lancamentos"));
+const AdminLayout = lazy(() => import("./components/AdminLayout"));
+const Dashboard = lazy(() => import("./pages/admin/Dashboard"));
+const Properties = lazy(() => import("./pages/admin/Properties"));
+const Brokers = lazy(() => import("./pages/admin/Brokers"));
+const Profile = lazy(() => import("./pages/admin/Profile"));
+const BlogAdmin = lazy(() => import("./pages/admin/BlogAdmin"));
+const CRM = lazy(() => import("./pages/admin/CRM"));
+const PropertyChatWidget = lazy(() => import("./components/PropertyChatWidget"));
+
+const queryClient = new QueryClient();
+
+const PageLoader = () => (
+  <div className="flex min-h-screen items-center justify-center bg-background">
+    <div className="flex flex-col items-center gap-3">
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      <p className="font-body text-sm text-muted-foreground">Carregando...</p>
+    </div>
+  </div>
+);
 
 const queryClient = new QueryClient();
 
