@@ -248,6 +248,8 @@ const CRM = () => {
         </div>
       )}
 
+      {activeTab === "dashboard" && <DashboardTab />}
+      {activeTab === "kanban" && <KanbanTab />}
       {activeTab === "tasks" && <TasksTab />}
       {activeTab === "visits" && <VisitsTab />}
       {activeTab === "proposals" && <ProposalsTab />}
