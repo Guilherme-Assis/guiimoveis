@@ -3,6 +3,7 @@ import { Bed, Bath, Car, Maximize, MapPin } from "lucide-react";
 import { Property, formatPrice } from "@/data/properties";
 import { Link } from "react-router-dom";
 import FavoriteButton from "@/components/FavoriteButton";
+import { useS3Image } from "@/hooks/useS3Image";
 
 interface PropertyCardProps {
   property: Property & { slug?: string };
@@ -10,6 +11,7 @@ interface PropertyCardProps {
 }
 
 const PropertyCard = ({ property, index }: PropertyCardProps) => {
+  const resolvedImage = useS3Image(property.image);
   const statusLabels: Record<string, string> = {
     venda: "Venda",
     aluguel: "Aluguel",
@@ -31,7 +33,7 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
       >
         <div className="relative aspect-[4/3] overflow-hidden">
           <img
-            src={property.image}
+            src={resolvedImage}
             alt={property.title}
             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
             loading="lazy"

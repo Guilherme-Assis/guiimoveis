@@ -10,6 +10,7 @@ import MortgageCalculator from "@/components/MortgageCalculator";
 import VirtualTourViewer from "@/components/VirtualTourViewer";
 import FavoriteButton from "@/components/FavoriteButton";
 import PropertyLocationMap from "@/components/PropertyLocationMap";
+import { useS3Image } from "@/hooks/useS3Image";
 
 const PropertyDetail = () => {
   const { slug } = useParams();
@@ -54,12 +55,14 @@ const PropertyDetail = () => {
     casa_condominio: "Casa em Condomínio", sitio_chacara: "Sítio / Chácara",
   };
 
+  const resolvedImage = useS3Image(property?.image_url);
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
       <section className="relative h-[60vh] w-full overflow-hidden">
-        <img src={property.image_url || "/placeholder.svg"} alt={property.title} className="h-full w-full object-cover" width={1920} height={1080} />
+        <img src={resolvedImage} alt={property.title} className="h-full w-full object-cover" width={1920} height={1080} />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-8">
           <div className="container mx-auto">

@@ -1,13 +1,15 @@
 import { motion } from "framer-motion";
 import { Search } from "lucide-react";
+import { useS3Image } from "@/hooks/useS3Image";
 
-const heroImage = "https://s3.sa-east-1.amazonaws.com/gui-imoveis/properties/hero-mansion.jpg";
+const heroImageUrl = "https://s3.sa-east-1.amazonaws.com/gui-imoveis/properties/hero-mansion.jpg";
 
 interface HeroSectionProps {
   onScrollToListings: () => void;
 }
 
 const HeroSection = ({ onScrollToListings }: HeroSectionProps) => {
+  const heroImage = useS3Image(heroImageUrl);
   return (
     <section className="relative h-screen w-full overflow-hidden">
       {/* Background Image */}
