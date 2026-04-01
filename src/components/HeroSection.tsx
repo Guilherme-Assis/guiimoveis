@@ -41,7 +41,7 @@ const HeroSection = ({ onScrollToListings }: HeroSectionProps) => {
             <br />
             seu Endereço
           </h1>
-          <p className="mx-auto mb-10 max-w-2xl font-body text-lg font-light text-muted-foreground md:text-xl">
+          <p className="mx-auto mb-6 sm:mb-10 max-w-2xl font-body text-base sm:text-lg font-light text-muted-foreground md:text-xl">
             Descubra propriedades exclusivas que redefinem o conceito de
             sofisticação e elegância no mercado imobiliário brasileiro.
           </p>
