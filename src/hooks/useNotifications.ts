@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -17,8 +17,34 @@ export interface AppNotification {
   color: string;
 }
 
+const STORAGE_KEY = "elite-read-notifications";
+
+const loadReadIds = (): Set<string> => {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? new Set(JSON.parse(raw)) : new Set();
+  } catch {
+    return new Set();
+  }
+};
+
+const saveReadIds = (ids: Set<string>) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify([...ids]));
+};
+
 export const useNotifications = () => {
   const { brokerId, role } = useAuth();
+  const [readIds, setReadIds] = useState<Set<string>>(loadReadIds);
+
+  useEffect(() => { saveReadIds(readIds); }, [readIds]);
+
+  const markAsRead = useCallback((id: string) => {
+    setReadIds((prev) => { const next = new Set(prev); next.add(id); return next; });
+  }, []);
+
+  const markAllAsRead = useCallback((ids: string[]) => {
+    setReadIds((prev) => { const next = new Set(prev); ids.forEach((id) => next.add(id)); return next; });
+  }, []);
 
   const { data: leads = [] } = useQuery({
     queryKey: ["notif-leads", brokerId],
@@ -68,7 +94,7 @@ export const useNotifications = () => {
     enabled: !!brokerId || role === "admin",
   });
 
-  const notifications: AppNotification[] = useMemo(() => {
+  const allNotifications: AppNotification[] = useMemo(() => {
     const notifs: AppNotification[] = [];
     const now = new Date();
     const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
@@ -134,7 +160,17 @@ export const useNotifications = () => {
     return notifs.sort((a, b) => b.date.getTime() - a.date.getTime());
   }, [leads, proposals, tasks, visits]);
 
-  return { notifications, count: notifications.length };
+  const unreadNotifications = useMemo(
+    () => allNotifications.filter((n) => !readIds.has(n.id)),
+    [allNotifications, readIds]
+  );
+
+  return {
+    notifications: unreadNotifications,
+    count: unreadNotifications.length,
+    markAsRead,
+    markAllAsRead,
+  };
 };
 
 export const formatRelativeDate = (date: Date) => {
