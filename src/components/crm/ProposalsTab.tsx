@@ -160,7 +160,7 @@ const ProposalsTab = () => {
                       )}
                     </div>
                   </div>
-                  <div className="flex shrink-0 gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+                  <div className="flex shrink-0 gap-0.5 sm:opacity-0 sm:transition-opacity sm:group-hover:opacity-100">
                     <PdfProposalButton data={{
                       leadName: proposal.broker_leads?.name || "Cliente",
                       propertyTitle: proposal.db_properties?.title || "Imóvel",

@@ -256,31 +256,31 @@ const DashboardTab = () => {
       </div>
 
       {/* Quick stats footer */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
         <Card className="border-border/40">
-          <CardContent className="flex items-center gap-3 p-4">
-            <CheckCircle2 className="h-5 w-5 text-primary" />
-            <div>
-              <p className="text-xs text-muted-foreground">Tarefas Concluídas</p>
-              <p className="font-display text-lg font-bold">{tasks.filter((t: any) => t.status === "concluida").length}/{tasks.length}</p>
+          <CardContent className="flex items-center gap-3 p-3 sm:p-4">
+            <CheckCircle2 className="h-5 w-5 shrink-0 text-primary" />
+            <div className="min-w-0">
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Tarefas Concluídas</p>
+              <p className="font-display text-base sm:text-lg font-bold">{tasks.filter((t: any) => t.status === "concluida").length}/{tasks.length}</p>
             </div>
           </CardContent>
         </Card>
         <Card className="border-border/40">
-          <CardContent className="flex items-center gap-3 p-4">
-            <CalendarDays className="h-5 w-5 text-amber-400" />
-            <div>
-              <p className="text-xs text-muted-foreground">Visitas Agendadas</p>
-              <p className="font-display text-lg font-bold">{visits.filter((v: any) => v.status === "agendada").length}</p>
+          <CardContent className="flex items-center gap-3 p-3 sm:p-4">
+            <CalendarDays className="h-5 w-5 shrink-0 text-amber-400" />
+            <div className="min-w-0">
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Visitas Agendadas</p>
+              <p className="font-display text-base sm:text-lg font-bold">{visits.filter((v: any) => v.status === "agendada").length}</p>
             </div>
           </CardContent>
         </Card>
         <Card className="border-border/40">
-          <CardContent className="flex items-center gap-3 p-4">
-            <XCircle className="h-5 w-5 text-destructive" />
-            <div>
-              <p className="text-xs text-muted-foreground">Leads Perdidos</p>
-              <p className="font-display text-lg font-bold">{leads.filter((l: any) => l.status === "perdido").length}</p>
+          <CardContent className="flex items-center gap-3 p-3 sm:p-4">
+            <XCircle className="h-5 w-5 shrink-0 text-destructive" />
+            <div className="min-w-0">
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Leads Perdidos</p>
+              <p className="font-display text-base sm:text-lg font-bold">{leads.filter((l: any) => l.status === "perdido").length}</p>
             </div>
           </CardContent>
         </Card>
