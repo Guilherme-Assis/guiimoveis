@@ -95,62 +95,90 @@ const Properties = () => {
     setDialogOpen(true);
   };
 
+  const uploadImageToS3 = async (file: File): Promise<string | null> => {
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/avif"];
+    if (!allowedTypes.includes(file.type)) {
+      toast({ title: "Formato inválido", description: `${file.name}: Use JPG, PNG, WebP ou AVIF.`, variant: "destructive" });
+      return null;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast({ title: "Arquivo muito grande", description: `${file.name}: Máximo 10MB.`, variant: "destructive" });
+      return null;
+    }
+
+    const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+    const session = (await supabase.auth.getSession()).data.session;
+    const fnUrl = `https://${projectId}.supabase.co/functions/v1/s3-upload?action=get_upload_url`;
+
+    const signResponse = await fetch(fnUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${session?.access_token}`,
+        "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+      },
+      body: JSON.stringify({ filename: file.name, content_type: file.type }),
+    });
+
+    const signData = await signResponse.json();
+    if (!signResponse.ok || !signData?.upload_url) {
+      throw new Error(signData?.error || "Failed to get upload URL");
+    }
+
+    const uploadResponse = await fetch(signData.upload_url, {
+      method: "PUT",
+      body: file,
+      headers: { "Content-Type": file.type },
+    });
+
+    if (!uploadResponse.ok) throw new Error("Upload to S3 failed");
+    return signData.public_url;
+  };
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/avif"];
-    if (!allowedTypes.includes(file.type)) {
-      toast({ title: "Formato inválido", description: "Use JPG, PNG, WebP ou AVIF.", variant: "destructive" });
-      return;
-    }
-    if (file.size > 10 * 1024 * 1024) {
-      toast({ title: "Arquivo muito grande", description: "Máximo 10MB.", variant: "destructive" });
-      return;
-    }
-
     setUploading(true);
     try {
-      // Get signed upload URL from edge function
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      const session = (await supabase.auth.getSession()).data.session;
-      const fnUrl = `https://${projectId}.supabase.co/functions/v1/s3-upload?action=get_upload_url`;
-      
-      const signResponse = await fetch(fnUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${session?.access_token}`,
-          "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        },
-        body: JSON.stringify({ filename: file.name, content_type: file.type }),
-      });
-
-      const signData = await signResponse.json();
-      if (!signResponse.ok || !signData?.upload_url) {
-        throw new Error(signData?.error || "Failed to get upload URL");
+      const url = await uploadImageToS3(file);
+      if (url) {
+        setForm({ ...form, image_url: url });
+        toast({ title: "Imagem principal enviada!" });
       }
-
-      // Upload directly to S3 using the signed URL
-      const uploadResponse = await fetch(signData.upload_url, {
-        method: "PUT",
-        body: file,
-        headers: { "Content-Type": file.type },
-      });
-
-      if (!uploadResponse.ok) {
-        throw new Error("Upload to S3 failed");
-      }
-
-      // Use the public URL
-      setForm({ ...form, image_url: signData.public_url });
-      toast({ title: "Imagem enviada!", description: "Imagem salva no S3 com sucesso." });
     } catch (err: any) {
       console.error("Upload error:", err);
       toast({ title: "Erro no upload", description: err.message || "Tente novamente.", variant: "destructive" });
     } finally {
       setUploading(false);
     }
+  };
+
+  const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    try {
+      const newUrls: string[] = [];
+      for (const file of Array.from(files)) {
+        const url = await uploadImageToS3(file);
+        if (url) newUrls.push(url);
+      }
+      if (newUrls.length > 0) {
+        setForm((prev) => ({ ...prev, images: [...prev.images, ...newUrls] }));
+        toast({ title: `${newUrls.length} imagem(ns) adicionada(s) à galeria!` });
+      }
+    } catch (err: any) {
+      console.error("Gallery upload error:", err);
+      toast({ title: "Erro no upload", description: err.message || "Tente novamente.", variant: "destructive" });
+    } finally {
+      setUploading(false);
+      // Reset input
+      e.target.value = "";
+    }
+  };
+
+  const removeGalleryImage = (idx: number) => {
+    setForm((prev) => ({ ...prev, images: prev.images.filter((_, i) => i !== idx) }));
   };
 
   const handleSave = async () => {
