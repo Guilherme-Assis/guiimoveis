@@ -225,7 +225,7 @@ const VisitForm = ({ brokerId, isAdmin, visit, leads, properties, onSuccess }: a
           </Select>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label className="text-xs text-muted-foreground">Data/Hora *</Label>
           <Input type="datetime-local" value={form.visit_date} onChange={(e) => setForm(p => ({ ...p, visit_date: e.target.value }))} className="border-border/40" />

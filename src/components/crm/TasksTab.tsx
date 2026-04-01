@@ -295,7 +295,7 @@ const TaskForm = ({ brokerId, isAdmin, task, leads, onSuccess }: any) => {
           </Select>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label className="text-xs text-muted-foreground">Vencimento</Label>
           <Input type="datetime-local" value={form.due_date} onChange={(e) => update("due_date", e.target.value)} className="border-border/40" />
