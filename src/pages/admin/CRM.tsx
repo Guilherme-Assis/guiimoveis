@@ -332,7 +332,7 @@ const LeadForm = ({ brokerId, lead, onSuccess, isAdmin }: { brokerId: string | n
       </div>
       <div className="rounded-lg border border-border/30 bg-secondary/30 p-4">
         <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Interesse Financeiro</p>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1.5"><Label className="text-xs text-muted-foreground">Valor (R$)</Label><Input type="number" value={form.interest_value} onChange={(e) => update("interest_value", e.target.value)} placeholder="500.000" className="border-border/40" /></div>
           <div className="space-y-1.5"><Label className="text-xs text-muted-foreground">Parcelas (R$)</Label><Input type="number" value={form.installment_value} onChange={(e) => update("installment_value", e.target.value)} placeholder="3.000" className="border-border/40" /></div>
         </div>
