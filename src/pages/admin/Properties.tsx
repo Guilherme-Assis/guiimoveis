@@ -382,25 +382,52 @@ const Properties = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="font-body text-sm">Terreno (m²)</Label>
-                <Input type="number" value={form.land_area} onChange={(e) => setForm({ ...form, land_area: Number(e.target.value) })} className="border-border bg-secondary" />
+            <div className="space-y-2">
+              <Label className="font-body text-sm">Terreno (m²)</Label>
+              <Input type="number" value={form.land_area} onChange={(e) => setForm({ ...form, land_area: Number(e.target.value) })} className="border-border bg-secondary" />
+            </div>
+
+            <div className="space-y-2">
+              <Label className="font-body text-sm">Imagem Principal</Label>
+              <div className="flex gap-2">
+                <Input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} placeholder="URL ou faça upload" className="flex-1 border-border bg-secondary" />
+                <label className="flex cursor-pointer items-center gap-1 rounded border border-primary px-3 py-2 font-body text-xs font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground">
+                  {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                  <span>{uploading ? "..." : "Upload"}</span>
+                  <input type="file" accept="image/jpeg,image/png,image/webp,image/avif" className="hidden" onChange={handleImageUpload} disabled={uploading} />
+                </label>
               </div>
-              <div className="space-y-2">
-                <Label className="font-body text-sm">Imagem</Label>
-                <div className="flex gap-2">
-                  <Input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} placeholder="URL ou faça upload" className="flex-1 border-border bg-secondary" />
-                  <label className="flex cursor-pointer items-center gap-1 rounded border border-primary px-3 py-2 font-body text-xs font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground">
-                    {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-                    <span>{uploading ? "Enviando..." : "Upload"}</span>
-                    <input type="file" accept="image/jpeg,image/png,image/webp,image/avif" className="hidden" onChange={handleImageUpload} disabled={uploading} />
-                  </label>
+              {form.image_url && (
+                <img src={form.image_url} alt="Preview" className="mt-2 h-20 w-32 rounded border border-border object-cover" />
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label className="font-body text-sm flex items-center gap-2">
+                <Images className="h-4 w-4" /> Galeria de Fotos
+              </Label>
+              <label className="flex cursor-pointer items-center justify-center gap-2 rounded border-2 border-dashed border-border p-4 font-body text-sm text-muted-foreground transition-colors hover:border-primary hover:text-primary">
+                {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                <span>{uploading ? "Enviando..." : "Clique para adicionar fotos à galeria"}</span>
+                <input type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple className="hidden" onChange={handleGalleryUpload} disabled={uploading} />
+              </label>
+              {form.images.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {form.images.map((url, idx) => (
+                    <div key={idx} className="relative group">
+                      <img src={url} alt={`Galeria ${idx + 1}`} className="h-20 w-28 rounded border border-border object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => removeGalleryImage(idx)}
+                        className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-destructive-foreground opacity-0 transition-opacity group-hover:opacity-100"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
                 </div>
-                {form.image_url && (
-                  <img src={form.image_url} alt="Preview" className="mt-2 h-20 w-32 rounded border border-border object-cover" />
-                )}
-              </div>
+              )}
+              <p className="font-body text-xs text-muted-foreground">{form.images.length} foto(s) na galeria</p>
             </div>
 
             <div className="space-y-2">
