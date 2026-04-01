@@ -187,7 +187,8 @@ const CRM = () => {
 };
 
 // Lead form component
-const LeadForm = ({ brokerId, lead, onSuccess }: { brokerId: string; lead?: any; onSuccess: () => void }) => {
+const LeadForm = ({ brokerId, lead, onSuccess, isAdmin }: { brokerId: string | null; lead?: any; onSuccess: () => void; isAdmin?: boolean }) => {
+  const [selectedBrokerId, setSelectedBrokerId] = useState(lead?.broker_id || brokerId || "");
   const [form, setForm] = useState({
     name: lead?.name || "",
     email: lead?.email || "",
@@ -203,12 +204,24 @@ const LeadForm = ({ brokerId, lead, onSuccess }: { brokerId: string; lead?: any;
   });
   const [saving, setSaving] = useState(false);
 
+  const { data: brokers = [] } = useQuery({
+    queryKey: ["brokers-list"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("brokers").select("id, company_name, creci");
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!isAdmin,
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const finalBrokerId = isAdmin ? selectedBrokerId : brokerId;
     if (!form.name.trim()) { toast({ title: "Nome é obrigatório", variant: "destructive" }); return; }
+    if (!finalBrokerId) { toast({ title: "Selecione um corretor", variant: "destructive" }); return; }
     setSaving(true);
     const payload = {
-      broker_id: brokerId,
+      broker_id: finalBrokerId,
       name: form.name.trim(),
       email: form.email.trim() || null,
       phone: form.phone.trim() || null,
@@ -243,6 +256,17 @@ const LeadForm = ({ brokerId, lead, onSuccess }: { brokerId: string; lead?: any;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {isAdmin && (
+        <div>
+          <Label>Corretor *</Label>
+          <Select value={selectedBrokerId} onValueChange={setSelectedBrokerId}>
+            <SelectTrigger><SelectValue placeholder="Selecione o corretor" /></SelectTrigger>
+            <SelectContent>
+              {brokers.map((b: any) => <SelectItem key={b.id} value={b.id}>{b.company_name || b.creci}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
       <div><Label>Nome *</Label><Input value={form.name} onChange={(e) => update("name", e.target.value)} placeholder="Nome do lead" /></div>
       <div className="grid grid-cols-2 gap-3">
         <div><Label>Email</Label><Input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} placeholder="email@exemplo.com" /></div>
