@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Pencil, Trash2, Eye, EyeOff, Upload, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, EyeOff, Upload, Loader2, X, Images } from "lucide-react";
 
 type DbProperty = {
   id: string;
@@ -44,7 +44,7 @@ const emptyProperty = {
   price: 0, location: "", city: "", state: "SP",
   bedrooms: 0, bathrooms: 0, parking_spaces: 0,
   area: 0, land_area: 0, description: "",
-  features: [] as string[], image_url: "", is_highlight: false, slug: "",
+  features: [] as string[], image_url: "", images: [] as string[], is_highlight: false, slug: "",
   latitude: "" as string | number, longitude: "" as string | number, virtual_tour_url: "",
 };
 
@@ -86,8 +86,8 @@ const Properties = () => {
       price: p.price, location: p.location, city: p.city, state: p.state,
       bedrooms: p.bedrooms, bathrooms: p.bathrooms, parking_spaces: p.parking_spaces,
       area: p.area, land_area: p.land_area, description: p.description || "",
-      features: p.features || [], image_url: p.image_url || "", is_highlight: p.is_highlight,
-      slug: p.slug || "",
+      features: p.features || [], image_url: p.image_url || "", images: (p as any).images || [],
+      is_highlight: p.is_highlight, slug: p.slug || "",
       latitude: (p as any).latitude || "", longitude: (p as any).longitude || "",
       virtual_tour_url: (p as any).virtual_tour_url || "",
     });
@@ -95,62 +95,90 @@ const Properties = () => {
     setDialogOpen(true);
   };
 
+  const uploadImageToS3 = async (file: File): Promise<string | null> => {
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/avif"];
+    if (!allowedTypes.includes(file.type)) {
+      toast({ title: "Formato inválido", description: `${file.name}: Use JPG, PNG, WebP ou AVIF.`, variant: "destructive" });
+      return null;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast({ title: "Arquivo muito grande", description: `${file.name}: Máximo 10MB.`, variant: "destructive" });
+      return null;
+    }
+
+    const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+    const session = (await supabase.auth.getSession()).data.session;
+    const fnUrl = `https://${projectId}.supabase.co/functions/v1/s3-upload?action=get_upload_url`;
+
+    const signResponse = await fetch(fnUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${session?.access_token}`,
+        "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+      },
+      body: JSON.stringify({ filename: file.name, content_type: file.type }),
+    });
+
+    const signData = await signResponse.json();
+    if (!signResponse.ok || !signData?.upload_url) {
+      throw new Error(signData?.error || "Failed to get upload URL");
+    }
+
+    const uploadResponse = await fetch(signData.upload_url, {
+      method: "PUT",
+      body: file,
+      headers: { "Content-Type": file.type },
+    });
+
+    if (!uploadResponse.ok) throw new Error("Upload to S3 failed");
+    return signData.public_url;
+  };
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/avif"];
-    if (!allowedTypes.includes(file.type)) {
-      toast({ title: "Formato inválido", description: "Use JPG, PNG, WebP ou AVIF.", variant: "destructive" });
-      return;
-    }
-    if (file.size > 10 * 1024 * 1024) {
-      toast({ title: "Arquivo muito grande", description: "Máximo 10MB.", variant: "destructive" });
-      return;
-    }
-
     setUploading(true);
     try {
-      // Get signed upload URL from edge function
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      const session = (await supabase.auth.getSession()).data.session;
-      const fnUrl = `https://${projectId}.supabase.co/functions/v1/s3-upload?action=get_upload_url`;
-      
-      const signResponse = await fetch(fnUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${session?.access_token}`,
-          "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        },
-        body: JSON.stringify({ filename: file.name, content_type: file.type }),
-      });
-
-      const signData = await signResponse.json();
-      if (!signResponse.ok || !signData?.upload_url) {
-        throw new Error(signData?.error || "Failed to get upload URL");
+      const url = await uploadImageToS3(file);
+      if (url) {
+        setForm({ ...form, image_url: url });
+        toast({ title: "Imagem principal enviada!" });
       }
-
-      // Upload directly to S3 using the signed URL
-      const uploadResponse = await fetch(signData.upload_url, {
-        method: "PUT",
-        body: file,
-        headers: { "Content-Type": file.type },
-      });
-
-      if (!uploadResponse.ok) {
-        throw new Error("Upload to S3 failed");
-      }
-
-      // Use the public URL
-      setForm({ ...form, image_url: signData.public_url });
-      toast({ title: "Imagem enviada!", description: "Imagem salva no S3 com sucesso." });
     } catch (err: any) {
       console.error("Upload error:", err);
       toast({ title: "Erro no upload", description: err.message || "Tente novamente.", variant: "destructive" });
     } finally {
       setUploading(false);
     }
+  };
+
+  const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    try {
+      const newUrls: string[] = [];
+      for (const file of Array.from(files)) {
+        const url = await uploadImageToS3(file);
+        if (url) newUrls.push(url);
+      }
+      if (newUrls.length > 0) {
+        setForm((prev) => ({ ...prev, images: [...prev.images, ...newUrls] }));
+        toast({ title: `${newUrls.length} imagem(ns) adicionada(s) à galeria!` });
+      }
+    } catch (err: any) {
+      console.error("Gallery upload error:", err);
+      toast({ title: "Erro no upload", description: err.message || "Tente novamente.", variant: "destructive" });
+    } finally {
+      setUploading(false);
+      // Reset input
+      e.target.value = "";
+    }
+  };
+
+  const removeGalleryImage = (idx: number) => {
+    setForm((prev) => ({ ...prev, images: prev.images.filter((_, i) => i !== idx) }));
   };
 
   const handleSave = async () => {
@@ -354,25 +382,52 @@ const Properties = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="font-body text-sm">Terreno (m²)</Label>
-                <Input type="number" value={form.land_area} onChange={(e) => setForm({ ...form, land_area: Number(e.target.value) })} className="border-border bg-secondary" />
+            <div className="space-y-2">
+              <Label className="font-body text-sm">Terreno (m²)</Label>
+              <Input type="number" value={form.land_area} onChange={(e) => setForm({ ...form, land_area: Number(e.target.value) })} className="border-border bg-secondary" />
+            </div>
+
+            <div className="space-y-2">
+              <Label className="font-body text-sm">Imagem Principal</Label>
+              <div className="flex gap-2">
+                <Input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} placeholder="URL ou faça upload" className="flex-1 border-border bg-secondary" />
+                <label className="flex cursor-pointer items-center gap-1 rounded border border-primary px-3 py-2 font-body text-xs font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground">
+                  {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                  <span>{uploading ? "..." : "Upload"}</span>
+                  <input type="file" accept="image/jpeg,image/png,image/webp,image/avif" className="hidden" onChange={handleImageUpload} disabled={uploading} />
+                </label>
               </div>
-              <div className="space-y-2">
-                <Label className="font-body text-sm">Imagem</Label>
-                <div className="flex gap-2">
-                  <Input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} placeholder="URL ou faça upload" className="flex-1 border-border bg-secondary" />
-                  <label className="flex cursor-pointer items-center gap-1 rounded border border-primary px-3 py-2 font-body text-xs font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground">
-                    {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-                    <span>{uploading ? "Enviando..." : "Upload"}</span>
-                    <input type="file" accept="image/jpeg,image/png,image/webp,image/avif" className="hidden" onChange={handleImageUpload} disabled={uploading} />
-                  </label>
+              {form.image_url && (
+                <img src={form.image_url} alt="Preview" className="mt-2 h-20 w-32 rounded border border-border object-cover" />
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label className="font-body text-sm flex items-center gap-2">
+                <Images className="h-4 w-4" /> Galeria de Fotos
+              </Label>
+              <label className="flex cursor-pointer items-center justify-center gap-2 rounded border-2 border-dashed border-border p-4 font-body text-sm text-muted-foreground transition-colors hover:border-primary hover:text-primary">
+                {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                <span>{uploading ? "Enviando..." : "Clique para adicionar fotos à galeria"}</span>
+                <input type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple className="hidden" onChange={handleGalleryUpload} disabled={uploading} />
+              </label>
+              {form.images.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {form.images.map((url, idx) => (
+                    <div key={idx} className="relative group">
+                      <img src={url} alt={`Galeria ${idx + 1}`} className="h-20 w-28 rounded border border-border object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => removeGalleryImage(idx)}
+                        className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-destructive-foreground opacity-0 transition-opacity group-hover:opacity-100"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
                 </div>
-                {form.image_url && (
-                  <img src={form.image_url} alt="Preview" className="mt-2 h-20 w-32 rounded border border-border object-cover" />
-                )}
-              </div>
+              )}
+              <p className="font-body text-xs text-muted-foreground">{form.images.length} foto(s) na galeria</p>
             </div>
 
             <div className="space-y-2">

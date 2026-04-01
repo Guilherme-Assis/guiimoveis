@@ -10,7 +10,7 @@ import MortgageCalculator from "@/components/MortgageCalculator";
 import VirtualTourViewer from "@/components/VirtualTourViewer";
 import FavoriteButton from "@/components/FavoriteButton";
 import PropertyLocationMap from "@/components/PropertyLocationMap";
-import { useS3Image } from "@/hooks/useS3Image";
+import PropertyImageGallery from "@/components/PropertyImageGallery";
 
 const PropertyDetail = () => {
   const { slug } = useParams();
@@ -55,23 +55,20 @@ const PropertyDetail = () => {
     casa_condominio: "Casa em Condomínio", sitio_chacara: "Sítio / Chácara",
   };
 
-  const resolvedImage = useS3Image(property?.image_url);
-
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
-      <section className="relative h-[60vh] w-full overflow-hidden">
-        <img src={resolvedImage} alt={property.title} className="h-full w-full object-cover" width={1920} height={1080} />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 p-8">
-          <div className="container mx-auto">
-            <Link to="/" className="mb-4 inline-flex items-center gap-2 font-body text-sm text-muted-foreground transition-colors hover:text-primary">
-              <ArrowLeft className="h-4 w-4" /> Voltar aos imóveis
-            </Link>
-          </div>
-        </div>
-      </section>
+      <PropertyImageGallery
+        mainImage={property.image_url}
+        images={property.images}
+        title={property.title}
+      />
+      <div className="container mx-auto px-6 -mt-4">
+        <Link to="/" className="inline-flex items-center gap-2 font-body text-sm text-muted-foreground transition-colors hover:text-primary">
+          <ArrowLeft className="h-4 w-4" /> Voltar aos imóveis
+        </Link>
+      </div>
 
       <section className="container mx-auto px-6 py-12">
         <div className="grid gap-12 lg:grid-cols-3">
