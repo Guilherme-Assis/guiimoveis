@@ -236,7 +236,7 @@ const ProposalForm = ({ brokerId, isAdmin, proposal, leads, properties, onSucces
           </Select>
         </div>
       )}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label className="text-xs text-muted-foreground">Lead *</Label>
           <Select value={form.lead_id} onValueChange={(v) => setForm(p => ({ ...p, lead_id: v }))}>
