@@ -546,6 +546,50 @@ export type Database = {
           },
         ]
       }
+      message_templates: {
+        Row: {
+          body: string
+          broker_id: string
+          category: Database["public"]["Enums"]["template_category"]
+          created_at: string
+          id: string
+          name: string
+          stage: string
+          subject: string | null
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          broker_id: string
+          category?: Database["public"]["Enums"]["template_category"]
+          created_at?: string
+          id?: string
+          name: string
+          stage?: string
+          subject?: string | null
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          broker_id?: string
+          category?: Database["public"]["Enums"]["template_category"]
+          created_at?: string
+          id?: string
+          name?: string
+          stage?: string
+          subject?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_templates_broker_id_fkey"
+            columns: ["broker_id"]
+            isOneToOne: false
+            referencedRelation: "brokers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -721,6 +765,7 @@ export type Database = {
         | "reuniao"
         | "follow_up"
         | "outro"
+      template_category: "whatsapp" | "email"
       visit_status: "agendada" | "realizada" | "cancelada" | "no_show"
     }
     CompositeTypes: {
@@ -907,6 +952,7 @@ export const Constants = {
         "follow_up",
         "outro",
       ],
+      template_category: ["whatsapp", "email"],
       visit_status: ["agendada", "realizada", "cancelada", "no_show"],
     },
   },
