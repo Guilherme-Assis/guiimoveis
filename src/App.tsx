@@ -9,6 +9,7 @@ import PropertyDetail from "./pages/PropertyDetail";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import BrokerProfile from "./pages/BrokerProfile";
+import BrokerCard from "./pages/BrokerCard";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Favorites from "./pages/Favorites";
@@ -46,6 +47,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/imovel/:slug" element={<PropertyDetail />} />
             <Route path="/corretor/:slug" element={<BrokerProfile />} />
+            <Route path="/corretor/:slug/cartao" element={<BrokerCard />} />
             <Route path="/login" element={<Login />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />

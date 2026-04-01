@@ -6,14 +6,22 @@ import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import BrokerReviews from "@/components/BrokerReviews";
 import { formatPrice } from "@/data/properties";
-import { ArrowLeft, Phone, Mail, Building2 } from "lucide-react";
+import { ArrowLeft, Phone, Mail, Building2, Copy, Check, Share2, QrCode } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { QRCodeSVG } from "qrcode.react";
+import { useToast } from "@/hooks/use-toast";
 
 const BrokerProfile = () => {
   const { slug } = useParams();
+  const { toast } = useToast();
   const [broker, setBroker] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [properties, setProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
+  const [showQr, setShowQr] = useState(false);
+
+  const profileUrl = `${window.location.origin}/corretor/${slug}`;
 
   useEffect(() => {
     const load = async () => {
@@ -68,6 +76,32 @@ const BrokerProfile = () => {
             </div>
           </div>
           {profile?.bio && <p className="mt-6 font-body text-sm leading-relaxed text-muted-foreground">{profile.bio}</p>}
+
+          {/* Share Actions */}
+          <div className="mt-6 flex flex-wrap items-center gap-2 border-t border-border pt-4">
+            <Button onClick={() => { navigator.clipboard.writeText(profileUrl); setCopied(true); toast({ title: "Link copiado!" }); setTimeout(() => setCopied(false), 2000); }}
+              variant="outline" size="sm" className="font-body text-xs">
+              {copied ? <Check className="mr-1 h-3 w-3" /> : <Copy className="mr-1 h-3 w-3" />}
+              {copied ? "Copiado!" : "Copiar Link"}
+            </Button>
+            <Button onClick={() => navigator.share ? navigator.share({ title: profile?.display_name, url: profileUrl }) : null}
+              variant="outline" size="sm" className="font-body text-xs">
+              <Share2 className="mr-1 h-3 w-3" /> Compartilhar
+            </Button>
+            <Button onClick={() => setShowQr(!showQr)} variant="outline" size="sm" className="font-body text-xs">
+              <QrCode className="mr-1 h-3 w-3" /> QR Code
+            </Button>
+            <Button asChild variant="outline" size="sm" className="font-body text-xs">
+              <Link to={`/corretor/${slug}/cartao`}>Cartão Digital</Link>
+            </Button>
+          </div>
+          {showQr && (
+            <div className="mt-4 flex justify-center">
+              <div className="rounded-xl bg-white p-4">
+                <QRCodeSVG value={profileUrl} size={160} level="M" />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Reviews */}
