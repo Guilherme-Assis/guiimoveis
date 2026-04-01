@@ -44,8 +44,8 @@ const Dashboard = () => {
 
   return (
     <div>
-      <h1 className="mb-2 font-display text-3xl font-bold text-foreground">Dashboard</h1>
-      <p className="mb-8 font-body text-sm text-muted-foreground">
+      <h1 className="mb-2 font-display text-2xl sm:text-3xl font-bold text-foreground">Dashboard</h1>
+      <p className="mb-6 sm:mb-8 font-body text-xs sm:text-sm text-muted-foreground">
         {role === "admin" ? "Visão geral da plataforma" : "Seus imóveis cadastrados"}
       </p>
 
