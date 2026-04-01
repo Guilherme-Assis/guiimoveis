@@ -112,14 +112,23 @@ const Properties = () => {
     setUploading(true);
     try {
       // Get signed upload URL from edge function
-      const { data: signData, error: signError } = await supabase.functions.invoke("s3-upload", {
-        body: { filename: file.name, content_type: file.type },
-        headers: { "Content-Type": "application/json" },
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const session = (await supabase.auth.getSession()).data.session;
+      const fnUrl = `https://${projectId}.supabase.co/functions/v1/s3-upload?action=get_upload_url`;
+      
+      const signResponse = await fetch(fnUrl, {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session?.access_token}`,
+          "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+        body: JSON.stringify({ filename: file.name, content_type: file.type }),
       });
 
-      if (signError || !signData?.upload_url) {
-        throw new Error(signError?.message || "Failed to get upload URL");
+      const signData = await signResponse.json();
+      if (!signResponse.ok || !signData?.upload_url) {
+        throw new Error(signData?.error || "Failed to get upload URL");
       }
 
       // Upload directly to S3 using the signed URL
