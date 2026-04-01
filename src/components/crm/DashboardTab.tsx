@@ -185,8 +185,7 @@ const DashboardTab = () => {
 
       {/* Charts Row 1 */}
       <div className="grid gap-4 lg:grid-cols-2">
-        {/* Leads by Month */}
-        <Card className="border-border/40">
+        <Card className="border-border/40 min-w-0">
           <CardContent className="p-5">
             <h3 className="mb-4 font-display text-sm font-semibold text-foreground">Leads por Mês</h3>
             <ResponsiveContainer width="100%" height={220}>

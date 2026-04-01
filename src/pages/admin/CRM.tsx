@@ -217,30 +217,28 @@ const CRM = () => {
             <div className="space-y-2">
               {filtered.map((lead: any) => (
                 <Card key={lead.id} className="group cursor-pointer border-border/30 bg-card/80 backdrop-blur-sm transition-all hover:border-primary/30 hover:bg-card hover:shadow-lg hover:shadow-primary/5" onClick={() => setSelectedLead(lead.id)}>
-                  <CardContent className="flex items-center gap-4 p-4">
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/30 to-primary/10 font-display text-lg font-bold text-primary transition-transform group-hover:scale-105">
+                  <CardContent className="flex items-start gap-3 p-3 sm:items-center sm:gap-4 sm:p-4">
+                    <div className="flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/30 to-primary/10 font-display text-base sm:text-lg font-bold text-primary">
                       {lead.name.charAt(0).toUpperCase()}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2.5">
+                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2.5">
                         <p className="truncate font-display text-sm font-semibold text-foreground">{lead.name}</p>
                         <Badge variant="outline" className={`text-[10px] font-medium ${statusColors[lead.status]}`}>{statusLabels[lead.status]}</Badge>
-                        <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                        <span className="hidden sm:flex items-center gap-1.5 text-[10px] text-muted-foreground">
                           <span className={`inline-block h-1.5 w-1.5 rounded-full ${priorityDots[lead.priority]}`} />
                           {priorityLabels[lead.priority]}
                         </span>
                       </div>
-                      <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                      <div className="mt-1 sm:mt-1.5 flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-1 text-xs text-muted-foreground">
                         {lead.phone && <span className="flex items-center gap-1.5"><Phone className="h-3 w-3 text-primary/60" />{lead.phone}</span>}
-                        {lead.email && <span className="flex items-center gap-1.5"><Mail className="h-3 w-3 text-primary/60" />{lead.email}</span>}
+                        {lead.email && <span className="hidden sm:flex items-center gap-1.5"><Mail className="h-3 w-3 text-primary/60" />{lead.email}</span>}
                         {lead.interest_value && <span className="flex items-center gap-1.5 font-medium text-primary/80"><DollarSign className="h-3 w-3" />{formatCurrency(lead.interest_value)}</span>}
-                        {lead.preferred_neighborhoods?.length > 0 && <span className="flex items-center gap-1.5"><MapPin className="h-3 w-3 text-primary/60" />{lead.preferred_neighborhoods.slice(0, 2).join(", ")}</span>}
                       </div>
                     </div>
-                    <div className="flex shrink-0 gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={(e) => { e.stopPropagation(); setSelectedLead(lead.id); }}><Eye className="h-4 w-4" /></Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={(e) => { e.stopPropagation(); setEditLead(lead); setShowForm(true); }}><Edit className="h-4 w-4" /></Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={(e) => { e.stopPropagation(); if (confirm("Excluir este lead?")) deleteMutation.mutate(lead.id); }}><Trash2 className="h-4 w-4" /></Button>
+                    <div className="flex shrink-0 gap-0.5 sm:opacity-0 sm:transition-opacity sm:group-hover:opacity-100">
+                      <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8 text-muted-foreground hover:text-primary" onClick={(e) => { e.stopPropagation(); setEditLead(lead); setShowForm(true); }}><Edit className="h-3.5 w-3.5 sm:h-4 sm:w-4" /></Button>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8 text-muted-foreground hover:text-destructive" onClick={(e) => { e.stopPropagation(); if (confirm("Excluir este lead?")) deleteMutation.mutate(lead.id); }}><Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" /></Button>
                     </div>
                   </CardContent>
                 </Card>
