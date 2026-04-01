@@ -283,7 +283,9 @@ const MessageTemplatesTab = () => {
                         </Badge>
                         {template.stage && (
                           <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-border/40 text-muted-foreground">
-                            {template.stage}
+                            {stageLabels[template.stage] || template.stage}
+                          </Badge>
+                        )}
                           </Badge>
                         )}
                       </div>
