@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import {
-  Building2, Users, Home, LogOut, LayoutDashboard, UserCircle, ChevronRight, BookOpen,
+  Building2, Users, Home, LogOut, LayoutDashboard, UserCircle, ChevronRight, BookOpen, Contact,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
