@@ -87,7 +87,7 @@ const VisitsTab = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           {upcomingCount > 0 && (
             <Badge variant="outline" className="border-sky-500/40 bg-sky-500/10 text-sky-300">
