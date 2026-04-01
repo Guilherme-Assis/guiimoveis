@@ -22,6 +22,7 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
 
   return (
     <motion.div
+      className="h-full"
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
@@ -29,7 +30,7 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
     >
       <Link
         to={linkTo}
-        className="group block overflow-hidden border border-border bg-card transition-all duration-500 hover:border-primary/30 hover:shadow-[var(--shadow-gold)]"
+        className="group flex h-full flex-col overflow-hidden border border-border bg-card transition-all duration-500 hover:border-primary/30 hover:shadow-[var(--shadow-gold)]"
       >
         <div className="relative aspect-[4/3] overflow-hidden">
           <img
@@ -59,8 +60,8 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
           </div>
         </div>
 
-        <div className="p-5">
-          <h3 className="mb-2 font-display text-lg font-semibold text-foreground transition-colors group-hover:text-primary">
+        <div className="flex flex-1 flex-col p-5">
+          <h3 className="mb-2 line-clamp-2 font-display text-lg font-semibold text-foreground transition-colors group-hover:text-primary">
             {property.title}
           </h3>
           <div className="mb-4 flex items-center gap-1 text-muted-foreground">
@@ -70,6 +71,7 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
             </span>
           </div>
 
+          <div className="mt-auto">
           {property.type !== "terreno" && property.type !== "sitio_chacara" && (
             <div className="flex items-center gap-4 border-t border-border pt-4">
               {property.bedrooms > 0 && (
@@ -106,6 +108,7 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
               </div>
             </div>
           )}
+          </div>
         </div>
       </Link>
     </motion.div>
