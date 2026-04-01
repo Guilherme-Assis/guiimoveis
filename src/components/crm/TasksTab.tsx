@@ -302,10 +302,10 @@ const TaskForm = ({ brokerId, isAdmin, task, leads, onSuccess }: any) => {
         </div>
         <div className="space-y-1.5">
           <Label className="text-xs text-muted-foreground">Lead (opcional)</Label>
-          <Select value={form.lead_id} onValueChange={(v) => update("lead_id", v)}>
+          <Select value={form.lead_id || "none"} onValueChange={(v) => update("lead_id", v === "none" ? "" : v)}>
             <SelectTrigger className="border-border/40"><SelectValue placeholder="Nenhum" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Nenhum</SelectItem>
+              <SelectItem value="none">Nenhum</SelectItem>
               {leads.map((l: any) => <SelectItem key={l.id} value={l.id}>{l.name}</SelectItem>)}
             </SelectContent>
           </Select>
