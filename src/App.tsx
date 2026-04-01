@@ -41,7 +41,6 @@ const PageLoader = () => (
   </div>
 );
 
-const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children, allowedRoles }: { children: ReactNode; allowedRoles?: string[] }) => {
   const { user, loading, role } = useAuth();
