@@ -108,6 +108,7 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
               </div>
             </div>
           )}
+          </div>
         </div>
       </Link>
     </motion.div>
