@@ -279,7 +279,7 @@ const TaskForm = ({ brokerId, isAdmin, task, leads, onSuccess }: any) => {
         <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Título *</Label>
         <Input value={form.title} onChange={(e) => update("title", e.target.value)} placeholder="Ex: Ligar para cliente" className="border-border/40" />
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label className="text-xs text-muted-foreground">Tipo</Label>
           <Select value={form.type} onValueChange={(v) => update("type", v)}>
