@@ -61,6 +61,7 @@ const App = () => (
             <Route path="/admin/brokers" element={<ProtectedRoute allowedRoles={["admin"]}><AdminLayout><Brokers /></AdminLayout></ProtectedRoute>} />
             <Route path="/admin/profile" element={<ProtectedRoute><AdminLayout><Profile /></AdminLayout></ProtectedRoute>} />
             <Route path="/admin/blog" element={<ProtectedRoute allowedRoles={["admin"]}><AdminLayout><BlogAdmin /></AdminLayout></ProtectedRoute>} />
+            <Route path="/admin/crm" element={<ProtectedRoute><AdminLayout><CRM /></AdminLayout></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

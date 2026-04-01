@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/admin", roles: ["admin", "broker"] },
   { label: "Imóveis", icon: Building2, path: "/admin/properties", roles: ["admin", "broker"] },
+  { label: "CRM", icon: Contact, path: "/admin/crm", roles: ["admin", "broker"] },
   { label: "Corretores", icon: Users, path: "/admin/brokers", roles: ["admin"] },
   { label: "Blog", icon: BookOpen, path: "/admin/blog", roles: ["admin"] },
   { label: "Meu Perfil", icon: UserCircle, path: "/admin/profile", roles: ["admin", "broker"] },
