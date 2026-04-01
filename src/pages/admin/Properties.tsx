@@ -258,7 +258,7 @@ const Properties = () => {
             <div key={p.id} className="flex items-center justify-between border border-border bg-card p-4">
               <div className="flex items-center gap-4">
                 {p.image_url && (
-                  <img src={p.image_url} alt={p.title} className="h-16 w-24 rounded object-cover" />
+                  <S3Thumbnail url={p.image_url} alt={p.title} />
                 )}
                 <div>
                   <h3 className="font-display text-lg font-semibold text-foreground">{p.title}</h3>
