@@ -54,18 +54,27 @@ const formatCurrency = (v: number | null) => v ? v.toLocaleString("pt-BR", { sty
 
 type CRMTab = "leads" | "tasks" | "visits" | "proposals" | "calendar" | "dashboard" | "kanban" | "reports" | "commissions" | "templates";
 
-const tabs: { id: CRMTab; label: string; icon: any }[] = [
-  { id: "dashboard", label: "Dashboard", icon: BarChart3 },
-  { id: "leads", label: "Leads", icon: Users },
-  { id: "kanban", label: "Kanban", icon: Columns3 },
-  { id: "tasks", label: "Tarefas", icon: CheckSquare },
-  { id: "visits", label: "Visitas", icon: CalendarDays },
-  { id: "proposals", label: "Propostas", icon: FileText },
-  { id: "calendar", label: "Calendário", icon: Calendar },
-  { id: "reports", label: "Relatórios", icon: Download },
-  { id: "commissions", label: "Comissões", icon: Award },
-  { id: "templates", label: "Templates", icon: MessageSquare },
+const tabGroups = [
+  { label: "Principal", items: [
+    { id: "dashboard" as CRMTab, label: "Dashboard", icon: BarChart3 },
+    { id: "leads" as CRMTab, label: "Leads", icon: Users },
+    { id: "kanban" as CRMTab, label: "Kanban", icon: Columns3 },
+  ]},
+  { label: "Gestão", items: [
+    { id: "tasks" as CRMTab, label: "Tarefas", icon: CheckSquare },
+    { id: "visits" as CRMTab, label: "Visitas", icon: CalendarDays },
+    { id: "proposals" as CRMTab, label: "Propostas", icon: FileText },
+    { id: "calendar" as CRMTab, label: "Calendário", icon: Calendar },
+  ]},
+  { label: "Ferramentas", items: [
+    { id: "reports" as CRMTab, label: "Relatórios", icon: Download },
+    { id: "commissions" as CRMTab, label: "Comissões", icon: Award },
+    { id: "templates" as CRMTab, label: "Templates", icon: MessageSquare },
+  ]},
 ];
+
+const allTabs = tabGroups.flatMap(g => g.items);
+const activeTabData = allTabs.find(t => t.id === activeTab) || allTabs[0];
 
 const CRM = () => {
   const { brokerId, role } = useAuth();
