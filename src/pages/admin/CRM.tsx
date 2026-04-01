@@ -15,8 +15,11 @@ import {
   Plus, Search, Phone, Mail, DollarSign, MapPin,
   Trash2, Edit, Eye, Filter, Users, TrendingUp, UserCheck, UserX,
   Sparkles, Clock, CheckSquare, CalendarDays, FileText, Calendar,
-  BarChart3, Columns3, Download, Award, MessageSquare
+  BarChart3, Columns3, Download, Award, MessageSquare, ChevronDown
 } from "lucide-react";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel,
+} from "@/components/ui/dropdown-menu";
 import LeadDetail from "@/components/crm/LeadDetail";
 import TasksTab from "@/components/crm/TasksTab";
 import VisitsTab from "@/components/crm/VisitsTab";
@@ -51,23 +54,32 @@ const formatCurrency = (v: number | null) => v ? v.toLocaleString("pt-BR", { sty
 
 type CRMTab = "leads" | "tasks" | "visits" | "proposals" | "calendar" | "dashboard" | "kanban" | "reports" | "commissions" | "templates";
 
-const tabs: { id: CRMTab; label: string; icon: any }[] = [
-  { id: "dashboard", label: "Dashboard", icon: BarChart3 },
-  { id: "leads", label: "Leads", icon: Users },
-  { id: "kanban", label: "Kanban", icon: Columns3 },
-  { id: "tasks", label: "Tarefas", icon: CheckSquare },
-  { id: "visits", label: "Visitas", icon: CalendarDays },
-  { id: "proposals", label: "Propostas", icon: FileText },
-  { id: "calendar", label: "Calendário", icon: Calendar },
-  { id: "reports", label: "Relatórios", icon: Download },
-  { id: "commissions", label: "Comissões", icon: Award },
-  { id: "templates", label: "Templates", icon: MessageSquare },
+const tabGroups = [
+  { label: "Principal", items: [
+    { id: "dashboard" as CRMTab, label: "Dashboard", icon: BarChart3 },
+    { id: "leads" as CRMTab, label: "Leads", icon: Users },
+    { id: "kanban" as CRMTab, label: "Kanban", icon: Columns3 },
+  ]},
+  { label: "Gestão", items: [
+    { id: "tasks" as CRMTab, label: "Tarefas", icon: CheckSquare },
+    { id: "visits" as CRMTab, label: "Visitas", icon: CalendarDays },
+    { id: "proposals" as CRMTab, label: "Propostas", icon: FileText },
+    { id: "calendar" as CRMTab, label: "Calendário", icon: Calendar },
+  ]},
+  { label: "Ferramentas", items: [
+    { id: "reports" as CRMTab, label: "Relatórios", icon: Download },
+    { id: "commissions" as CRMTab, label: "Comissões", icon: Award },
+    { id: "templates" as CRMTab, label: "Templates", icon: MessageSquare },
+  ]},
 ];
+
+const allTabs = tabGroups.flatMap(g => g.items);
 
 const CRM = () => {
   const { brokerId, role } = useAuth();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<CRMTab>("dashboard");
+  const activeTabData = allTabs.find(t => t.id === activeTab) || allTabs[0];
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [showForm, setShowForm] = useState(false);
@@ -129,25 +141,34 @@ const CRM = () => {
         </div>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
-        <div className="flex items-center gap-1 rounded-xl border border-border/30 bg-card/50 p-1 min-w-max">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center justify-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-2 font-body text-xs sm:text-sm font-medium transition-all sm:px-4 sm:py-2.5 sm:gap-2 ${
-                activeTab === tab.id
-                  ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-md shadow-primary/20"
-                  : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-              }`}
-            >
-              <tab.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-              <span className="hidden xs:inline sm:inline">{tab.label}</span>
-            </button>
+      {/* Tab Navigation - Dropdown Submenu */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" className="gap-2 border-border/40 bg-card/50 font-body text-sm">
+            <activeTabData.icon className="h-4 w-4 text-primary" />
+            {activeTabData.label}
+            <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="w-52">
+          {tabGroups.map((group, gi) => (
+            <div key={group.label}>
+              {gi > 0 && <DropdownMenuSeparator />}
+              <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-muted-foreground">{group.label}</DropdownMenuLabel>
+              {group.items.map((tab) => (
+                <DropdownMenuItem
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`gap-2 cursor-pointer ${activeTab === tab.id ? "bg-primary/10 text-primary font-medium" : ""}`}
+                >
+                  <tab.icon className="h-4 w-4" />
+                  {tab.label}
+                </DropdownMenuItem>
+              ))}
+            </div>
           ))}
-        </div>
-      </div>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       {/* Tab Content */}
       {activeTab === "leads" && (
