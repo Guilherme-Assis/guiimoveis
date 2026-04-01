@@ -86,8 +86,8 @@ const Properties = () => {
       price: p.price, location: p.location, city: p.city, state: p.state,
       bedrooms: p.bedrooms, bathrooms: p.bathrooms, parking_spaces: p.parking_spaces,
       area: p.area, land_area: p.land_area, description: p.description || "",
-      features: p.features || [], image_url: p.image_url || "", is_highlight: p.is_highlight,
-      slug: p.slug || "",
+      features: p.features || [], image_url: p.image_url || "", images: (p as any).images || [],
+      is_highlight: p.is_highlight, slug: p.slug || "",
       latitude: (p as any).latitude || "", longitude: (p as any).longitude || "",
       virtual_tour_url: (p as any).virtual_tour_url || "",
     });
