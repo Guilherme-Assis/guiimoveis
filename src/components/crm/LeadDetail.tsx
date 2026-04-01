@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
+import { Copy } from "lucide-react";
 import {
   ArrowLeft, Plus, Phone, Mail, DollarSign, MapPin, MessageSquare,
   Calendar, Trash2, User, Home, Sparkles
@@ -40,6 +41,66 @@ const formatCurrency = (v: number | null) =>
   v ? v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "—";
 const formatDate = (d: string) =>
   new Date(d).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+
+const stageLabels: Record<string, string> = {
+  novo: "Novo", em_contato: "Em Contato", qualificado: "Qualificado",
+  proposta: "Proposta", fechado: "Fechado", perdido: "Perdido",
+};
+
+const LeadTemplates = ({ leadStatus, brokerId }: { leadStatus: string; brokerId: string | null }) => {
+  const { data: templates = [] } = useQuery({
+    queryKey: ["lead-templates", brokerId, leadStatus],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("message_templates")
+        .select("*")
+        .eq("stage", leadStatus)
+        .order("category");
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!brokerId,
+  });
+
+  const copyToClipboard = (t: any) => {
+    const text = t.subject ? `Assunto: ${t.subject}\n\n${t.body}` : t.body;
+    navigator.clipboard.writeText(text);
+    toast({ title: "Copiado!", description: `Template "${t.name}" copiado.` });
+  };
+
+  if (templates.length === 0) return null;
+
+  return (
+    <Card className="border-border/30">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
+          <MessageSquare className="h-4 w-4 text-primary" />
+          Templates para "{stageLabels[leadStatus] || leadStatus}"
+          <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">{templates.length}</span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {templates.map((t: any) => (
+          <div key={t.id} className="group rounded-lg border border-border/20 bg-card/50 p-3 transition-colors hover:border-primary/20">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <div className={`flex h-6 w-6 items-center justify-center rounded-md border ${t.category === "whatsapp" ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300" : "border-sky-500/40 bg-sky-500/10 text-sky-300"}`}>
+                  {t.category === "whatsapp" ? <Phone className="h-3 w-3" /> : <Mail className="h-3 w-3" />}
+                </div>
+                <span className="text-sm font-medium text-foreground">{t.name}</span>
+              </div>
+              <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-primary" onClick={() => copyToClipboard(t)}>
+                <Copy className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+            {t.subject && <p className="text-xs text-muted-foreground mb-1">Assunto: {t.subject}</p>}
+            <pre className="whitespace-pre-wrap text-xs text-muted-foreground bg-muted/20 rounded-lg p-2 max-h-28 overflow-y-auto font-body leading-relaxed">{t.body}</pre>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+};
 
 const LeadDetail = ({ leadId, onBack }: { leadId: string; onBack: () => void }) => {
   const { brokerId } = useAuth();
@@ -261,6 +322,9 @@ const LeadDetail = ({ leadId, onBack }: { leadId: string; onBack: () => void }) 
           </CardContent>
         </Card>
       )}
+
+      {/* Templates for current stage */}
+      <LeadTemplates leadStatus={lead.status} brokerId={brokerId} />
 
       {/* Interactions Timeline */}
       <Card className="border-border/30">
