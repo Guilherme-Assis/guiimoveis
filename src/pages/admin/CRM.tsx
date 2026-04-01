@@ -15,7 +15,7 @@ import {
   Plus, Search, Phone, Mail, DollarSign, MapPin,
   Trash2, Edit, Eye, Filter, Users, TrendingUp, UserCheck, UserX,
   Sparkles, Clock, CheckSquare, CalendarDays, FileText, Calendar,
-  BarChart3, Columns3, Bell, Download, Award, MessageSquare
+  BarChart3, Columns3, Download, Award, MessageSquare
 } from "lucide-react";
 import LeadDetail from "@/components/crm/LeadDetail";
 import TasksTab from "@/components/crm/TasksTab";
@@ -24,7 +24,7 @@ import ProposalsTab from "@/components/crm/ProposalsTab";
 import CalendarTab from "@/components/crm/CalendarTab";
 import DashboardTab from "@/components/crm/DashboardTab";
 import KanbanTab from "@/components/crm/KanbanTab";
-import NotificationsTab from "@/components/crm/NotificationsTab";
+
 import ReportsTab from "@/components/crm/ReportsTab";
 import CommissionsTab from "@/components/crm/CommissionsTab";
 import MessageTemplatesTab from "@/components/crm/MessageTemplatesTab";
@@ -49,7 +49,7 @@ const sourceLabels: Record<string, string> = {
 };
 const formatCurrency = (v: number | null) => v ? v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "—";
 
-type CRMTab = "leads" | "tasks" | "visits" | "proposals" | "calendar" | "dashboard" | "kanban" | "notifications" | "reports" | "commissions" | "templates";
+type CRMTab = "leads" | "tasks" | "visits" | "proposals" | "calendar" | "dashboard" | "kanban" | "reports" | "commissions" | "templates";
 
 const tabs: { id: CRMTab; label: string; icon: any }[] = [
   { id: "dashboard", label: "Dashboard", icon: BarChart3 },
@@ -59,7 +59,6 @@ const tabs: { id: CRMTab; label: string; icon: any }[] = [
   { id: "visits", label: "Visitas", icon: CalendarDays },
   { id: "proposals", label: "Propostas", icon: FileText },
   { id: "calendar", label: "Calendário", icon: Calendar },
-  { id: "notifications", label: "Alertas", icon: Bell },
   { id: "reports", label: "Relatórios", icon: Download },
   { id: "commissions", label: "Comissões", icon: Award },
   { id: "templates", label: "Templates", icon: MessageSquare },
@@ -262,7 +261,7 @@ const CRM = () => {
       {activeTab === "visits" && <VisitsTab />}
       {activeTab === "proposals" && <ProposalsTab />}
       {activeTab === "calendar" && <CalendarTab />}
-      {activeTab === "notifications" && <NotificationsTab />}
+      
       {activeTab === "reports" && <ReportsTab />}
       {activeTab === "commissions" && <CommissionsTab />}
       {activeTab === "templates" && <MessageTemplatesTab />}
