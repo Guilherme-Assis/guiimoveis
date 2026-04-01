@@ -44,7 +44,7 @@ const emptyProperty = {
   price: 0, location: "", city: "", state: "SP",
   bedrooms: 0, bathrooms: 0, parking_spaces: 0,
   area: 0, land_area: 0, description: "",
-  features: [] as string[], image_url: "", is_highlight: false, slug: "",
+  features: [] as string[], image_url: "", images: [] as string[], is_highlight: false, slug: "",
   latitude: "" as string | number, longitude: "" as string | number, virtual_tour_url: "",
 };
 
