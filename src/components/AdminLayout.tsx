@@ -37,6 +37,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [crmOpen, setCrmOpen] = useState(location.pathname.startsWith("/admin/crm"));
   const { notifications, count, markAsRead, markAllAsRead } = useNotifications();
 
   const handleSignOut = async () => {
