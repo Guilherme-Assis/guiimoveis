@@ -52,32 +52,14 @@ const formatCurrency = (v: number | null) => v ? v.toLocaleString("pt-BR", { sty
 
 type CRMTab = "leads" | "tasks" | "visits" | "proposals" | "calendar" | "dashboard" | "kanban" | "reports" | "commissions" | "templates";
 
-const tabGroups = [
-  { label: "Principal", items: [
-    { id: "dashboard" as CRMTab, label: "Dashboard", icon: BarChart3 },
-    { id: "leads" as CRMTab, label: "Leads", icon: Users },
-    { id: "kanban" as CRMTab, label: "Kanban", icon: Columns3 },
-  ]},
-  { label: "Gestão", items: [
-    { id: "tasks" as CRMTab, label: "Tarefas", icon: CheckSquare },
-    { id: "visits" as CRMTab, label: "Visitas", icon: CalendarDays },
-    { id: "proposals" as CRMTab, label: "Propostas", icon: FileText },
-    { id: "calendar" as CRMTab, label: "Calendário", icon: Calendar },
-  ]},
-  { label: "Ferramentas", items: [
-    { id: "reports" as CRMTab, label: "Relatórios", icon: Download },
-    { id: "commissions" as CRMTab, label: "Comissões", icon: Award },
-    { id: "templates" as CRMTab, label: "Templates", icon: MessageSquare },
-  ]},
-];
-
-const allTabs = tabGroups.flatMap(g => g.items);
+const validTabs: CRMTab[] = ["dashboard", "leads", "kanban", "tasks", "visits", "proposals", "calendar", "reports", "commissions", "templates"];
 
 const CRM = () => {
   const { brokerId, role } = useAuth();
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<CRMTab>("dashboard");
-  const activeTabData = allTabs.find(t => t.id === activeTab) || allTabs[0];
+  const [searchParams] = useSearchParams();
+  const tabParam = searchParams.get("tab") as CRMTab | null;
+  const activeTab: CRMTab = tabParam && validTabs.includes(tabParam) ? tabParam : "dashboard";
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [showForm, setShowForm] = useState(false);
