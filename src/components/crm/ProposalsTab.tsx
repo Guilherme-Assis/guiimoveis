@@ -95,8 +95,8 @@ const ProposalsTab = () => {
   return (
     <div className="space-y-6">
       {/* Stats row */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           {totalValue > 0 && (
             <Badge variant="outline" className="border-primary/40 bg-primary/10 px-3 py-1 text-primary">
               <DollarSign className="mr-1 h-3 w-3" /> Vendas: {formatCurrency(totalValue)}
