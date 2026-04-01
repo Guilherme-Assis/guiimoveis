@@ -130,15 +130,15 @@ const LeadDetail = ({ leadId, onBack }: { leadId: string; onBack: () => void }) 
 
       {/* Lead Header Card */}
       <Card className="overflow-hidden border-border/30">
-        <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-6">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-5">
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/40 to-primary/10 font-display text-2xl font-bold text-primary shadow-lg shadow-primary/10">
+        <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-4 sm:p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex items-center gap-3 sm:gap-5">
+              <div className="flex h-12 w-12 sm:h-16 sm:w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/40 to-primary/10 font-display text-xl sm:text-2xl font-bold text-primary shadow-lg shadow-primary/10">
                 {lead.name.charAt(0).toUpperCase()}
               </div>
-              <div>
-                <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{lead.name}</h1>
-                <div className="mt-2 flex items-center gap-3">
+              <div className="min-w-0">
+                <h1 className="font-display text-xl sm:text-2xl font-bold tracking-tight text-foreground truncate">{lead.name}</h1>
+                <div className="mt-1.5 sm:mt-2 flex flex-wrap items-center gap-2 sm:gap-3">
                   <Badge variant="outline" className={`${statusColors[lead.status]} px-3 py-0.5 text-xs font-medium`}>
                     {statusLabels[lead.status]}
                   </Badge>
@@ -151,7 +151,7 @@ const LeadDetail = ({ leadId, onBack }: { leadId: string; onBack: () => void }) 
               </div>
             </div>
             <Select value={lead.status} onValueChange={(v) => updateStatus.mutate(v)}>
-              <SelectTrigger className="w-44 border-border/40 bg-card/80">
+              <SelectTrigger className="w-full sm:w-44 border-border/40 bg-card/80">
                 <SelectValue placeholder="Alterar status" />
               </SelectTrigger>
               <SelectContent>
