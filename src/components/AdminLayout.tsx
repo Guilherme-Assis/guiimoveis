@@ -4,15 +4,29 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNotifications, formatRelativeDate } from "@/hooks/useNotifications";
 import {
   Building2, Users, Home, LogOut, LayoutDashboard, UserCircle, ChevronRight, BookOpen, Contact, Menu, X, Bell, Clock, Check, CheckCheck,
+  BarChart3, Columns3, CheckSquare, CalendarDays, FileText, Calendar, Download, Award, MessageSquare, ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+const crmSubItems = [
+  { label: "Dashboard", icon: BarChart3, tab: "dashboard" },
+  { label: "Leads", icon: Users, tab: "leads" },
+  { label: "Kanban", icon: Columns3, tab: "kanban" },
+  { label: "Tarefas", icon: CheckSquare, tab: "tasks" },
+  { label: "Visitas", icon: CalendarDays, tab: "visits" },
+  { label: "Propostas", icon: FileText, tab: "proposals" },
+  { label: "Calendário", icon: Calendar, tab: "calendar" },
+  { label: "Relatórios", icon: Download, tab: "reports" },
+  { label: "Comissões", icon: Award, tab: "commissions" },
+  { label: "Templates", icon: MessageSquare, tab: "templates" },
+];
+
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/admin", roles: ["admin", "broker"] },
   { label: "Imóveis", icon: Building2, path: "/admin/properties", roles: ["admin", "broker"] },
-  { label: "CRM", icon: Contact, path: "/admin/crm", roles: ["admin", "broker"] },
+  { label: "CRM", icon: Contact, path: "/admin/crm", roles: ["admin", "broker"], subItems: crmSubItems },
   { label: "Corretores", icon: Users, path: "/admin/brokers", roles: ["admin"] },
   { label: "Blog", icon: BookOpen, path: "/admin/blog", roles: ["admin"] },
   { label: "Meu Perfil", icon: UserCircle, path: "/admin/profile", roles: ["admin", "broker"] },
