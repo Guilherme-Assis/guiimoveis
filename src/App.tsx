@@ -59,28 +59,32 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/imovel/:slug" element={<PropertyDetail />} />
-            <Route path="/corretor/:slug" element={<BrokerProfile />} />
-            <Route path="/corretor/:slug/cartao" element={<BrokerCard />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:slug" element={<BlogPost />} />
-            <Route path="/favoritos" element={<Favorites />} />
-            <Route path="/mapa" element={<MapSearch />} />
-            <Route path="/imoveis/:citySlug" element={<CityProperties />} />
-            <Route path="/lancamentos" element={<Lancamentos />} />
-            <Route path="/admin" element={<ProtectedRoute><AdminLayout><Dashboard /></AdminLayout></ProtectedRoute>} />
-            <Route path="/admin/properties" element={<ProtectedRoute><AdminLayout><Properties /></AdminLayout></ProtectedRoute>} />
-            <Route path="/admin/brokers" element={<ProtectedRoute allowedRoles={["admin"]}><AdminLayout><Brokers /></AdminLayout></ProtectedRoute>} />
-            <Route path="/admin/profile" element={<ProtectedRoute><AdminLayout><Profile /></AdminLayout></ProtectedRoute>} />
-            <Route path="/admin/blog" element={<ProtectedRoute allowedRoles={["admin"]}><AdminLayout><BlogAdmin /></AdminLayout></ProtectedRoute>} />
-            <Route path="/admin/crm" element={<ProtectedRoute><AdminLayout><CRM /></AdminLayout></ProtectedRoute>} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/imovel/:slug" element={<PropertyDetail />} />
+              <Route path="/corretor/:slug" element={<BrokerProfile />} />
+              <Route path="/corretor/:slug/cartao" element={<BrokerCard />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
+              <Route path="/favoritos" element={<Favorites />} />
+              <Route path="/mapa" element={<MapSearch />} />
+              <Route path="/imoveis/:citySlug" element={<CityProperties />} />
+              <Route path="/lancamentos" element={<Lancamentos />} />
+              <Route path="/admin" element={<ProtectedRoute><AdminLayout><Dashboard /></AdminLayout></ProtectedRoute>} />
+              <Route path="/admin/properties" element={<ProtectedRoute><AdminLayout><Properties /></AdminLayout></ProtectedRoute>} />
+              <Route path="/admin/brokers" element={<ProtectedRoute allowedRoles={["admin"]}><AdminLayout><Brokers /></AdminLayout></ProtectedRoute>} />
+              <Route path="/admin/profile" element={<ProtectedRoute><AdminLayout><Profile /></AdminLayout></ProtectedRoute>} />
+              <Route path="/admin/blog" element={<ProtectedRoute allowedRoles={["admin"]}><AdminLayout><BlogAdmin /></AdminLayout></ProtectedRoute>} />
+              <Route path="/admin/crm" element={<ProtectedRoute><AdminLayout><CRM /></AdminLayout></ProtectedRoute>} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </BrowserRouter>
-        <PropertyChatWidget />
+        <Suspense fallback={null}>
+          <PropertyChatWidget />
+        </Suspense>
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
