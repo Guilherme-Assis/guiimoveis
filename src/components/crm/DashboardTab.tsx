@@ -165,17 +165,17 @@ const DashboardTab = () => {
   return (
     <div className="space-y-6">
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {kpis.map((kpi) => (
           <Card key={kpi.label} className="border-border/40 transition-all hover:border-border/60">
-            <CardContent className="p-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-body text-[11px] font-medium uppercase tracking-wider text-muted-foreground">{kpi.label}</p>
-                  <p className="mt-2 font-display text-2xl font-bold text-foreground">{kpi.value}</p>
+            <CardContent className="p-3 sm:p-5">
+              <div className="flex items-center justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="font-body text-[10px] sm:text-[11px] font-medium uppercase tracking-wider text-muted-foreground truncate">{kpi.label}</p>
+                  <p className="mt-1 sm:mt-2 font-display text-lg sm:text-2xl font-bold text-foreground truncate">{kpi.value}</p>
                 </div>
-                <div className={`flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br ${kpi.bg}`}>
-                  <kpi.icon className={`h-5 w-5 ${kpi.color}`} />
+                <div className={`flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${kpi.bg}`}>
+                  <kpi.icon className={`h-4 w-4 sm:h-5 sm:w-5 ${kpi.color}`} />
                 </div>
               </div>
             </CardContent>
@@ -185,8 +185,7 @@ const DashboardTab = () => {
 
       {/* Charts Row 1 */}
       <div className="grid gap-4 lg:grid-cols-2">
-        {/* Leads by Month */}
-        <Card className="border-border/40">
+        <Card className="border-border/40 min-w-0">
           <CardContent className="p-5">
             <h3 className="mb-4 font-display text-sm font-semibold text-foreground">Leads por Mês</h3>
             <ResponsiveContainer width="100%" height={220}>
@@ -257,31 +256,31 @@ const DashboardTab = () => {
       </div>
 
       {/* Quick stats footer */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
         <Card className="border-border/40">
-          <CardContent className="flex items-center gap-3 p-4">
-            <CheckCircle2 className="h-5 w-5 text-primary" />
-            <div>
-              <p className="text-xs text-muted-foreground">Tarefas Concluídas</p>
-              <p className="font-display text-lg font-bold">{tasks.filter((t: any) => t.status === "concluida").length}/{tasks.length}</p>
+          <CardContent className="flex items-center gap-3 p-3 sm:p-4">
+            <CheckCircle2 className="h-5 w-5 shrink-0 text-primary" />
+            <div className="min-w-0">
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Tarefas Concluídas</p>
+              <p className="font-display text-base sm:text-lg font-bold">{tasks.filter((t: any) => t.status === "concluida").length}/{tasks.length}</p>
             </div>
           </CardContent>
         </Card>
         <Card className="border-border/40">
-          <CardContent className="flex items-center gap-3 p-4">
-            <CalendarDays className="h-5 w-5 text-amber-400" />
-            <div>
-              <p className="text-xs text-muted-foreground">Visitas Agendadas</p>
-              <p className="font-display text-lg font-bold">{visits.filter((v: any) => v.status === "agendada").length}</p>
+          <CardContent className="flex items-center gap-3 p-3 sm:p-4">
+            <CalendarDays className="h-5 w-5 shrink-0 text-amber-400" />
+            <div className="min-w-0">
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Visitas Agendadas</p>
+              <p className="font-display text-base sm:text-lg font-bold">{visits.filter((v: any) => v.status === "agendada").length}</p>
             </div>
           </CardContent>
         </Card>
         <Card className="border-border/40">
-          <CardContent className="flex items-center gap-3 p-4">
-            <XCircle className="h-5 w-5 text-destructive" />
-            <div>
-              <p className="text-xs text-muted-foreground">Leads Perdidos</p>
-              <p className="font-display text-lg font-bold">{leads.filter((l: any) => l.status === "perdido").length}</p>
+          <CardContent className="flex items-center gap-3 p-3 sm:p-4">
+            <XCircle className="h-5 w-5 shrink-0 text-destructive" />
+            <div className="min-w-0">
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Leads Perdidos</p>
+              <p className="font-display text-base sm:text-lg font-bold">{leads.filter((l: any) => l.status === "perdido").length}</p>
             </div>
           </CardContent>
         </Card>

@@ -44,12 +44,12 @@ const Dashboard = () => {
 
   return (
     <div>
-      <h1 className="mb-2 font-display text-3xl font-bold text-foreground">Dashboard</h1>
-      <p className="mb-8 font-body text-sm text-muted-foreground">
+      <h1 className="mb-2 font-display text-2xl sm:text-3xl font-bold text-foreground">Dashboard</h1>
+      <p className="mb-6 sm:mb-8 font-body text-xs sm:text-sm text-muted-foreground">
         {role === "admin" ? "Visão geral da plataforma" : "Seus imóveis cadastrados"}
       </p>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:gap-6 grid-cols-2 lg:grid-cols-4">
         <StatCard icon={Building2} label="Total de Imóveis" value={stats.total} color="bg-primary/10 text-primary" />
         <StatCard icon={Eye} label="Disponíveis" value={stats.available} color="bg-green-500/10 text-green-500" />
         <StatCard icon={TrendingUp} label="Indisponíveis" value={stats.unavailable} color="bg-destructive/10 text-destructive" />

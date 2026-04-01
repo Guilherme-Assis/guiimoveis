@@ -95,8 +95,8 @@ const ProposalsTab = () => {
   return (
     <div className="space-y-6">
       {/* Stats row */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           {totalValue > 0 && (
             <Badge variant="outline" className="border-primary/40 bg-primary/10 px-3 py-1 text-primary">
               <DollarSign className="mr-1 h-3 w-3" /> Vendas: {formatCurrency(totalValue)}
@@ -160,7 +160,7 @@ const ProposalsTab = () => {
                       )}
                     </div>
                   </div>
-                  <div className="flex shrink-0 gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+                  <div className="flex shrink-0 gap-0.5 sm:opacity-0 sm:transition-opacity sm:group-hover:opacity-100">
                     <PdfProposalButton data={{
                       leadName: proposal.broker_leads?.name || "Cliente",
                       propertyTitle: proposal.db_properties?.title || "Imóvel",
@@ -236,7 +236,7 @@ const ProposalForm = ({ brokerId, isAdmin, proposal, leads, properties, onSucces
           </Select>
         </div>
       )}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label className="text-xs text-muted-foreground">Lead *</Label>
           <Select value={form.lead_id} onValueChange={(v) => setForm(p => ({ ...p, lead_id: v }))}>
@@ -265,7 +265,7 @@ const ProposalForm = ({ brokerId, isAdmin, proposal, leads, properties, onSucces
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label className="text-xs text-muted-foreground">Status</Label>
           <Select value={form.status} onValueChange={(v) => setForm(p => ({ ...p, status: v }))}>

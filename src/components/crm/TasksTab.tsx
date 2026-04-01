@@ -109,8 +109,8 @@ const TasksTab = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3 sm:gap-4">
           <Select value={filter} onValueChange={setFilter}>
             <SelectTrigger className="w-40 border-border/40 bg-card/50">
               <SelectValue />
@@ -195,7 +195,7 @@ const TasksTab = () => {
                       )}
                     </div>
                   </div>
-                  <div className="flex shrink-0 gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+                  <div className="flex shrink-0 gap-0.5 sm:opacity-0 sm:transition-opacity sm:group-hover:opacity-100">
                     <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={() => { setEditTask(task); setShowForm(true); }}>
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -279,7 +279,7 @@ const TaskForm = ({ brokerId, isAdmin, task, leads, onSuccess }: any) => {
         <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Título *</Label>
         <Input value={form.title} onChange={(e) => update("title", e.target.value)} placeholder="Ex: Ligar para cliente" className="border-border/40" />
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label className="text-xs text-muted-foreground">Tipo</Label>
           <Select value={form.type} onValueChange={(v) => update("type", v)}>
@@ -295,7 +295,7 @@ const TaskForm = ({ brokerId, isAdmin, task, leads, onSuccess }: any) => {
           </Select>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label className="text-xs text-muted-foreground">Vencimento</Label>
           <Input type="datetime-local" value={form.due_date} onChange={(e) => update("due_date", e.target.value)} className="border-border/40" />

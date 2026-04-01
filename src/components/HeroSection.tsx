@@ -35,13 +35,13 @@ const HeroSection = ({ onScrollToListings }: HeroSectionProps) => {
           <p className="mb-4 text-sm font-body uppercase tracking-[0.3em] text-primary">
             Imóveis de Alto Padrão
           </p>
-          <h1 className="mb-6 font-display text-5xl font-semibold leading-tight text-foreground md:text-7xl lg:text-8xl">
+          <h1 className="mb-4 sm:mb-6 font-display text-3xl sm:text-5xl font-semibold leading-tight text-foreground md:text-7xl lg:text-8xl">
             Onde o Luxo{" "}
             <span className="text-gradient-gold italic">Encontra</span>
             <br />
             seu Endereço
           </h1>
-          <p className="mx-auto mb-10 max-w-2xl font-body text-lg font-light text-muted-foreground md:text-xl">
+          <p className="mx-auto mb-6 sm:mb-10 max-w-2xl font-body text-base sm:text-lg font-light text-muted-foreground md:text-xl">
             Descubra propriedades exclusivas que redefinem o conceito de
             sofisticação e elegância no mercado imobiliário brasileiro.
           </p>
@@ -52,7 +52,7 @@ const HeroSection = ({ onScrollToListings }: HeroSectionProps) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5 }}
           onClick={onScrollToListings}
-          className="group flex items-center gap-3 bg-gradient-gold px-8 py-4 font-body text-sm font-semibold uppercase tracking-widest text-primary-foreground transition-all hover:shadow-[var(--shadow-gold)] hover:scale-105"
+          className="group flex items-center gap-3 bg-gradient-gold px-6 py-3 sm:px-8 sm:py-4 font-body text-xs sm:text-sm font-semibold uppercase tracking-widest text-primary-foreground transition-all hover:shadow-[var(--shadow-gold)] hover:scale-105"
         >
           <Search className="h-4 w-4" />
           Explorar Imóveis

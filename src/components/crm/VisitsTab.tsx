@@ -87,7 +87,7 @@ const VisitsTab = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           {upcomingCount > 0 && (
             <Badge variant="outline" className="border-sky-500/40 bg-sky-500/10 text-sky-300">
@@ -146,7 +146,7 @@ const VisitsTab = () => {
                     </div>
                     {visit.feedback && <p className="mt-1 truncate text-xs text-muted-foreground/70">{visit.feedback}</p>}
                   </div>
-                  <div className="flex shrink-0 gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+                  <div className="flex shrink-0 gap-0.5 sm:opacity-0 sm:transition-opacity sm:group-hover:opacity-100">
                     <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={() => { setEditVisit(visit); setShowForm(true); }}><Edit className="h-4 w-4" /></Button>
                     <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => { if (confirm("Excluir?")) deleteMutation.mutate(visit.id); }}><Trash2 className="h-4 w-4" /></Button>
                   </div>
@@ -209,7 +209,7 @@ const VisitForm = ({ brokerId, isAdmin, visit, leads, properties, onSuccess }: a
           </Select>
         </div>
       )}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label className="text-xs text-muted-foreground">Lead *</Label>
           <Select value={form.lead_id} onValueChange={(v) => setForm(p => ({ ...p, lead_id: v }))}>
@@ -225,7 +225,7 @@ const VisitForm = ({ brokerId, isAdmin, visit, leads, properties, onSuccess }: a
           </Select>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label className="text-xs text-muted-foreground">Data/Hora *</Label>
           <Input type="datetime-local" value={form.visit_date} onChange={(e) => setForm(p => ({ ...p, visit_date: e.target.value }))} className="border-border/40" />

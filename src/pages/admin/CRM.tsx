@@ -110,34 +110,36 @@ const CRM = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-end justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/60">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/60">
             <Sparkles className="h-5 w-5 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="font-display text-3xl font-bold tracking-tight text-foreground">CRM</h1>
-            <p className="font-body text-sm text-muted-foreground">Gestão completa de leads, tarefas, visitas e propostas</p>
+            <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-foreground">CRM</h1>
+            <p className="font-body text-xs sm:text-sm text-muted-foreground">Gestão completa de leads, tarefas, visitas e propostas</p>
           </div>
         </div>
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex items-center gap-1 rounded-xl border border-border/30 bg-card/50 p-1">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-body text-sm font-medium transition-all ${
-              activeTab === tab.id
-                ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-md shadow-primary/20"
-                : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-            }`}
-          >
-            <tab.icon className="h-4 w-4" />
-            {tab.label}
-          </button>
-        ))}
+      <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div className="flex items-center gap-1 rounded-xl border border-border/30 bg-card/50 p-1 min-w-max">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center justify-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-2 font-body text-xs sm:text-sm font-medium transition-all sm:px-4 sm:py-2.5 sm:gap-2 ${
+                activeTab === tab.id
+                  ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-md shadow-primary/20"
+                  : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+              }`}
+            >
+              <tab.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span className="hidden xs:inline sm:inline">{tab.label}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Tab Content */}
@@ -152,14 +154,14 @@ const CRM = () => {
               { label: "Fechados", value: stats.fechados, icon: UserCheck, gradient: "from-primary/20 to-primary/5", iconColor: "text-primary" },
             ].map((stat) => (
               <Card key={stat.label} className="overflow-hidden border-border/40 transition-all hover:border-border/60">
-                <CardContent className="p-5">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-body text-xs font-medium uppercase tracking-wider text-muted-foreground">{stat.label}</p>
-                      <p className="mt-2 font-display text-3xl font-bold text-foreground">{stat.value}</p>
+                <CardContent className="p-3 sm:p-5">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="font-body text-[10px] sm:text-xs font-medium uppercase tracking-wider text-muted-foreground truncate">{stat.label}</p>
+                      <p className="mt-1 sm:mt-2 font-display text-xl sm:text-3xl font-bold text-foreground">{stat.value}</p>
                     </div>
-                    <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${stat.gradient}`}>
-                      <stat.icon className={`h-6 w-6 ${stat.iconColor}`} />
+                    <div className={`flex h-9 w-9 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${stat.gradient}`}>
+                      <stat.icon className={`h-4 w-4 sm:h-6 sm:w-6 ${stat.iconColor}`} />
                     </div>
                   </div>
                 </CardContent>
@@ -215,30 +217,28 @@ const CRM = () => {
             <div className="space-y-2">
               {filtered.map((lead: any) => (
                 <Card key={lead.id} className="group cursor-pointer border-border/30 bg-card/80 backdrop-blur-sm transition-all hover:border-primary/30 hover:bg-card hover:shadow-lg hover:shadow-primary/5" onClick={() => setSelectedLead(lead.id)}>
-                  <CardContent className="flex items-center gap-4 p-4">
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/30 to-primary/10 font-display text-lg font-bold text-primary transition-transform group-hover:scale-105">
+                  <CardContent className="flex items-start gap-3 p-3 sm:items-center sm:gap-4 sm:p-4">
+                    <div className="flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/30 to-primary/10 font-display text-base sm:text-lg font-bold text-primary">
                       {lead.name.charAt(0).toUpperCase()}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2.5">
+                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2.5">
                         <p className="truncate font-display text-sm font-semibold text-foreground">{lead.name}</p>
                         <Badge variant="outline" className={`text-[10px] font-medium ${statusColors[lead.status]}`}>{statusLabels[lead.status]}</Badge>
-                        <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                        <span className="hidden sm:flex items-center gap-1.5 text-[10px] text-muted-foreground">
                           <span className={`inline-block h-1.5 w-1.5 rounded-full ${priorityDots[lead.priority]}`} />
                           {priorityLabels[lead.priority]}
                         </span>
                       </div>
-                      <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                      <div className="mt-1 sm:mt-1.5 flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-1 text-xs text-muted-foreground">
                         {lead.phone && <span className="flex items-center gap-1.5"><Phone className="h-3 w-3 text-primary/60" />{lead.phone}</span>}
-                        {lead.email && <span className="flex items-center gap-1.5"><Mail className="h-3 w-3 text-primary/60" />{lead.email}</span>}
+                        {lead.email && <span className="hidden sm:flex items-center gap-1.5"><Mail className="h-3 w-3 text-primary/60" />{lead.email}</span>}
                         {lead.interest_value && <span className="flex items-center gap-1.5 font-medium text-primary/80"><DollarSign className="h-3 w-3" />{formatCurrency(lead.interest_value)}</span>}
-                        {lead.preferred_neighborhoods?.length > 0 && <span className="flex items-center gap-1.5"><MapPin className="h-3 w-3 text-primary/60" />{lead.preferred_neighborhoods.slice(0, 2).join(", ")}</span>}
                       </div>
                     </div>
-                    <div className="flex shrink-0 gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={(e) => { e.stopPropagation(); setSelectedLead(lead.id); }}><Eye className="h-4 w-4" /></Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={(e) => { e.stopPropagation(); setEditLead(lead); setShowForm(true); }}><Edit className="h-4 w-4" /></Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={(e) => { e.stopPropagation(); if (confirm("Excluir este lead?")) deleteMutation.mutate(lead.id); }}><Trash2 className="h-4 w-4" /></Button>
+                    <div className="flex shrink-0 gap-0.5 sm:opacity-0 sm:transition-opacity sm:group-hover:opacity-100">
+                      <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8 text-muted-foreground hover:text-primary" onClick={(e) => { e.stopPropagation(); setEditLead(lead); setShowForm(true); }}><Edit className="h-3.5 w-3.5 sm:h-4 sm:w-4" /></Button>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8 text-muted-foreground hover:text-destructive" onClick={(e) => { e.stopPropagation(); if (confirm("Excluir este lead?")) deleteMutation.mutate(lead.id); }}><Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" /></Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -326,20 +326,20 @@ const LeadForm = ({ brokerId, lead, onSuccess, isAdmin }: { brokerId: string | n
         <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Nome *</Label>
         <Input value={form.name} onChange={(e) => update("name", e.target.value)} placeholder="Nome completo do lead" className="border-border/40" />
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-1.5"><Label className="text-xs text-muted-foreground">Email</Label><Input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} placeholder="email@exemplo.com" className="border-border/40" /></div>
         <div className="space-y-1.5"><Label className="text-xs text-muted-foreground">Telefone</Label><Input value={form.phone} onChange={(e) => update("phone", e.target.value)} placeholder="(11) 99999-9999" className="border-border/40" /></div>
       </div>
       <div className="rounded-lg border border-border/30 bg-secondary/30 p-4">
         <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Interesse Financeiro</p>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1.5"><Label className="text-xs text-muted-foreground">Valor (R$)</Label><Input type="number" value={form.interest_value} onChange={(e) => update("interest_value", e.target.value)} placeholder="500.000" className="border-border/40" /></div>
           <div className="space-y-1.5"><Label className="text-xs text-muted-foreground">Parcelas (R$)</Label><Input type="number" value={form.installment_value} onChange={(e) => update("installment_value", e.target.value)} placeholder="3.000" className="border-border/40" /></div>
         </div>
       </div>
       <div className="space-y-1.5"><Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Bairros</Label><Input value={form.preferred_neighborhoods} onChange={(e) => update("preferred_neighborhoods", e.target.value)} placeholder="Jardins, Moema, Vila Mariana" className="border-border/40" /><p className="text-[11px] text-muted-foreground/60">Separe por vírgula</p></div>
       <div className="space-y-1.5"><Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Tipo de Imóvel</Label><Input value={form.property_type_interest} onChange={(e) => update("property_type_interest", e.target.value)} placeholder="Apartamento 3 quartos, casa com piscina..." className="border-border/40" /></div>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="space-y-1.5"><Label className="text-xs text-muted-foreground">Origem</Label><Select value={form.source} onValueChange={(v) => update("source", v)}><SelectTrigger className="border-border/40"><SelectValue /></SelectTrigger><SelectContent>{Object.entries(sourceLabels).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}</SelectContent></Select></div>
         <div className="space-y-1.5"><Label className="text-xs text-muted-foreground">Status</Label><Select value={form.status} onValueChange={(v) => update("status", v)}><SelectTrigger className="border-border/40"><SelectValue /></SelectTrigger><SelectContent>{Object.entries(statusLabels).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}</SelectContent></Select></div>
         <div className="space-y-1.5"><Label className="text-xs text-muted-foreground">Prioridade</Label><Select value={form.priority} onValueChange={(v) => update("priority", v)}><SelectTrigger className="border-border/40"><SelectValue /></SelectTrigger><SelectContent>{Object.entries(priorityLabels).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}</SelectContent></Select></div>
