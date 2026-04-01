@@ -7,14 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
+  Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Pencil, Trash2, Eye, EyeOff } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, EyeOff, Upload, Loader2 } from "lucide-react";
 
 type DbProperty = {
   id: string;
@@ -57,6 +57,7 @@ const Properties = () => {
   const [editing, setEditing] = useState<DbProperty | null>(null);
   const [form, setForm] = useState(emptyProperty);
   const [featuresInput, setFeaturesInput] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -92,6 +93,55 @@ const Properties = () => {
     });
     setFeaturesInput((p.features || []).join(", "));
     setDialogOpen(true);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/avif"];
+    if (!allowedTypes.includes(file.type)) {
+      toast({ title: "Formato inválido", description: "Use JPG, PNG, WebP ou AVIF.", variant: "destructive" });
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast({ title: "Arquivo muito grande", description: "Máximo 10MB.", variant: "destructive" });
+      return;
+    }
+
+    setUploading(true);
+    try {
+      // Get signed upload URL from edge function
+      const { data: signData, error: signError } = await supabase.functions.invoke("s3-upload", {
+        body: { filename: file.name, content_type: file.type },
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      });
+
+      if (signError || !signData?.upload_url) {
+        throw new Error(signError?.message || "Failed to get upload URL");
+      }
+
+      // Upload directly to S3 using the signed URL
+      const uploadResponse = await fetch(signData.upload_url, {
+        method: "PUT",
+        body: file,
+        headers: { "Content-Type": file.type },
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error("Upload to S3 failed");
+      }
+
+      // Use the public URL
+      setForm({ ...form, image_url: signData.public_url });
+      toast({ title: "Imagem enviada!", description: "Imagem salva no S3 com sucesso." });
+    } catch (err: any) {
+      console.error("Upload error:", err);
+      toast({ title: "Erro no upload", description: err.message || "Tente novamente.", variant: "destructive" });
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSave = async () => {
@@ -301,8 +351,18 @@ const Properties = () => {
                 <Input type="number" value={form.land_area} onChange={(e) => setForm({ ...form, land_area: Number(e.target.value) })} className="border-border bg-secondary" />
               </div>
               <div className="space-y-2">
-                <Label className="font-body text-sm">URL da Imagem</Label>
-                <Input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} placeholder="https://..." className="border-border bg-secondary" />
+                <Label className="font-body text-sm">Imagem</Label>
+                <div className="flex gap-2">
+                  <Input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} placeholder="URL ou faça upload" className="flex-1 border-border bg-secondary" />
+                  <label className="flex cursor-pointer items-center gap-1 rounded border border-primary px-3 py-2 font-body text-xs font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground">
+                    {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                    <span>{uploading ? "Enviando..." : "Upload"}</span>
+                    <input type="file" accept="image/jpeg,image/png,image/webp,image/avif" className="hidden" onChange={handleImageUpload} disabled={uploading} />
+                  </label>
+                </div>
+                {form.image_url && (
+                  <img src={form.image_url} alt="Preview" className="mt-2 h-20 w-32 rounded border border-border object-cover" />
+                )}
               </div>
             </div>
 
