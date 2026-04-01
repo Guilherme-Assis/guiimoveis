@@ -109,8 +109,8 @@ const TasksTab = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3 sm:gap-4">
           <Select value={filter} onValueChange={setFilter}>
             <SelectTrigger className="w-40 border-border/40 bg-card/50">
               <SelectValue />
