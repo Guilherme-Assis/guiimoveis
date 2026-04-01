@@ -22,6 +22,7 @@ import Properties from "./pages/admin/Properties";
 import Brokers from "./pages/admin/Brokers";
 import Profile from "./pages/admin/Profile";
 import BlogAdmin from "./pages/admin/BlogAdmin";
+import CRM from "./pages/admin/CRM";
 import { ReactNode } from "react";
 import PropertyChatWidget from "./components/PropertyChatWidget";
 
