@@ -18,13 +18,18 @@ const categoryColors: Record<string, string> = {
   email: "border-sky-500/40 bg-sky-500/10 text-sky-300",
 };
 
+const stageLabels: Record<string, string> = {
+  novo: "Novo", em_contato: "Em Contato", qualificado: "Qualificado",
+  proposta: "Proposta", fechado: "Fechado", perdido: "Perdido",
+};
+
 const defaultTemplates = [
-  { name: "Primeiro Contato", category: "whatsapp" as const, stage: "Novo", body: `Olá {{nome}}! 👋\n\nSou {{corretor}} da GUI Imóveis. Vi que você demonstrou interesse em imóveis na região de {{bairro}}.\n\nTenho ótimas opções que podem ser perfeitas para você! Posso te enviar algumas sugestões?\n\nAguardo seu retorno! 😊` },
-  { name: "Agendamento de Visita", category: "whatsapp" as const, stage: "Em Contato", body: `Olá {{nome}}! 🏡\n\nTenho disponibilidade para uma visita ao imóvel {{imovel}} nos seguintes horários:\n\n📅 {{data1}}\n📅 {{data2}}\n\nQual horário fica melhor para você?` },
-  { name: "Pós-Visita", category: "whatsapp" as const, stage: "Qualificado", body: `Olá {{nome}}! 😊\n\nEspero que tenha gostado da visita ao {{imovel}}!\n\nO que achou? Ficou com alguma dúvida?\n\nSe quiser, posso agendar outra visita ou apresentar opções similares.` },
-  { name: "Envio de Proposta", category: "whatsapp" as const, stage: "Proposta", body: `Olá {{nome}}! 📋\n\nPreparei a proposta para o {{imovel}}:\n\n💰 Valor: {{valor}}\n📝 Condições: {{condicoes}}\n\nA proposta é válida até {{validade}}.` },
-  { name: "Primeiro Contato", category: "email" as const, stage: "Novo", subject: "Bem-vindo(a) à GUI Imóveis!", body: `Olá {{nome}},\n\nSeja bem-vindo(a)! Sou {{corretor}}, consultor imobiliário da GUI Imóveis.\n\nRecebi seu interesse e ficarei feliz em ajudá-lo(a).\n\nAtenciosamente,\n{{corretor}}` },
-  { name: "Proposta Comercial", category: "email" as const, stage: "Proposta", subject: "Proposta Comercial - {{imovel}}", body: `Prezado(a) {{nome}},\n\nSegue a proposta comercial para o imóvel {{imovel}}:\n\n• Valor: {{valor}}\n• Condições: {{condicoes}}\n• Válida até: {{validade}}\n\nAtenciosamente,\n{{corretor}}` },
+  { name: "Primeiro Contato", category: "whatsapp" as const, stage: "novo", body: `Olá {{nome}}! 👋\n\nSou {{corretor}} da GUI Imóveis. Vi que você demonstrou interesse em imóveis na região de {{bairro}}.\n\nTenho ótimas opções que podem ser perfeitas para você! Posso te enviar algumas sugestões?\n\nAguardo seu retorno! 😊` },
+  { name: "Agendamento de Visita", category: "whatsapp" as const, stage: "em_contato", body: `Olá {{nome}}! 🏡\n\nTenho disponibilidade para uma visita ao imóvel {{imovel}} nos seguintes horários:\n\n📅 {{data1}}\n📅 {{data2}}\n\nQual horário fica melhor para você?` },
+  { name: "Pós-Visita", category: "whatsapp" as const, stage: "qualificado", body: `Olá {{nome}}! 😊\n\nEspero que tenha gostado da visita ao {{imovel}}!\n\nO que achou? Ficou com alguma dúvida?\n\nSe quiser, posso agendar outra visita ou apresentar opções similares.` },
+  { name: "Envio de Proposta", category: "whatsapp" as const, stage: "proposta", body: `Olá {{nome}}! 📋\n\nPreparei a proposta para o {{imovel}}:\n\n💰 Valor: {{valor}}\n📝 Condições: {{condicoes}}\n\nA proposta é válida até {{validade}}.` },
+  { name: "Primeiro Contato", category: "email" as const, stage: "novo", subject: "Bem-vindo(a) à GUI Imóveis!", body: `Olá {{nome}},\n\nSeja bem-vindo(a)! Sou {{corretor}}, consultor imobiliário da GUI Imóveis.\n\nRecebi seu interesse e ficarei feliz em ajudá-lo(a).\n\nAtenciosamente,\n{{corretor}}` },
+  { name: "Proposta Comercial", category: "email" as const, stage: "proposta", subject: "Proposta Comercial - {{imovel}}", body: `Prezado(a) {{nome}},\n\nSegue a proposta comercial para o imóvel {{imovel}}:\n\n• Valor: {{valor}}\n• Condições: {{condicoes}}\n• Válida até: {{validade}}\n\nAtenciosamente,\n{{corretor}}` },
 ];
 
 interface TemplateForm {
