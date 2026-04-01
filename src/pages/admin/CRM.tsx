@@ -24,7 +24,7 @@ import ProposalsTab from "@/components/crm/ProposalsTab";
 import CalendarTab from "@/components/crm/CalendarTab";
 import DashboardTab from "@/components/crm/DashboardTab";
 import KanbanTab from "@/components/crm/KanbanTab";
-import NotificationsTab from "@/components/crm/NotificationsTab";
+
 import ReportsTab from "@/components/crm/ReportsTab";
 import CommissionsTab from "@/components/crm/CommissionsTab";
 import MessageTemplatesTab from "@/components/crm/MessageTemplatesTab";
