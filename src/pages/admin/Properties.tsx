@@ -399,7 +399,7 @@ const Properties = () => {
                 </label>
               </div>
               {form.image_url && (
-                <img src={form.image_url} alt="Preview" className="mt-2 h-20 w-32 rounded border border-border object-cover" />
+                <S3Thumbnail url={form.image_url} alt="Preview" className="mt-2 h-20 w-32 rounded border border-border object-cover" />
               )}
             </div>
 
