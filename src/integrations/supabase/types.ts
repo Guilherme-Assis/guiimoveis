@@ -163,6 +163,70 @@ export type Database = {
           },
         ]
       }
+      broker_proposals: {
+        Row: {
+          broker_id: string
+          conditions: string | null
+          counter_value: number | null
+          created_at: string
+          id: string
+          lead_id: string
+          property_id: string
+          proposed_value: number
+          status: Database["public"]["Enums"]["proposal_status"]
+          updated_at: string
+          valid_until: string | null
+        }
+        Insert: {
+          broker_id: string
+          conditions?: string | null
+          counter_value?: number | null
+          created_at?: string
+          id?: string
+          lead_id: string
+          property_id: string
+          proposed_value: number
+          status?: Database["public"]["Enums"]["proposal_status"]
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Update: {
+          broker_id?: string
+          conditions?: string | null
+          counter_value?: number | null
+          created_at?: string
+          id?: string
+          lead_id?: string
+          property_id?: string
+          proposed_value?: number
+          status?: Database["public"]["Enums"]["proposal_status"]
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "broker_proposals_broker_id_fkey"
+            columns: ["broker_id"]
+            isOneToOne: false
+            referencedRelation: "brokers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "broker_proposals_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "broker_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "broker_proposals_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "db_properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       broker_reviews: {
         Row: {
           broker_id: string
@@ -197,6 +261,66 @@ export type Database = {
             columns: ["broker_id"]
             isOneToOne: false
             referencedRelation: "brokers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      broker_tasks: {
+        Row: {
+          broker_id: string
+          completed_at: string | null
+          created_at: string
+          description: string | null
+          due_date: string | null
+          id: string
+          lead_id: string | null
+          priority: Database["public"]["Enums"]["lead_priority"]
+          status: Database["public"]["Enums"]["task_status"]
+          title: string
+          type: Database["public"]["Enums"]["task_type"]
+          updated_at: string
+        }
+        Insert: {
+          broker_id: string
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          lead_id?: string | null
+          priority?: Database["public"]["Enums"]["lead_priority"]
+          status?: Database["public"]["Enums"]["task_status"]
+          title: string
+          type?: Database["public"]["Enums"]["task_type"]
+          updated_at?: string
+        }
+        Update: {
+          broker_id?: string
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          lead_id?: string | null
+          priority?: Database["public"]["Enums"]["lead_priority"]
+          status?: Database["public"]["Enums"]["task_status"]
+          title?: string
+          type?: Database["public"]["Enums"]["task_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "broker_tasks_broker_id_fkey"
+            columns: ["broker_id"]
+            isOneToOne: false
+            referencedRelation: "brokers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "broker_tasks_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "broker_leads"
             referencedColumns: ["id"]
           },
         ]
@@ -354,6 +478,67 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "favorites_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "db_properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_property_visits: {
+        Row: {
+          broker_id: string
+          created_at: string
+          feedback: string | null
+          id: string
+          interest_level: number | null
+          lead_id: string
+          property_id: string
+          status: Database["public"]["Enums"]["visit_status"]
+          updated_at: string
+          visit_date: string
+        }
+        Insert: {
+          broker_id: string
+          created_at?: string
+          feedback?: string | null
+          id?: string
+          interest_level?: number | null
+          lead_id: string
+          property_id: string
+          status?: Database["public"]["Enums"]["visit_status"]
+          updated_at?: string
+          visit_date: string
+        }
+        Update: {
+          broker_id?: string
+          created_at?: string
+          feedback?: string | null
+          id?: string
+          interest_level?: number | null
+          lead_id?: string
+          property_id?: string
+          status?: Database["public"]["Enums"]["visit_status"]
+          updated_at?: string
+          visit_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_property_visits_broker_id_fkey"
+            columns: ["broker_id"]
+            isOneToOne: false
+            referencedRelation: "brokers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_property_visits_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "broker_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_property_visits_property_id_fkey"
             columns: ["property_id"]
             isOneToOne: false
             referencedRelation: "db_properties"
@@ -521,6 +706,22 @@ export type Database = {
         | "loft"
         | "casa_condominio"
         | "sitio_chacara"
+      proposal_status:
+        | "rascunho"
+        | "enviada"
+        | "em_analise"
+        | "aceita"
+        | "recusada"
+        | "expirada"
+      task_status: "pendente" | "em_andamento" | "concluida" | "cancelada"
+      task_type:
+        | "ligacao"
+        | "visita"
+        | "documento"
+        | "reuniao"
+        | "follow_up"
+        | "outro"
+      visit_status: "agendada" | "realizada" | "cancelada" | "no_show"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -689,6 +890,24 @@ export const Constants = {
         "casa_condominio",
         "sitio_chacara",
       ],
+      proposal_status: [
+        "rascunho",
+        "enviada",
+        "em_analise",
+        "aceita",
+        "recusada",
+        "expirada",
+      ],
+      task_status: ["pendente", "em_andamento", "concluida", "cancelada"],
+      task_type: [
+        "ligacao",
+        "visita",
+        "documento",
+        "reuniao",
+        "follow_up",
+        "outro",
+      ],
+      visit_status: ["agendada", "realizada", "cancelada", "no_show"],
     },
   },
 } as const
