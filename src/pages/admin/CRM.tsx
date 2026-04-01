@@ -16,11 +16,8 @@ import {
   Plus, Search, Phone, Mail, DollarSign, MapPin,
   Trash2, Edit, Eye, Filter, Users, TrendingUp, UserCheck, UserX,
   Sparkles, Clock, CheckSquare, CalendarDays, FileText, Calendar,
-  BarChart3, Columns3, Download, Award, MessageSquare, ChevronDown
+  BarChart3, Columns3, Download, Award, MessageSquare
 } from "lucide-react";
-import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel,
-} from "@/components/ui/dropdown-menu";
 import LeadDetail from "@/components/crm/LeadDetail";
 import TasksTab from "@/components/crm/TasksTab";
 import VisitsTab from "@/components/crm/VisitsTab";
