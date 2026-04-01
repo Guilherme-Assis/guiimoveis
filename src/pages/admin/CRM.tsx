@@ -110,7 +110,9 @@ const CRM = () => {
               <DialogTitle>{editLead ? "Editar Lead" : "Novo Lead"}</DialogTitle>
             </DialogHeader>
             <LeadForm
-              brokerId={brokerId!}
+              brokerId={brokerId}
+              isAdmin={role === "admin"}
+              lead={editLead}
               lead={editLead}
               onSuccess={() => {
                 setShowForm(false);
