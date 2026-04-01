@@ -49,7 +49,7 @@ const sourceLabels: Record<string, string> = {
 };
 const formatCurrency = (v: number | null) => v ? v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "—";
 
-type CRMTab = "leads" | "tasks" | "visits" | "proposals" | "calendar" | "dashboard" | "kanban" | "notifications" | "reports" | "commissions" | "templates";
+type CRMTab = "leads" | "tasks" | "visits" | "proposals" | "calendar" | "dashboard" | "kanban" | "reports" | "commissions" | "templates";
 
 const tabs: { id: CRMTab; label: string; icon: any }[] = [
   { id: "dashboard", label: "Dashboard", icon: BarChart3 },
@@ -59,7 +59,6 @@ const tabs: { id: CRMTab; label: string; icon: any }[] = [
   { id: "visits", label: "Visitas", icon: CalendarDays },
   { id: "proposals", label: "Propostas", icon: FileText },
   { id: "calendar", label: "Calendário", icon: Calendar },
-  { id: "notifications", label: "Alertas", icon: Bell },
   { id: "reports", label: "Relatórios", icon: Download },
   { id: "commissions", label: "Comissões", icon: Award },
   { id: "templates", label: "Templates", icon: MessageSquare },
