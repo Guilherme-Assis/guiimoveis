@@ -13,8 +13,15 @@ import { useToast } from "@/hooks/use-toast";
 
 const BrokerProfile = () => {
   const { slug } = useParams();
+  const { toast } = useToast();
   const [broker, setBroker] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
+  const [properties, setProperties] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
+  const [showQr, setShowQr] = useState(false);
+
+  const profileUrl = `${window.location.origin}/corretor/${slug}`;
   const [properties, setProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
