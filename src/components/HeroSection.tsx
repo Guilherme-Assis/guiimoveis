@@ -9,6 +9,7 @@ interface HeroSectionProps {
 }
 
 const HeroSection = ({ onScrollToListings }: HeroSectionProps) => {
+  const heroImage = useS3Image(heroImageUrl);
   return (
     <section className="relative h-screen w-full overflow-hidden">
       {/* Background Image */}

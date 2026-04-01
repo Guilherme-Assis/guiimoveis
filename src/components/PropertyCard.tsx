@@ -33,7 +33,7 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
       >
         <div className="relative aspect-[4/3] overflow-hidden">
           <img
-            src={property.image}
+            src={resolvedImage}
             alt={property.title}
             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
             loading="lazy"
