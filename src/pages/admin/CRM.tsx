@@ -15,7 +15,7 @@ import {
   Plus, Search, Phone, Mail, DollarSign, MapPin,
   Trash2, Edit, Eye, Filter, Users, TrendingUp, UserCheck, UserX,
   Sparkles, Clock, CheckSquare, CalendarDays, FileText, Calendar,
-  BarChart3, Columns3
+  BarChart3, Columns3, Bell, Download, Award, MessageSquare
 } from "lucide-react";
 import LeadDetail from "@/components/crm/LeadDetail";
 import TasksTab from "@/components/crm/TasksTab";
