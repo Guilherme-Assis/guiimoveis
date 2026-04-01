@@ -56,6 +56,113 @@ export type Database = {
         }
         Relationships: []
       }
+      broker_lead_interactions: {
+        Row: {
+          broker_id: string
+          created_at: string
+          description: string
+          id: string
+          lead_id: string
+          next_contact_date: string | null
+          type: Database["public"]["Enums"]["interaction_type"]
+        }
+        Insert: {
+          broker_id: string
+          created_at?: string
+          description: string
+          id?: string
+          lead_id: string
+          next_contact_date?: string | null
+          type?: Database["public"]["Enums"]["interaction_type"]
+        }
+        Update: {
+          broker_id?: string
+          created_at?: string
+          description?: string
+          id?: string
+          lead_id?: string
+          next_contact_date?: string | null
+          type?: Database["public"]["Enums"]["interaction_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "broker_lead_interactions_broker_id_fkey"
+            columns: ["broker_id"]
+            isOneToOne: false
+            referencedRelation: "brokers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "broker_lead_interactions_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "broker_leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      broker_leads: {
+        Row: {
+          broker_id: string
+          created_at: string
+          email: string | null
+          id: string
+          installment_value: number | null
+          interest_value: number | null
+          name: string
+          notes: string | null
+          phone: string | null
+          preferred_neighborhoods: string[] | null
+          priority: Database["public"]["Enums"]["lead_priority"]
+          property_type_interest: string | null
+          source: Database["public"]["Enums"]["lead_source"]
+          status: Database["public"]["Enums"]["lead_status"]
+          updated_at: string
+        }
+        Insert: {
+          broker_id: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          installment_value?: number | null
+          interest_value?: number | null
+          name: string
+          notes?: string | null
+          phone?: string | null
+          preferred_neighborhoods?: string[] | null
+          priority?: Database["public"]["Enums"]["lead_priority"]
+          property_type_interest?: string | null
+          source?: Database["public"]["Enums"]["lead_source"]
+          status?: Database["public"]["Enums"]["lead_status"]
+          updated_at?: string
+        }
+        Update: {
+          broker_id?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          installment_value?: number | null
+          interest_value?: number | null
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          preferred_neighborhoods?: string[] | null
+          priority?: Database["public"]["Enums"]["lead_priority"]
+          property_type_interest?: string | null
+          source?: Database["public"]["Enums"]["lead_source"]
+          status?: Database["public"]["Enums"]["lead_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "broker_leads_broker_id_fkey"
+            columns: ["broker_id"]
+            isOneToOne: false
+            referencedRelation: "brokers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       broker_reviews: {
         Row: {
           broker_id: string
@@ -378,6 +485,28 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "broker"
+      interaction_type:
+        | "ligacao"
+        | "whatsapp"
+        | "email"
+        | "visita"
+        | "reuniao"
+        | "outro"
+      lead_priority: "baixa" | "media" | "alta"
+      lead_source:
+        | "site"
+        | "indicacao"
+        | "portais"
+        | "redes_sociais"
+        | "telefone"
+        | "outro"
+      lead_status:
+        | "novo"
+        | "em_contato"
+        | "qualificado"
+        | "proposta"
+        | "fechado"
+        | "perdido"
       property_availability: "available" | "unavailable"
       property_status: "venda" | "aluguel" | "lancamento"
       property_type:
@@ -520,6 +649,31 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "broker"],
+      interaction_type: [
+        "ligacao",
+        "whatsapp",
+        "email",
+        "visita",
+        "reuniao",
+        "outro",
+      ],
+      lead_priority: ["baixa", "media", "alta"],
+      lead_source: [
+        "site",
+        "indicacao",
+        "portais",
+        "redes_sociais",
+        "telefone",
+        "outro",
+      ],
+      lead_status: [
+        "novo",
+        "em_contato",
+        "qualificado",
+        "proposta",
+        "fechado",
+        "perdido",
+      ],
       property_availability: ["available", "unavailable"],
       property_status: ["venda", "aluguel", "lancamento"],
       property_type: [
