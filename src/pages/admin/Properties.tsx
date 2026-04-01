@@ -416,7 +416,7 @@ const Properties = () => {
                 <div className="flex flex-wrap gap-2 mt-2">
                   {form.images.map((url, idx) => (
                     <div key={idx} className="relative group">
-                      <img src={url} alt={`Galeria ${idx + 1}`} className="h-20 w-28 rounded border border-border object-cover" />
+                      <S3Thumbnail url={url} alt={`Galeria ${idx + 1}`} className="h-20 w-28 rounded border border-border object-cover" />
                       <button
                         type="button"
                         onClick={() => removeGalleryImage(idx)}
