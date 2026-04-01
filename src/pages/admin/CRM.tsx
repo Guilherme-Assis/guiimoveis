@@ -45,10 +45,12 @@ const sourceLabels: Record<string, string> = {
 };
 const formatCurrency = (v: number | null) => v ? v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "—";
 
-type CRMTab = "leads" | "tasks" | "visits" | "proposals" | "calendar";
+type CRMTab = "leads" | "tasks" | "visits" | "proposals" | "calendar" | "dashboard" | "kanban";
 
 const tabs: { id: CRMTab; label: string; icon: any }[] = [
+  { id: "dashboard", label: "Dashboard", icon: BarChart3 },
   { id: "leads", label: "Leads", icon: Users },
+  { id: "kanban", label: "Kanban", icon: Columns3 },
   { id: "tasks", label: "Tarefas", icon: CheckSquare },
   { id: "visits", label: "Visitas", icon: CalendarDays },
   { id: "proposals", label: "Propostas", icon: FileText },
