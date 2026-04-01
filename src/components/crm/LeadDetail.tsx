@@ -263,6 +263,9 @@ const LeadDetail = ({ leadId, onBack }: { leadId: string; onBack: () => void }) 
         </Card>
       )}
 
+      {/* Templates for current stage */}
+      <LeadTemplates leadStatus={lead.status} brokerId={brokerId} />
+
       {/* Interactions Timeline */}
       <Card className="border-border/30">
         <CardHeader className="flex flex-row items-center justify-between pb-4">

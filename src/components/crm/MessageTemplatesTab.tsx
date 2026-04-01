@@ -190,7 +190,17 @@ const MessageTemplatesTab = () => {
                   </div>
                   <div>
                     <Label>Etapa do Funil</Label>
-                    <Input value={form.stage} onChange={(e) => setForm({ ...form, stage: e.target.value })} placeholder="Ex: Novo, Proposta" className="border-border/40 bg-card/50" maxLength={50} />
+                    <Select value={form.stage} onValueChange={(v) => setForm({ ...form, stage: v })}>
+                      <SelectTrigger className="border-border/40 bg-card/50"><SelectValue placeholder="Selecione a etapa" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="novo">Novo</SelectItem>
+                        <SelectItem value="em_contato">Em Contato</SelectItem>
+                        <SelectItem value="qualificado">Qualificado</SelectItem>
+                        <SelectItem value="proposta">Proposta</SelectItem>
+                        <SelectItem value="fechado">Fechado</SelectItem>
+                        <SelectItem value="perdido">Perdido</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
                 {form.category === "email" && (
