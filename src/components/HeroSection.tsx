@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
-import heroImage from "@/assets/hero-mansion.jpg";
 import { Search } from "lucide-react";
+
+const heroImage = "https://s3.sa-east-1.amazonaws.com/gui-imoveis/properties/hero-mansion.jpg";
 
 interface HeroSectionProps {
   onScrollToListings: () => void;

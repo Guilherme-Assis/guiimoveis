@@ -1,9 +1,11 @@
-import penthouseImg from "@/assets/property-penthouse.jpg";
-import beachVillaImg from "@/assets/property-beach-villa.jpg";
-import modernHouseImg from "@/assets/property-modern-house.jpg";
-import estateImg from "@/assets/property-estate.jpg";
-import landImg from "@/assets/property-land.jpg";
-import heroImg from "@/assets/hero-mansion.jpg";
+const S3_BASE = "https://s3.sa-east-1.amazonaws.com/gui-imoveis/properties";
+
+const heroImg = `${S3_BASE}/hero-mansion.jpg`;
+const penthouseImg = `${S3_BASE}/property-penthouse.jpg`;
+const beachVillaImg = `${S3_BASE}/property-beach-villa.jpg`;
+const modernHouseImg = `${S3_BASE}/property-modern-house.jpg`;
+const estateImg = `${S3_BASE}/property-estate.jpg`;
+const landImg = `${S3_BASE}/property-land.jpg`;
 
 export type PropertyType = "casa" | "apartamento" | "cobertura" | "terreno" | "fazenda" | "mansão" | "kitnet" | "flat" | "loft" | "casa_condominio" | "sitio_chacara";
 export type PropertyStatus = "venda" | "aluguel" | "lançamento";
@@ -64,7 +66,7 @@ export const properties: Property[] = [
     parkingSpaces: 6,
     area: 680,
     landArea: 0,
-    description: "Cobertura duplex espetacular no coração da Vila Nova Conceição, com vista privilegiada de 360° para o Parque Ibirapuera e o skyline paulistano. Projeto de interiores assinado por Patricia Anastassiadis, com acabamentos em mármore Calacatta, marcenaria em nogueira americana e metais em ouro escovado. Terraço gourmet com churrasqueira, piscina aquecida com raia de 15m, sauna seca e a vapor, e varanda panorâmica com jardim vertical.",
+    description: "Cobertura duplex espetacular no coração da Vila Nova Conceição, com vista privilegiada de 360° para o Parque Ibirapuera e o skyline paulistano.",
     features: ["Vista Panorâmica", "Piscina com Raia", "Terraço Gourmet", "Sauna", "Lareira", "Wine Bar", "4 Vagas Cobertas"],
     image: penthouseImg,
     images: [penthouseImg],
@@ -84,7 +86,7 @@ export const properties: Property[] = [
     parkingSpaces: 5,
     area: 950,
     landArea: 1800,
-    description: "Residência exclusiva pé-na-areia em Jurerê Internacional, o endereço mais cobiçado do sul do Brasil. Arquitetura mediterrânea contemporânea com amplos espaços de convivência voltados para o mar. Piscina de borda infinita que se funde com o horizonte oceânico, deck em madeira de demolição, suíte master com closet de 40m² e banheira de hidromassagem com vista para o mar. Cozinha gourmet equipada com eletrodomésticos Sub-Zero e Wolf, e área de lazer completa com quadra de tênis.",
+    description: "Residência exclusiva pé-na-areia em Jurerê Internacional, o endereço mais cobiçado do sul do Brasil.",
     features: ["Pé na Areia", "Piscina Infinita", "Quadra de Tênis", "Cozinha Gourmet", "Pier Privativo", "Jardim Tropical", "Segurança 24h"],
     image: beachVillaImg,
     images: [beachVillaImg],
@@ -104,7 +106,7 @@ export const properties: Property[] = [
     parkingSpaces: 4,
     area: 620,
     landArea: 1200,
-    description: "Residência de alto padrão em condomínio fechado no Alphaville, com projeto arquitetônico arrojado que harmoniza concreto aparente, vidro e aço corten. Ampla sala de estar com lareira ecológica e pé-direito triplo, cozinha integrada com ilha central em granito preto São Gabriel, suíte master com terraço privativo e banheira vitoriana. Piscina aquecida com prainha, sauna, espaço fitness e jardim paisagístico com espécies nativas e sistema de irrigação automatizado.",
+    description: "Residência de alto padrão em condomínio fechado no Alphaville, com projeto arquitetônico arrojado.",
     features: ["Condomínio Fechado", "Piscina Aquecida", "Sauna", "Fitness", "Lareira Ecológica", "Jardim Paisagístico", "Energia Solar"],
     image: modernHouseImg,
     images: [modernHouseImg],
@@ -124,7 +126,7 @@ export const properties: Property[] = [
     parkingSpaces: 10,
     area: 2800,
     landArea: 500000,
-    description: "Propriedade rural excepcional na Serra da Mantiqueira, com 50 hectares de paisagens deslumbrantes, mata nativa preservada e nascentes de água cristalina. A sede principal conta com 2.800m² de área construída em estilo colonial contemporâneo, com 10 suítes, salão de festas para 200 pessoas, adega subterrânea, e centro equestre completo com 20 baias, picadeiro coberto e pista de salto. Inclui casa de hóspedes independente, lago artificial com pedalinho e trilhas ecológicas demarcadas.",
+    description: "Propriedade rural excepcional na Serra da Mantiqueira, com 50 hectares de paisagens deslumbrantes.",
     features: ["50 Hectares", "Centro Equestre", "Adega Subterrânea", "Lago Artificial", "Casa de Hóspedes", "Mata Nativa", "Nascentes", "Heliponto"],
     image: estateImg,
     images: [estateImg],
@@ -144,7 +146,7 @@ export const properties: Property[] = [
     parkingSpaces: 0,
     area: 0,
     landArea: 5000,
-    description: "Terreno exclusivo de 5.000m² em uma das praias mais bonitas do Brasil, com vista panorâmica de 270° para o Oceano Atlântico e a baía da Praia do Rosa. Topografia privilegiada em aclive suave, permitindo aproveitamento total da vista marítima. Vegetação nativa de restinga preservada, acesso privativo à praia por trilha, e infraestrutura completa de água, energia e esgoto já instalada. Projeto arquitetônico aprovado pela prefeitura incluso, assinado por Isay Weinfeld.",
+    description: "Terreno exclusivo de 5.000m² em uma das praias mais bonitas do Brasil, com vista panorâmica de 270° para o Oceano Atlântico.",
     features: ["Vista para o Mar", "5.000m²", "Projeto Aprovado", "Infraestrutura Completa", "Acesso à Praia", "Vegetação Preservada"],
     image: landImg,
     images: [landImg],
@@ -173,26 +175,10 @@ export const propertyStatuses: { value: PropertyStatus; label: string }[] = [
 ];
 
 export const amenityOptions = [
-  "Piscina",
-  "Mobiliado",
-  "Varanda",
-  "Quintal",
-  "Churrasqueira",
-  "Sauna",
-  "Academia",
-  "Elevador",
-  "Segurança 24h",
-  "Condomínio Fechado",
-  "Vista para o Mar",
-  "Jardim",
-  "Energia Solar",
-  "Ar Condicionado",
-  "Lareira",
-  "Home Theater",
-  "Playground",
-  "Salão de Festas",
-  "Automação",
-  "Pet Friendly",
+  "Piscina", "Mobiliado", "Varanda", "Quintal", "Churrasqueira",
+  "Sauna", "Academia", "Elevador", "Segurança 24h", "Condomínio Fechado",
+  "Vista para o Mar", "Jardim", "Energia Solar", "Ar Condicionado",
+  "Lareira", "Home Theater", "Playground", "Salão de Festas", "Automação", "Pet Friendly",
 ];
 
 export const cities = [...new Set(properties.map((p) => p.city))];
@@ -202,18 +188,10 @@ export const formatPrice = (price: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 }).format(price);
 
 export const typeLabelsMap: Record<string, string> = {
-  casa: "Casa",
-  apartamento: "Apartamento",
-  cobertura: "Cobertura",
-  terreno: "Terreno",
-  fazenda: "Fazenda",
-  mansao: "Mansão",
-  "mansão": "Mansão",
-  kitnet: "Kitnet / Studio",
-  flat: "Flat",
-  loft: "Loft",
-  casa_condominio: "Casa em Condomínio",
-  sitio_chacara: "Sítio / Chácara",
+  casa: "Casa", apartamento: "Apartamento", cobertura: "Cobertura",
+  terreno: "Terreno", fazenda: "Fazenda", mansao: "Mansão", "mansão": "Mansão",
+  kitnet: "Kitnet / Studio", flat: "Flat", loft: "Loft",
+  casa_condominio: "Casa em Condomínio", sitio_chacara: "Sítio / Chácara",
 };
 
 export const slugifyCity = (city: string, state: string) => {
