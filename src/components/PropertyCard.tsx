@@ -3,6 +3,7 @@ import { Bed, Bath, Car, Maximize, MapPin } from "lucide-react";
 import { Property, formatPrice } from "@/data/properties";
 import { Link } from "react-router-dom";
 import FavoriteButton from "@/components/FavoriteButton";
+import { useS3Image } from "@/hooks/useS3Image";
 
 interface PropertyCardProps {
   property: Property & { slug?: string };
