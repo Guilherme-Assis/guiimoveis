@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useNotifications, formatRelativeDate } from "@/hooks/useNotifications";
 import {
-  Building2, Users, Home, LogOut, LayoutDashboard, UserCircle, ChevronRight, BookOpen, Contact, Menu, X, Bell, Clock,
+  Building2, Users, Home, LogOut, LayoutDashboard, UserCircle, ChevronRight, BookOpen, Contact, Menu, X, Bell, Clock, Check, CheckCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -23,7 +23,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { notifications, count } = useNotifications();
+  const { notifications, count, markAsRead, markAllAsRead } = useNotifications();
 
   const handleSignOut = async () => {
     await signOut();
@@ -47,7 +47,16 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
       <PopoverContent className="w-80 p-0 border-border/50 bg-card" align="end" sideOffset={8}>
         <div className="flex items-center justify-between border-b border-border/30 px-4 py-3">
           <h4 className="text-sm font-semibold text-foreground">Notificações</h4>
-          <span className="text-[10px] font-medium text-primary">{count} alertas</span>
+          {count > 0 ? (
+            <button
+              onClick={() => markAllAsRead(notifications.map((n) => n.id))}
+              className="flex items-center gap-1 text-[10px] font-medium text-primary hover:text-primary/80 transition-colors"
+            >
+              <CheckCheck className="h-3 w-3" /> Marcar todas como lidas
+            </button>
+          ) : (
+            <span className="text-[10px] font-medium text-muted-foreground">0 alertas</span>
+          )}
         </div>
         <ScrollArea className="max-h-80">
           {notifications.length === 0 ? (
@@ -58,7 +67,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
           ) : (
             <div className="divide-y divide-border/20">
               {notifications.slice(0, 15).map((notif) => (
-                <div key={notif.id} className="flex items-start gap-3 px-4 py-3 transition-colors hover:bg-muted/30">
+                <div key={notif.id} className="group flex items-start gap-3 px-4 py-3 transition-colors hover:bg-muted/30">
                   <div className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border ${notif.color}`}>
                     <notif.icon className="h-3.5 w-3.5" />
                   </div>
@@ -66,10 +75,19 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
                     <p className="text-xs font-semibold text-foreground leading-tight">{notif.title}</p>
                     <p className="mt-0.5 text-[11px] text-muted-foreground leading-snug truncate">{notif.description}</p>
                   </div>
-                  <span className="flex shrink-0 items-center gap-0.5 text-[10px] text-muted-foreground whitespace-nowrap">
-                    <Clock className="h-2.5 w-2.5" />
-                    {formatRelativeDate(notif.date)}
-                  </span>
+                  <div className="flex shrink-0 flex-col items-end gap-1">
+                    <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground whitespace-nowrap">
+                      <Clock className="h-2.5 w-2.5" />
+                      {formatRelativeDate(notif.date)}
+                    </span>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); markAsRead(notif.id); }}
+                      className="flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] text-muted-foreground opacity-0 transition-all hover:bg-primary/10 hover:text-primary group-hover:opacity-100"
+                      title="Marcar como lida"
+                    >
+                      <Check className="h-2.5 w-2.5" /> Lida
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
