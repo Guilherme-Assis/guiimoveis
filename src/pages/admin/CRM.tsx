@@ -12,17 +12,19 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import {
-  Plus, Search, Phone, Mail, User, DollarSign, MapPin,
+  Plus, Search, Phone, Mail, DollarSign, MapPin,
   Trash2, Edit, Eye, Filter, Users, TrendingUp, UserCheck, UserX,
-  Sparkles, Clock
+  Sparkles, Clock, CheckSquare, CalendarDays, FileText
 } from "lucide-react";
 import LeadDetail from "@/components/crm/LeadDetail";
+import TasksTab from "@/components/crm/TasksTab";
+import VisitsTab from "@/components/crm/VisitsTab";
+import ProposalsTab from "@/components/crm/ProposalsTab";
 
 const statusLabels: Record<string, string> = {
   novo: "Novo", em_contato: "Em Contato", qualificado: "Qualificado",
   proposta: "Proposta", fechado: "Fechado", perdido: "Perdido",
 };
-
 const statusColors: Record<string, string> = {
   novo: "border-sky-500/40 bg-sky-500/10 text-sky-300",
   em_contato: "border-amber-500/40 bg-amber-500/10 text-amber-300",
@@ -31,25 +33,27 @@ const statusColors: Record<string, string> = {
   fechado: "border-primary/40 bg-primary/10 text-primary",
   perdido: "border-destructive/40 bg-destructive/10 text-destructive",
 };
-
 const priorityLabels: Record<string, string> = { baixa: "Baixa", media: "Média", alta: "Alta" };
-const priorityDots: Record<string, string> = {
-  baixa: "bg-muted-foreground",
-  media: "bg-amber-400",
-  alta: "bg-destructive",
-};
-
+const priorityDots: Record<string, string> = { baixa: "bg-muted-foreground", media: "bg-amber-400", alta: "bg-destructive" };
 const sourceLabels: Record<string, string> = {
   site: "Site", indicacao: "Indicação", portais: "Portais",
   redes_sociais: "Redes Sociais", telefone: "Telefone", outro: "Outro",
 };
+const formatCurrency = (v: number | null) => v ? v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "—";
 
-const formatCurrency = (v: number | null) =>
-  v ? v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "—";
+type CRMTab = "leads" | "tasks" | "visits" | "proposals";
+
+const tabs: { id: CRMTab; label: string; icon: any }[] = [
+  { id: "leads", label: "Leads", icon: Users },
+  { id: "tasks", label: "Tarefas", icon: CheckSquare },
+  { id: "visits", label: "Visitas", icon: CalendarDays },
+  { id: "proposals", label: "Propostas", icon: FileText },
+];
 
 const CRM = () => {
   const { brokerId, role } = useAuth();
   const queryClient = useQueryClient();
+  const [activeTab, setActiveTab] = useState<CRMTab>("leads");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [showForm, setShowForm] = useState(false);
@@ -97,196 +101,149 @@ const CRM = () => {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-end justify-between">
-        <div>
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/60">
-              <Sparkles className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <div>
-              <h1 className="font-display text-3xl font-bold tracking-tight text-foreground">CRM</h1>
-              <p className="font-body text-sm text-muted-foreground">Gestão de leads e pipeline de vendas</p>
-            </div>
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/60">
+            <Sparkles className="h-5 w-5 text-primary-foreground" />
+          </div>
+          <div>
+            <h1 className="font-display text-3xl font-bold tracking-tight text-foreground">CRM</h1>
+            <p className="font-body text-sm text-muted-foreground">Gestão completa de leads, tarefas, visitas e propostas</p>
           </div>
         </div>
-        <Dialog open={showForm} onOpenChange={(open) => { setShowForm(open); if (!open) setEditLead(null); }}>
-          <DialogTrigger asChild>
-            <Button className="gap-2 bg-gradient-to-r from-primary to-primary/80 font-semibold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40">
-              <Plus className="h-4 w-4" /> Novo Lead
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto border-border/50 bg-card">
-            <DialogHeader>
-              <DialogTitle className="font-display text-xl">{editLead ? "Editar Lead" : "Novo Lead"}</DialogTitle>
-            </DialogHeader>
-            <LeadForm
-              brokerId={brokerId}
-              isAdmin={role === "admin"}
-              lead={editLead}
-              onSuccess={() => {
-                setShowForm(false);
-                setEditLead(null);
-                queryClient.invalidateQueries({ queryKey: ["broker-leads"] });
-              }}
-            />
-          </DialogContent>
-        </Dialog>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        {[
-          { label: "Total de Leads", value: stats.total, icon: Users, gradient: "from-secondary to-secondary/60", iconColor: "text-foreground" },
-          { label: "Novos", value: stats.novos, icon: TrendingUp, gradient: "from-sky-500/20 to-sky-600/10", iconColor: "text-sky-400" },
-          { label: "Em Negociação", value: stats.emContato, icon: Clock, gradient: "from-amber-500/20 to-amber-600/10", iconColor: "text-amber-400" },
-          { label: "Fechados", value: stats.fechados, icon: UserCheck, gradient: "from-primary/20 to-primary/5", iconColor: "text-primary" },
-        ].map((stat) => (
-          <Card key={stat.label} className="overflow-hidden border-border/40 bg-gradient-to-br transition-all hover:border-border/60">
-            <CardContent className="p-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-body text-xs font-medium uppercase tracking-wider text-muted-foreground">{stat.label}</p>
-                  <p className="mt-2 font-display text-3xl font-bold text-foreground">{stat.value}</p>
-                </div>
-                <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${stat.gradient}`}>
-                  <stat.icon className={`h-6 w-6 ${stat.iconColor}`} />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+      {/* Tab Navigation */}
+      <div className="flex items-center gap-1 rounded-xl border border-border/30 bg-card/50 p-1">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-body text-sm font-medium transition-all ${
+              activeTab === tab.id
+                ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-md shadow-primary/20"
+                : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+            }`}
+          >
+            <tab.icon className="h-4 w-4" />
+            {tab.label}
+          </button>
         ))}
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Buscar por nome, email ou telefone..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="border-border/40 bg-card/50 pl-10 backdrop-blur-sm transition-colors focus:border-primary/50"
-          />
-        </div>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-full border-border/40 bg-card/50 sm:w-48">
-            <Filter className="mr-2 h-4 w-4 text-muted-foreground" />
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos os status</SelectItem>
-            {Object.entries(statusLabels).map(([k, v]) => (
-              <SelectItem key={k} value={k}>{v}</SelectItem>
+      {/* Tab Content */}
+      {activeTab === "leads" && (
+        <div className="space-y-6">
+          {/* Stats */}
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+            {[
+              { label: "Total de Leads", value: stats.total, icon: Users, gradient: "from-secondary to-secondary/60", iconColor: "text-foreground" },
+              { label: "Novos", value: stats.novos, icon: TrendingUp, gradient: "from-sky-500/20 to-sky-600/10", iconColor: "text-sky-400" },
+              { label: "Em Negociação", value: stats.emContato, icon: Clock, gradient: "from-amber-500/20 to-amber-600/10", iconColor: "text-amber-400" },
+              { label: "Fechados", value: stats.fechados, icon: UserCheck, gradient: "from-primary/20 to-primary/5", iconColor: "text-primary" },
+            ].map((stat) => (
+              <Card key={stat.label} className="overflow-hidden border-border/40 transition-all hover:border-border/60">
+                <CardContent className="p-5">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-body text-xs font-medium uppercase tracking-wider text-muted-foreground">{stat.label}</p>
+                      <p className="mt-2 font-display text-3xl font-bold text-foreground">{stat.value}</p>
+                    </div>
+                    <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${stat.gradient}`}>
+                      <stat.icon className={`h-6 w-6 ${stat.iconColor}`} />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
-          </SelectContent>
-        </Select>
-      </div>
+          </div>
 
-      {/* Lead List */}
-      {isLoading ? (
-        <div className="flex flex-col items-center gap-3 py-16">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-          <p className="text-sm text-muted-foreground">Carregando leads...</p>
-        </div>
-      ) : filtered.length === 0 ? (
-        <Card className="border-dashed border-border/40">
-          <CardContent className="flex flex-col items-center gap-4 py-16">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-secondary">
-              <UserX className="h-8 w-8 text-muted-foreground/40" />
+          {/* Filters + New Lead */}
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input placeholder="Buscar por nome, email ou telefone..." value={search} onChange={(e) => setSearch(e.target.value)} className="border-border/40 bg-card/50 pl-10" />
             </div>
-            <div className="text-center">
-              <p className="font-display text-lg font-semibold text-foreground">Nenhum lead encontrado</p>
-              <p className="mt-1 text-sm text-muted-foreground">Cadastre seu primeiro lead clicando no botão acima</p>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-full border-border/40 bg-card/50 sm:w-48">
+                <Filter className="mr-2 h-4 w-4 text-muted-foreground" /><SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os status</SelectItem>
+                {Object.entries(statusLabels).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Dialog open={showForm} onOpenChange={(open) => { setShowForm(open); if (!open) setEditLead(null); }}>
+              <DialogTrigger asChild>
+                <Button className="gap-2 bg-gradient-to-r from-primary to-primary/80 font-semibold shadow-lg shadow-primary/20">
+                  <Plus className="h-4 w-4" /> Novo Lead
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto border-border/50 bg-card">
+                <DialogHeader><DialogTitle className="font-display text-xl">{editLead ? "Editar Lead" : "Novo Lead"}</DialogTitle></DialogHeader>
+                <LeadForm brokerId={brokerId} isAdmin={role === "admin"} lead={editLead} onSuccess={() => { setShowForm(false); setEditLead(null); queryClient.invalidateQueries({ queryKey: ["broker-leads"] }); }} />
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          {/* Lead List */}
+          {isLoading ? (
+            <div className="flex flex-col items-center gap-3 py-16">
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+              <p className="text-sm text-muted-foreground">Carregando leads...</p>
             </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-2">
-          {filtered.map((lead: any) => (
-            <Card
-              key={lead.id}
-              className="group cursor-pointer border-border/30 bg-card/80 backdrop-blur-sm transition-all hover:border-primary/30 hover:bg-card hover:shadow-lg hover:shadow-primary/5"
-              onClick={() => setSelectedLead(lead.id)}
-            >
-              <CardContent className="flex items-center gap-4 p-4">
-                {/* Avatar */}
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/30 to-primary/10 font-display text-lg font-bold text-primary transition-transform group-hover:scale-105">
-                  {lead.name.charAt(0).toUpperCase()}
-                </div>
-
-                {/* Info */}
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2.5">
-                    <p className="truncate font-display text-sm font-semibold text-foreground">{lead.name}</p>
-                    <Badge variant="outline" className={`text-[10px] font-medium ${statusColors[lead.status]}`}>
-                      {statusLabels[lead.status]}
-                    </Badge>
-                    <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-                      <span className={`inline-block h-1.5 w-1.5 rounded-full ${priorityDots[lead.priority]}`} />
-                      {priorityLabels[lead.priority]}
-                    </span>
-                  </div>
-                  <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                    {lead.phone && (
-                      <span className="flex items-center gap-1.5">
-                        <Phone className="h-3 w-3 text-primary/60" />{lead.phone}
-                      </span>
-                    )}
-                    {lead.email && (
-                      <span className="flex items-center gap-1.5">
-                        <Mail className="h-3 w-3 text-primary/60" />{lead.email}
-                      </span>
-                    )}
-                    {lead.interest_value && (
-                      <span className="flex items-center gap-1.5 font-medium text-primary/80">
-                        <DollarSign className="h-3 w-3" />{formatCurrency(lead.interest_value)}
-                      </span>
-                    )}
-                    {lead.preferred_neighborhoods?.length > 0 && (
-                      <span className="flex items-center gap-1.5">
-                        <MapPin className="h-3 w-3 text-primary/60" />{lead.preferred_neighborhoods.slice(0, 2).join(", ")}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex shrink-0 gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-primary"
-                    onClick={(e) => { e.stopPropagation(); setSelectedLead(lead.id); }}
-                    title="Ver detalhes"
-                  >
-                    <Eye className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-primary"
-                    onClick={(e) => { e.stopPropagation(); setEditLead(lead); setShowForm(true); }}
-                    title="Editar"
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                    onClick={(e) => { e.stopPropagation(); if (confirm("Excluir este lead?")) deleteMutation.mutate(lead.id); }}
-                    title="Excluir"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+          ) : filtered.length === 0 ? (
+            <Card className="border-dashed border-border/40">
+              <CardContent className="flex flex-col items-center gap-4 py-16">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-secondary"><UserX className="h-8 w-8 text-muted-foreground/40" /></div>
+                <div className="text-center">
+                  <p className="font-display text-lg font-semibold text-foreground">Nenhum lead encontrado</p>
+                  <p className="mt-1 text-sm text-muted-foreground">Cadastre seu primeiro lead clicando no botão acima</p>
                 </div>
               </CardContent>
             </Card>
-          ))}
+          ) : (
+            <div className="space-y-2">
+              {filtered.map((lead: any) => (
+                <Card key={lead.id} className="group cursor-pointer border-border/30 bg-card/80 backdrop-blur-sm transition-all hover:border-primary/30 hover:bg-card hover:shadow-lg hover:shadow-primary/5" onClick={() => setSelectedLead(lead.id)}>
+                  <CardContent className="flex items-center gap-4 p-4">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/30 to-primary/10 font-display text-lg font-bold text-primary transition-transform group-hover:scale-105">
+                      {lead.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2.5">
+                        <p className="truncate font-display text-sm font-semibold text-foreground">{lead.name}</p>
+                        <Badge variant="outline" className={`text-[10px] font-medium ${statusColors[lead.status]}`}>{statusLabels[lead.status]}</Badge>
+                        <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                          <span className={`inline-block h-1.5 w-1.5 rounded-full ${priorityDots[lead.priority]}`} />
+                          {priorityLabels[lead.priority]}
+                        </span>
+                      </div>
+                      <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                        {lead.phone && <span className="flex items-center gap-1.5"><Phone className="h-3 w-3 text-primary/60" />{lead.phone}</span>}
+                        {lead.email && <span className="flex items-center gap-1.5"><Mail className="h-3 w-3 text-primary/60" />{lead.email}</span>}
+                        {lead.interest_value && <span className="flex items-center gap-1.5 font-medium text-primary/80"><DollarSign className="h-3 w-3" />{formatCurrency(lead.interest_value)}</span>}
+                        {lead.preferred_neighborhoods?.length > 0 && <span className="flex items-center gap-1.5"><MapPin className="h-3 w-3 text-primary/60" />{lead.preferred_neighborhoods.slice(0, 2).join(", ")}</span>}
+                      </div>
+                    </div>
+                    <div className="flex shrink-0 gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={(e) => { e.stopPropagation(); setSelectedLead(lead.id); }}><Eye className="h-4 w-4" /></Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={(e) => { e.stopPropagation(); setEditLead(lead); setShowForm(true); }}><Edit className="h-4 w-4" /></Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={(e) => { e.stopPropagation(); if (confirm("Excluir este lead?")) deleteMutation.mutate(lead.id); }}><Trash2 className="h-4 w-4" /></Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       )}
+
+      {activeTab === "tasks" && <TasksTab />}
+      {activeTab === "visits" && <VisitsTab />}
+      {activeTab === "proposals" && <ProposalsTab />}
     </div>
   );
 };
@@ -307,11 +264,7 @@ const LeadForm = ({ brokerId, lead, onSuccess, isAdmin }: { brokerId: string | n
 
   const { data: brokers = [] } = useQuery({
     queryKey: ["brokers-list"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("brokers").select("id, company_name, creci");
-      if (error) throw error;
-      return data;
-    },
+    queryFn: async () => { const { data, error } = await supabase.from("brokers").select("id, company_name, creci"); if (error) throw error; return data; },
     enabled: !!isAdmin,
   });
 
@@ -322,8 +275,8 @@ const LeadForm = ({ brokerId, lead, onSuccess, isAdmin }: { brokerId: string | n
     if (!finalBrokerId) { toast({ title: "Selecione um corretor", variant: "destructive" }); return; }
     setSaving(true);
     const payload = {
-      broker_id: finalBrokerId,
-      name: form.name.trim(), email: form.email.trim() || null, phone: form.phone.trim() || null,
+      broker_id: finalBrokerId, name: form.name.trim(), email: form.email.trim() || null,
+      phone: form.phone.trim() || null,
       interest_value: form.interest_value ? parseFloat(form.interest_value) : null,
       installment_value: form.installment_value ? parseFloat(form.installment_value) : null,
       preferred_neighborhoods: form.preferred_neighborhoods ? form.preferred_neighborhoods.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
@@ -335,18 +288,15 @@ const LeadForm = ({ brokerId, lead, onSuccess, isAdmin }: { brokerId: string | n
       if (lead) {
         const { error } = await supabase.from("broker_leads").update(payload).eq("id", lead.id);
         if (error) throw error;
-        toast({ title: "Lead atualizado com sucesso!" });
+        toast({ title: "Lead atualizado!" });
       } else {
         const { error } = await supabase.from("broker_leads").insert(payload);
         if (error) throw error;
-        toast({ title: "Lead cadastrado com sucesso!" });
+        toast({ title: "Lead cadastrado!" });
       }
       onSuccess();
-    } catch (err: any) {
-      toast({ title: "Erro ao salvar", description: err.message, variant: "destructive" });
-    } finally {
-      setSaving(false);
-    }
+    } catch (err: any) { toast({ title: "Erro", description: err.message, variant: "destructive" }); }
+    finally { setSaving(false); }
   };
 
   const update = (key: string, value: string) => setForm((p) => ({ ...p, [key]: value }));
@@ -358,83 +308,33 @@ const LeadForm = ({ brokerId, lead, onSuccess, isAdmin }: { brokerId: string | n
           <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Corretor *</Label>
           <Select value={selectedBrokerId} onValueChange={setSelectedBrokerId}>
             <SelectTrigger className="border-border/40"><SelectValue placeholder="Selecione o corretor" /></SelectTrigger>
-            <SelectContent>
-              {brokers.map((b: any) => <SelectItem key={b.id} value={b.id}>{b.company_name || b.creci}</SelectItem>)}
-            </SelectContent>
+            <SelectContent>{brokers.map((b: any) => <SelectItem key={b.id} value={b.id}>{b.company_name || b.creci}</SelectItem>)}</SelectContent>
           </Select>
         </div>
       )}
-
       <div className="space-y-1.5">
         <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Nome *</Label>
         <Input value={form.name} onChange={(e) => update("name", e.target.value)} placeholder="Nome completo do lead" className="border-border/40" />
       </div>
-
       <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-1.5">
-          <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Email</Label>
-          <Input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} placeholder="email@exemplo.com" className="border-border/40" />
-        </div>
-        <div className="space-y-1.5">
-          <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Telefone</Label>
-          <Input value={form.phone} onChange={(e) => update("phone", e.target.value)} placeholder="(11) 99999-9999" className="border-border/40" />
-        </div>
+        <div className="space-y-1.5"><Label className="text-xs text-muted-foreground">Email</Label><Input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} placeholder="email@exemplo.com" className="border-border/40" /></div>
+        <div className="space-y-1.5"><Label className="text-xs text-muted-foreground">Telefone</Label><Input value={form.phone} onChange={(e) => update("phone", e.target.value)} placeholder="(11) 99999-9999" className="border-border/40" /></div>
       </div>
-
       <div className="rounded-lg border border-border/30 bg-secondary/30 p-4">
         <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Interesse Financeiro</p>
         <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">Valor de Interesse (R$)</Label>
-            <Input type="number" value={form.interest_value} onChange={(e) => update("interest_value", e.target.value)} placeholder="500.000" className="border-border/40" />
-          </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">Parcelas Desejadas (R$)</Label>
-            <Input type="number" value={form.installment_value} onChange={(e) => update("installment_value", e.target.value)} placeholder="3.000" className="border-border/40" />
-          </div>
+          <div className="space-y-1.5"><Label className="text-xs text-muted-foreground">Valor (R$)</Label><Input type="number" value={form.interest_value} onChange={(e) => update("interest_value", e.target.value)} placeholder="500.000" className="border-border/40" /></div>
+          <div className="space-y-1.5"><Label className="text-xs text-muted-foreground">Parcelas (R$)</Label><Input type="number" value={form.installment_value} onChange={(e) => update("installment_value", e.target.value)} placeholder="3.000" className="border-border/40" /></div>
         </div>
       </div>
-
-      <div className="space-y-1.5">
-        <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Bairros de Preferência</Label>
-        <Input value={form.preferred_neighborhoods} onChange={(e) => update("preferred_neighborhoods", e.target.value)} placeholder="Jardins, Moema, Vila Mariana" className="border-border/40" />
-        <p className="text-[11px] text-muted-foreground/60">Separe os bairros por vírgula</p>
-      </div>
-
-      <div className="space-y-1.5">
-        <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Tipo de Imóvel</Label>
-        <Input value={form.property_type_interest} onChange={(e) => update("property_type_interest", e.target.value)} placeholder="Apartamento 3 quartos, casa com piscina..." className="border-border/40" />
-      </div>
-
+      <div className="space-y-1.5"><Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Bairros</Label><Input value={form.preferred_neighborhoods} onChange={(e) => update("preferred_neighborhoods", e.target.value)} placeholder="Jardins, Moema, Vila Mariana" className="border-border/40" /><p className="text-[11px] text-muted-foreground/60">Separe por vírgula</p></div>
+      <div className="space-y-1.5"><Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Tipo de Imóvel</Label><Input value={form.property_type_interest} onChange={(e) => update("property_type_interest", e.target.value)} placeholder="Apartamento 3 quartos, casa com piscina..." className="border-border/40" /></div>
       <div className="grid grid-cols-3 gap-3">
-        <div className="space-y-1.5">
-          <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Origem</Label>
-          <Select value={form.source} onValueChange={(v) => update("source", v)}>
-            <SelectTrigger className="border-border/40"><SelectValue /></SelectTrigger>
-            <SelectContent>{Object.entries(sourceLabels).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}</SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-1.5">
-          <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Status</Label>
-          <Select value={form.status} onValueChange={(v) => update("status", v)}>
-            <SelectTrigger className="border-border/40"><SelectValue /></SelectTrigger>
-            <SelectContent>{Object.entries(statusLabels).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}</SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-1.5">
-          <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Prioridade</Label>
-          <Select value={form.priority} onValueChange={(v) => update("priority", v)}>
-            <SelectTrigger className="border-border/40"><SelectValue /></SelectTrigger>
-            <SelectContent>{Object.entries(priorityLabels).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}</SelectContent>
-          </Select>
-        </div>
+        <div className="space-y-1.5"><Label className="text-xs text-muted-foreground">Origem</Label><Select value={form.source} onValueChange={(v) => update("source", v)}><SelectTrigger className="border-border/40"><SelectValue /></SelectTrigger><SelectContent>{Object.entries(sourceLabels).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}</SelectContent></Select></div>
+        <div className="space-y-1.5"><Label className="text-xs text-muted-foreground">Status</Label><Select value={form.status} onValueChange={(v) => update("status", v)}><SelectTrigger className="border-border/40"><SelectValue /></SelectTrigger><SelectContent>{Object.entries(statusLabels).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}</SelectContent></Select></div>
+        <div className="space-y-1.5"><Label className="text-xs text-muted-foreground">Prioridade</Label><Select value={form.priority} onValueChange={(v) => update("priority", v)}><SelectTrigger className="border-border/40"><SelectValue /></SelectTrigger><SelectContent>{Object.entries(priorityLabels).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}</SelectContent></Select></div>
       </div>
-
-      <div className="space-y-1.5">
-        <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Observações</Label>
-        <Textarea value={form.notes} onChange={(e) => update("notes", e.target.value)} placeholder="Anotações gerais sobre o lead..." rows={3} className="border-border/40" />
-      </div>
-
+      <div className="space-y-1.5"><Label className="text-xs text-muted-foreground">Observações</Label><Textarea value={form.notes} onChange={(e) => update("notes", e.target.value)} placeholder="Anotações gerais..." rows={3} className="border-border/40" /></div>
       <Button type="submit" disabled={saving} className="w-full bg-gradient-to-r from-primary to-primary/80 font-semibold shadow-lg shadow-primary/20">
         {saving ? "Salvando..." : lead ? "Atualizar Lead" : "Cadastrar Lead"}
       </Button>
