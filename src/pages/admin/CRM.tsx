@@ -113,7 +113,6 @@ const CRM = () => {
               brokerId={brokerId}
               isAdmin={role === "admin"}
               lead={editLead}
-              lead={editLead}
               onSuccess={() => {
                 setShowForm(false);
                 setEditLead(null);
