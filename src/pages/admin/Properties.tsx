@@ -15,6 +15,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Plus, Pencil, Trash2, Eye, EyeOff, Upload, Loader2, X, Images } from "lucide-react";
+import S3Thumbnail from "@/components/S3Thumbnail";
 
 type DbProperty = {
   id: string;
@@ -257,7 +258,7 @@ const Properties = () => {
             <div key={p.id} className="flex items-center justify-between border border-border bg-card p-4">
               <div className="flex items-center gap-4">
                 {p.image_url && (
-                  <img src={p.image_url} alt={p.title} className="h-16 w-24 rounded object-cover" />
+                  <S3Thumbnail url={p.image_url} alt={p.title} />
                 )}
                 <div>
                   <h3 className="font-display text-lg font-semibold text-foreground">{p.title}</h3>
@@ -398,7 +399,7 @@ const Properties = () => {
                 </label>
               </div>
               {form.image_url && (
-                <img src={form.image_url} alt="Preview" className="mt-2 h-20 w-32 rounded border border-border object-cover" />
+                <S3Thumbnail url={form.image_url} alt="Preview" className="mt-2 h-20 w-32 rounded border border-border object-cover" />
               )}
             </div>
 
@@ -415,7 +416,7 @@ const Properties = () => {
                 <div className="flex flex-wrap gap-2 mt-2">
                   {form.images.map((url, idx) => (
                     <div key={idx} className="relative group">
-                      <img src={url} alt={`Galeria ${idx + 1}`} className="h-20 w-28 rounded border border-border object-cover" />
+                      <S3Thumbnail url={url} alt={`Galeria ${idx + 1}`} className="h-20 w-28 rounded border border-border object-cover" />
                       <button
                         type="button"
                         onClick={() => removeGalleryImage(idx)}
