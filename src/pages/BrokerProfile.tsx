@@ -76,6 +76,32 @@ const BrokerProfile = () => {
             </div>
           </div>
           {profile?.bio && <p className="mt-6 font-body text-sm leading-relaxed text-muted-foreground">{profile.bio}</p>}
+
+          {/* Share Actions */}
+          <div className="mt-6 flex flex-wrap items-center gap-2 border-t border-border pt-4">
+            <Button onClick={() => { navigator.clipboard.writeText(profileUrl); setCopied(true); toast({ title: "Link copiado!" }); setTimeout(() => setCopied(false), 2000); }}
+              variant="outline" size="sm" className="font-body text-xs">
+              {copied ? <Check className="mr-1 h-3 w-3" /> : <Copy className="mr-1 h-3 w-3" />}
+              {copied ? "Copiado!" : "Copiar Link"}
+            </Button>
+            <Button onClick={() => navigator.share ? navigator.share({ title: profile?.display_name, url: profileUrl }) : null}
+              variant="outline" size="sm" className="font-body text-xs">
+              <Share2 className="mr-1 h-3 w-3" /> Compartilhar
+            </Button>
+            <Button onClick={() => setShowQr(!showQr)} variant="outline" size="sm" className="font-body text-xs">
+              <QrCode className="mr-1 h-3 w-3" /> QR Code
+            </Button>
+            <Button asChild variant="outline" size="sm" className="font-body text-xs">
+              <Link to={`/corretor/${slug}/cartao`}>Cartão Digital</Link>
+            </Button>
+          </div>
+          {showQr && (
+            <div className="mt-4 flex justify-center">
+              <div className="rounded-xl bg-white p-4">
+                <QRCodeSVG value={profileUrl} size={160} level="M" />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Reviews */}
