@@ -6,7 +6,10 @@ import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import BrokerReviews from "@/components/BrokerReviews";
 import { formatPrice } from "@/data/properties";
-import { ArrowLeft, Phone, Mail, Building2 } from "lucide-react";
+import { ArrowLeft, Phone, Mail, Building2, Copy, Check, Share2, QrCode } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { QRCodeSVG } from "qrcode.react";
+import { useToast } from "@/hooks/use-toast";
 
 const BrokerProfile = () => {
   const { slug } = useParams();
