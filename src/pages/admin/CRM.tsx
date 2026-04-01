@@ -14,12 +14,13 @@ import { toast } from "@/hooks/use-toast";
 import {
   Plus, Search, Phone, Mail, DollarSign, MapPin,
   Trash2, Edit, Eye, Filter, Users, TrendingUp, UserCheck, UserX,
-  Sparkles, Clock, CheckSquare, CalendarDays, FileText
+  Sparkles, Clock, CheckSquare, CalendarDays, FileText, Calendar
 } from "lucide-react";
 import LeadDetail from "@/components/crm/LeadDetail";
 import TasksTab from "@/components/crm/TasksTab";
 import VisitsTab from "@/components/crm/VisitsTab";
 import ProposalsTab from "@/components/crm/ProposalsTab";
+import CalendarTab from "@/components/crm/CalendarTab";
 
 const statusLabels: Record<string, string> = {
   novo: "Novo", em_contato: "Em Contato", qualificado: "Qualificado",
@@ -41,13 +42,14 @@ const sourceLabels: Record<string, string> = {
 };
 const formatCurrency = (v: number | null) => v ? v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "—";
 
-type CRMTab = "leads" | "tasks" | "visits" | "proposals";
+type CRMTab = "leads" | "tasks" | "visits" | "proposals" | "calendar";
 
 const tabs: { id: CRMTab; label: string; icon: any }[] = [
   { id: "leads", label: "Leads", icon: Users },
   { id: "tasks", label: "Tarefas", icon: CheckSquare },
   { id: "visits", label: "Visitas", icon: CalendarDays },
   { id: "proposals", label: "Propostas", icon: FileText },
+  { id: "calendar", label: "Calendário", icon: Calendar },
 ];
 
 const CRM = () => {
@@ -244,6 +246,7 @@ const CRM = () => {
       {activeTab === "tasks" && <TasksTab />}
       {activeTab === "visits" && <VisitsTab />}
       {activeTab === "proposals" && <ProposalsTab />}
+      {activeTab === "calendar" && <CalendarTab />}
     </div>
   );
 };
