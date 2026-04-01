@@ -124,26 +124,75 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
         </button>
       </div>
 
-      <nav className="flex-1 space-y-1 p-4">
-        {filteredNav.map((item) => {
-          const active = location.pathname === item.path;
-          return (
-            <Link
-              key={item.path}
-              to={item.path}
-              onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 rounded px-3 py-2.5 font-body text-sm transition-colors ${
-                active
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-              }`}
-            >
-              <item.icon className="h-4 w-4" />
-              {item.label}
-              {active && <ChevronRight className="ml-auto h-3 w-3" />}
-            </Link>
-          );
-        })}
+      <ScrollArea className="flex-1">
+        <nav className="space-y-1 p-4">
+          {filteredNav.map((item) => {
+            const active = location.pathname === item.path && !item.subItems;
+            const isCrmParent = !!item.subItems;
+            const isCrmActive = isCrmParent && location.pathname.startsWith(item.path);
+
+            if (isCrmParent) {
+              return (
+                <div key={item.path}>
+                  <button
+                    onClick={() => setCrmOpen((o) => !o)}
+                    className={`flex w-full items-center gap-3 rounded px-3 py-2.5 font-body text-sm transition-colors ${
+                      isCrmActive
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    }`}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    {item.label}
+                    <ChevronDown className={`ml-auto h-3.5 w-3.5 transition-transform duration-200 ${crmOpen ? "rotate-180" : ""}`} />
+                  </button>
+                  {crmOpen && (
+                    <div className="ml-4 mt-1 space-y-0.5 border-l border-border/40 pl-3">
+                      {item.subItems!.map((sub) => {
+                        const subActive = location.pathname === item.path && new URLSearchParams(location.search).get("tab") === sub.tab;
+                        const isDefault = sub.tab === "dashboard" && location.pathname === item.path && !new URLSearchParams(location.search).get("tab");
+                        const highlighted = subActive || isDefault;
+                        return (
+                          <Link
+                            key={sub.tab}
+                            to={`${item.path}?tab=${sub.tab}`}
+                            onClick={() => setSidebarOpen(false)}
+                            className={`flex items-center gap-2.5 rounded px-2.5 py-2 font-body text-xs transition-colors ${
+                              highlighted
+                                ? "bg-primary/10 text-primary font-medium"
+                                : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                            }`}
+                          >
+                            <sub.icon className="h-3.5 w-3.5" />
+                            {sub.label}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center gap-3 rounded px-3 py-2.5 font-body text-sm transition-colors ${
+                  active
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                }`}
+              >
+                <item.icon className="h-4 w-4" />
+                {item.label}
+                {active && <ChevronRight className="ml-auto h-3 w-3" />}
+              </Link>
+            );
+          })}
+        </nav>
+      </ScrollArea>
       </nav>
 
       <div className="border-t border-border p-4">
