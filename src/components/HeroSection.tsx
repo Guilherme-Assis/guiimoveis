@@ -52,7 +52,7 @@ const HeroSection = ({ onScrollToListings }: HeroSectionProps) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5 }}
           onClick={onScrollToListings}
-          className="group flex items-center gap-3 bg-gradient-gold px-8 py-4 font-body text-sm font-semibold uppercase tracking-widest text-primary-foreground transition-all hover:shadow-[var(--shadow-gold)] hover:scale-105"
+          className="group flex items-center gap-3 bg-gradient-gold px-6 py-3 sm:px-8 sm:py-4 font-body text-xs sm:text-sm font-semibold uppercase tracking-widest text-primary-foreground transition-all hover:shadow-[var(--shadow-gold)] hover:scale-105"
         >
           <Search className="h-4 w-4" />
           Explorar Imóveis
