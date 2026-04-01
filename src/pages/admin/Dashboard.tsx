@@ -49,7 +49,7 @@ const Dashboard = () => {
         {role === "admin" ? "Visão geral da plataforma" : "Seus imóveis cadastrados"}
       </p>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:gap-6 grid-cols-2 lg:grid-cols-4">
         <StatCard icon={Building2} label="Total de Imóveis" value={stats.total} color="bg-primary/10 text-primary" />
         <StatCard icon={Eye} label="Disponíveis" value={stats.available} color="bg-green-500/10 text-green-500" />
         <StatCard icon={TrendingUp} label="Indisponíveis" value={stats.unavailable} color="bg-destructive/10 text-destructive" />
