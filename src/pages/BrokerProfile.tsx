@@ -22,8 +22,6 @@ const BrokerProfile = () => {
   const [showQr, setShowQr] = useState(false);
 
   const profileUrl = `${window.location.origin}/corretor/${slug}`;
-  const [properties, setProperties] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
