@@ -110,14 +110,14 @@ const CRM = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-end justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/60">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/60">
             <Sparkles className="h-5 w-5 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="font-display text-3xl font-bold tracking-tight text-foreground">CRM</h1>
-            <p className="font-body text-sm text-muted-foreground">Gestão completa de leads, tarefas, visitas e propostas</p>
+            <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-foreground">CRM</h1>
+            <p className="font-body text-xs sm:text-sm text-muted-foreground">Gestão completa de leads, tarefas, visitas e propostas</p>
           </div>
         </div>
       </div>
