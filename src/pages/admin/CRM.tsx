@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -15,11 +16,8 @@ import {
   Plus, Search, Phone, Mail, DollarSign, MapPin,
   Trash2, Edit, Eye, Filter, Users, TrendingUp, UserCheck, UserX,
   Sparkles, Clock, CheckSquare, CalendarDays, FileText, Calendar,
-  BarChart3, Columns3, Download, Award, MessageSquare, ChevronDown
+  BarChart3, Columns3, Download, Award, MessageSquare
 } from "lucide-react";
-import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel,
-} from "@/components/ui/dropdown-menu";
 import LeadDetail from "@/components/crm/LeadDetail";
 import TasksTab from "@/components/crm/TasksTab";
 import VisitsTab from "@/components/crm/VisitsTab";
@@ -54,32 +52,14 @@ const formatCurrency = (v: number | null) => v ? v.toLocaleString("pt-BR", { sty
 
 type CRMTab = "leads" | "tasks" | "visits" | "proposals" | "calendar" | "dashboard" | "kanban" | "reports" | "commissions" | "templates";
 
-const tabGroups = [
-  { label: "Principal", items: [
-    { id: "dashboard" as CRMTab, label: "Dashboard", icon: BarChart3 },
-    { id: "leads" as CRMTab, label: "Leads", icon: Users },
-    { id: "kanban" as CRMTab, label: "Kanban", icon: Columns3 },
-  ]},
-  { label: "Gestão", items: [
-    { id: "tasks" as CRMTab, label: "Tarefas", icon: CheckSquare },
-    { id: "visits" as CRMTab, label: "Visitas", icon: CalendarDays },
-    { id: "proposals" as CRMTab, label: "Propostas", icon: FileText },
-    { id: "calendar" as CRMTab, label: "Calendário", icon: Calendar },
-  ]},
-  { label: "Ferramentas", items: [
-    { id: "reports" as CRMTab, label: "Relatórios", icon: Download },
-    { id: "commissions" as CRMTab, label: "Comissões", icon: Award },
-    { id: "templates" as CRMTab, label: "Templates", icon: MessageSquare },
-  ]},
-];
-
-const allTabs = tabGroups.flatMap(g => g.items);
+const validTabs: CRMTab[] = ["dashboard", "leads", "kanban", "tasks", "visits", "proposals", "calendar", "reports", "commissions", "templates"];
 
 const CRM = () => {
   const { brokerId, role } = useAuth();
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<CRMTab>("dashboard");
-  const activeTabData = allTabs.find(t => t.id === activeTab) || allTabs[0];
+  const [searchParams] = useSearchParams();
+  const tabParam = searchParams.get("tab") as CRMTab | null;
+  const activeTab: CRMTab = tabParam && validTabs.includes(tabParam) ? tabParam : "dashboard";
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [showForm, setShowForm] = useState(false);
@@ -141,34 +121,8 @@ const CRM = () => {
         </div>
       </div>
 
-      {/* Tab Navigation - Dropdown Submenu */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="gap-2 border-border/40 bg-card/50 font-body text-sm">
-            <activeTabData.icon className="h-4 w-4 text-primary" />
-            {activeTabData.label}
-            <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-52">
-          {tabGroups.map((group, gi) => (
-            <div key={group.label}>
-              {gi > 0 && <DropdownMenuSeparator />}
-              <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-muted-foreground">{group.label}</DropdownMenuLabel>
-              {group.items.map((tab) => (
-                <DropdownMenuItem
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`gap-2 cursor-pointer ${activeTab === tab.id ? "bg-primary/10 text-primary font-medium" : ""}`}
-                >
-                  <tab.icon className="h-4 w-4" />
-                  {tab.label}
-                </DropdownMenuItem>
-              ))}
-            </div>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+
+
 
       {/* Tab Content */}
       {activeTab === "leads" && (
