@@ -286,8 +286,6 @@ const MessageTemplatesTab = () => {
                             {stageLabels[template.stage] || template.stage}
                           </Badge>
                         )}
-                          </Badge>
-                        )}
                       </div>
                     </div>
                   </div>
