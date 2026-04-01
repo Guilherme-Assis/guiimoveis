@@ -22,6 +22,7 @@ import Brokers from "./pages/admin/Brokers";
 import Profile from "./pages/admin/Profile";
 import BlogAdmin from "./pages/admin/BlogAdmin";
 import { ReactNode } from "react";
+import PropertyChatWidget from "./components/PropertyChatWidget";
 
 const queryClient = new QueryClient();
 
