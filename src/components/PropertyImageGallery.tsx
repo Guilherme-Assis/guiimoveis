@@ -37,6 +37,7 @@ const PropertyImageGallery = ({ mainImage, images, title }: PropertyImageGallery
           src={resolvedUrls[current]}
           alt={`${title} - Foto ${current + 1}`}
           className="h-full w-full object-cover transition-opacity duration-300"
+          loading="lazy"
           width={1920}
           height={1080}
         />

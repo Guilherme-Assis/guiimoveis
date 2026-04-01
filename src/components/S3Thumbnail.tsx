@@ -8,7 +8,7 @@ interface S3ThumbnailProps {
 
 const S3Thumbnail = ({ url, alt, className = "h-16 w-24 rounded object-cover" }: S3ThumbnailProps) => {
   const resolved = useS3Image(url);
-  return <img src={resolved} alt={alt} className={className} />;
+  return <img src={resolved} alt={alt} className={className} loading="lazy" />;
 };
 
 export default S3Thumbnail;
