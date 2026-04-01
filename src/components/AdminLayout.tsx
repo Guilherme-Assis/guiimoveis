@@ -193,7 +193,6 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
           })}
         </nav>
       </ScrollArea>
-      </nav>
 
       <div className="border-t border-border p-4">
         <div className="mb-3 flex items-center gap-3 px-3">
