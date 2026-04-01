@@ -74,7 +74,6 @@ const tabGroups = [
 ];
 
 const allTabs = tabGroups.flatMap(g => g.items);
-const activeTabData = allTabs.find(t => t.id === activeTab) || allTabs[0];
 
 const CRM = () => {
   const { brokerId, role } = useAuth();
