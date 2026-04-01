@@ -11,6 +11,7 @@ interface PropertyCardProps {
 }
 
 const PropertyCard = ({ property, index }: PropertyCardProps) => {
+  const resolvedImage = useS3Image(property.image);
   const statusLabels: Record<string, string> = {
     venda: "Venda",
     aluguel: "Aluguel",
