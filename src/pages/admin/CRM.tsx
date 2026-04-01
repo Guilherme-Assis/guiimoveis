@@ -42,13 +42,14 @@ const sourceLabels: Record<string, string> = {
 };
 const formatCurrency = (v: number | null) => v ? v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "—";
 
-type CRMTab = "leads" | "tasks" | "visits" | "proposals";
+type CRMTab = "leads" | "tasks" | "visits" | "proposals" | "calendar";
 
 const tabs: { id: CRMTab; label: string; icon: any }[] = [
   { id: "leads", label: "Leads", icon: Users },
   { id: "tasks", label: "Tarefas", icon: CheckSquare },
   { id: "visits", label: "Visitas", icon: CalendarDays },
   { id: "proposals", label: "Propostas", icon: FileText },
+  { id: "calendar", label: "Calendário", icon: Calendar },
 ];
 
 const CRM = () => {
