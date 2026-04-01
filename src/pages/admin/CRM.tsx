@@ -79,6 +79,7 @@ const CRM = () => {
   const { brokerId, role } = useAuth();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<CRMTab>("dashboard");
+  const activeTabData = allTabs.find(t => t.id === activeTab) || allTabs[0];
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [showForm, setShowForm] = useState(false);
