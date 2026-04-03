@@ -23,6 +23,7 @@ const MapSearch = lazy(() => import("./pages/MapSearch"));
 const CityProperties = lazy(() => import("./pages/CityProperties"));
 const Lancamentos = lazy(() => import("./pages/Lancamentos"));
 const Compare = lazy(() => import("./pages/Compare"));
+const ApiDocs = lazy(() => import("./pages/ApiDocs"));
 const AdminLayout = lazy(() => import("./components/AdminLayout"));
 const Dashboard = lazy(() => import("./pages/admin/Dashboard"));
 const Properties = lazy(() => import("./pages/admin/Properties"));
@@ -76,6 +77,7 @@ const App = () => (
                 <Route path="/imoveis/:citySlug" element={<CityProperties />} />
                 <Route path="/lancamentos" element={<Lancamentos />} />
                 <Route path="/comparar" element={<Compare />} />
+                <Route path="/api-docs" element={<ApiDocs />} />
                 <Route path="/admin" element={<ProtectedRoute><AdminLayout><Dashboard /></AdminLayout></ProtectedRoute>} />
                 <Route path="/admin/properties" element={<ProtectedRoute><AdminLayout><Properties /></AdminLayout></ProtectedRoute>} />
                 <Route path="/admin/brokers" element={<ProtectedRoute allowedRoles={["admin"]}><AdminLayout><Brokers /></AdminLayout></ProtectedRoute>} />
