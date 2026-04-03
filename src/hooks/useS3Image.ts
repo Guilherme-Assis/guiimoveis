@@ -37,7 +37,7 @@ async function flushBatch() {
     const urls = data?.urls as Record<string, string> | undefined;
     keys.forEach((k) => {
       const resolved = urls?.[k] || k;
-      cache.set(k, resolved);
+      cache.set(k, { url: resolved, expiry: Date.now() + CACHE_TTL });
       notifyListeners(k);
     });
   } catch (err) {
