@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Bed, Bath, Car, Maximize, MapPin, Check, Phone, Mail, PawPrint, Sofa, CalendarDays, FileText } from "lucide-react";
 import { formatPrice } from "@/data/properties";
@@ -12,6 +12,10 @@ import VirtualTourViewer from "@/components/VirtualTourViewer";
 import FavoriteButton from "@/components/FavoriteButton";
 import PropertyLocationMap from "@/components/PropertyLocationMap";
 import PropertyImageGallery from "@/components/PropertyImageGallery";
+import SocialShare from "@/components/SocialShare";
+import NeighborhoodRating from "@/components/NeighborhoodRating";
+import FloorPlanGallery from "@/components/FloorPlanGallery";
+import SEOHead from "@/components/SEOHead";
 
 const PropertyDetail = () => {
   const { slug } = useParams();
@@ -27,6 +31,36 @@ const PropertyDetail = () => {
     };
     load();
   }, [slug]);
+
+  const jsonLd = useMemo(() => {
+    if (!property) return undefined;
+    const isRental = property.status === "aluguel";
+    const price = isRental && Number(property.rental_price) > 0 ? Number(property.rental_price) : Number(property.price);
+    return {
+      "@context": "https://schema.org",
+      "@type": "RealEstateListing",
+      name: property.title,
+      description: property.description || "",
+      url: window.location.href,
+      image: property.image_url || "",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: property.location,
+        addressLocality: property.city,
+        addressRegion: property.state,
+        addressCountry: "BR",
+      },
+      offers: {
+        "@type": "Offer",
+        price,
+        priceCurrency: "BRL",
+        availability: "https://schema.org/InStock",
+      },
+      numberOfRooms: property.bedrooms,
+      numberOfBathroomsTotal: property.bathrooms,
+      floorSize: { "@type": "QuantitativeValue", value: Number(property.area), unitCode: "MTK" },
+    };
+  }, [property]);
 
   if (loading) {
     return (
@@ -62,8 +96,20 @@ const PropertyDetail = () => {
   const iptu = Number(property.iptu) || 0;
   const displayPrice = isRental && rentalPrice > 0 ? rentalPrice : Number(property.price);
 
+  // Detect floor plan images (images that contain "planta" in the URL or last images if more than 4)
+  const allImages = property.images || [];
+  const floorPlans = allImages.filter((img: string) => img.toLowerCase().includes("planta") || img.toLowerCase().includes("floor"));
+
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title={property.title}
+        description={`${typeLabels[property.type]} em ${property.location}, ${property.city} - ${property.state}. ${property.bedrooms} quartos, ${property.area}m². ${formatPrice(displayPrice)}${isRental ? "/mês" : ""}`}
+        image={property.image_url}
+        url={window.location.href}
+        type="product"
+        jsonLd={jsonLd}
+      />
       <Header />
 
       <PropertyImageGallery
@@ -98,7 +144,14 @@ const PropertyDetail = () => {
                     <PawPrint className="h-3 w-3" /> Aceita Pets
                   </span>
                 )}
-                <FavoriteButton propertyId={property.id} size="md" className="ml-auto" />
+                <div className="ml-auto flex items-center gap-2">
+                  <SocialShare
+                    title={property.title}
+                    price={`${formatPrice(displayPrice)}${isRental ? "/mês" : ""}`}
+                    location={`${property.location}, ${property.city}`}
+                  />
+                  <FavoriteButton propertyId={property.id} size="md" />
+                </div>
               </div>
 
               <h1 className="mb-3 font-display text-3xl font-bold text-foreground md:text-4xl lg:text-5xl">{property.title}</h1>
@@ -212,6 +265,12 @@ const PropertyDetail = () => {
                 </div>
               )}
 
+              {/* Floor Plans */}
+              <FloorPlanGallery floorPlans={floorPlans} title={property.title} />
+
+              {/* Neighborhood Rating */}
+              <NeighborhoodRating neighborhood={property.location} city={property.city} />
+
               {/* Virtual Tour */}
               {property.virtual_tour_url && (
                 <div className="mb-10">
@@ -236,7 +295,7 @@ const PropertyDetail = () => {
               <div className="sticky top-24 space-y-6">
                 <div className="border border-border bg-card p-8">
                   <h3 className="mb-2 font-display text-xl font-semibold text-foreground">
-                    {isRental ? "Agende uma Visita" : "Agende uma Visita"}
+                    Agende uma Visita
                   </h3>
                   <p className="mb-6 font-body text-sm text-muted-foreground">
                     Entre em contato com nossos consultores especializados.
