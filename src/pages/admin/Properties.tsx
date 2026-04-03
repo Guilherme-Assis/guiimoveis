@@ -441,8 +441,49 @@ const Properties = () => {
               <p className="font-body text-xs text-muted-foreground">{form.images.length} foto(s) na galeria</p>
             </div>
 
-            <div className="space-y-2">
-              <Label className="font-body text-sm">Descrição</Label>
+            {/* Rental-specific fields */}
+            {form.status === "aluguel" && (
+              <>
+                <div className="luxury-divider" />
+                <p className="font-display text-sm font-semibold text-primary uppercase tracking-wider">Dados de Aluguel</p>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label className="font-body text-sm">Aluguel (R$/mês)</Label>
+                    <Input type="number" value={form.rental_price} onChange={(e) => setForm({ ...form, rental_price: Number(e.target.value) })} className="border-border bg-secondary" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="font-body text-sm">Condomínio (R$)</Label>
+                    <Input type="number" value={form.condominium_fee} onChange={(e) => setForm({ ...form, condominium_fee: Number(e.target.value) })} className="border-border bg-secondary" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="font-body text-sm">IPTU (R$/mês)</Label>
+                    <Input type="number" value={form.iptu} onChange={(e) => setForm({ ...form, iptu: Number(e.target.value) })} className="border-border bg-secondary" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label className="font-body text-sm">Contrato Mín. (meses)</Label>
+                    <Input type="number" value={form.min_contract_months} onChange={(e) => setForm({ ...form, min_contract_months: Number(e.target.value) })} className="border-border bg-secondary" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="font-body text-sm">Disponível a partir de</Label>
+                    <Input type="date" value={form.available_from} onChange={(e) => setForm({ ...form, available_from: e.target.value })} className="border-border bg-secondary" />
+                  </div>
+                </div>
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-3">
+                    <Switch checked={form.accepts_pets} onCheckedChange={(v) => setForm({ ...form, accepts_pets: v })} />
+                    <Label className="font-body text-sm">Aceita Pets</Label>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Switch checked={form.furnished} onCheckedChange={(v) => setForm({ ...form, furnished: v })} />
+                    <Label className="font-body text-sm">Mobiliado</Label>
+                  </div>
+                </div>
+              </>
+            )}
+
+
               <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={4} className="border-border bg-secondary" />
             </div>
 
