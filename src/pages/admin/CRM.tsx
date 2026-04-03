@@ -29,6 +29,7 @@ import KanbanTab from "@/components/crm/KanbanTab";
 import ReportsTab from "@/components/crm/ReportsTab";
 import CommissionsTab from "@/components/crm/CommissionsTab";
 import MessageTemplatesTab from "@/components/crm/MessageTemplatesTab";
+import ContractsTab from "@/components/crm/ContractsTab";
 
 const statusLabels: Record<string, string> = {
   novo: "Novo", em_contato: "Em Contato", qualificado: "Qualificado",
@@ -50,9 +51,9 @@ const sourceLabels: Record<string, string> = {
 };
 const formatCurrency = (v: number | null) => v ? v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "—";
 
-type CRMTab = "leads" | "tasks" | "visits" | "proposals" | "calendar" | "dashboard" | "kanban" | "reports" | "commissions" | "templates";
+type CRMTab = "leads" | "tasks" | "visits" | "proposals" | "calendar" | "dashboard" | "kanban" | "reports" | "commissions" | "templates" | "contracts";
 
-const validTabs: CRMTab[] = ["dashboard", "leads", "kanban", "tasks", "visits", "proposals", "calendar", "reports", "commissions", "templates"];
+const validTabs: CRMTab[] = ["dashboard", "leads", "kanban", "tasks", "visits", "proposals", "calendar", "reports", "commissions", "templates", "contracts"];
 
 const CRM = () => {
   const { brokerId, role } = useAuth();
@@ -240,6 +241,7 @@ const CRM = () => {
       {activeTab === "reports" && <ReportsTab />}
       {activeTab === "commissions" && <CommissionsTab />}
       {activeTab === "templates" && <MessageTemplatesTab />}
+      {activeTab === "contracts" && <ContractsTab />}
     </div>
   );
 };
