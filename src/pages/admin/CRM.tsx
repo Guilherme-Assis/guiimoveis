@@ -52,9 +52,9 @@ const sourceLabels: Record<string, string> = {
 };
 const formatCurrency = (v: number | null) => v ? v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "—";
 
-type CRMTab = "leads" | "tasks" | "visits" | "proposals" | "calendar" | "dashboard" | "kanban" | "reports" | "commissions" | "templates" | "contracts";
+type CRMTab = "leads" | "tasks" | "visits" | "proposals" | "calendar" | "dashboard" | "kanban" | "reports" | "commissions" | "templates" | "contracts" | "performance";
 
-const validTabs: CRMTab[] = ["dashboard", "leads", "kanban", "tasks", "visits", "proposals", "calendar", "reports", "commissions", "templates", "contracts"];
+const validTabs: CRMTab[] = ["dashboard", "leads", "kanban", "tasks", "visits", "proposals", "calendar", "reports", "commissions", "templates", "contracts", "performance"];
 
 const CRM = () => {
   const { brokerId, role } = useAuth();
