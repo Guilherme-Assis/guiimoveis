@@ -483,7 +483,8 @@ const Properties = () => {
               </>
             )}
 
-
+            <div className="space-y-2">
+              <Label className="font-body text-sm">Descrição</Label>
               <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={4} className="border-border bg-secondary" />
             </div>
 
