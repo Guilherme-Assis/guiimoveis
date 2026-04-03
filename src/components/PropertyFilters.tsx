@@ -16,6 +16,8 @@ export interface FilterState {
   sortBy: string;
   amenities: string[];
   neighborhood: string;
+  acceptsPets: string;
+  furnished: string;
 }
 
 export const defaultFilters: FilterState = {
@@ -31,6 +33,8 @@ export const defaultFilters: FilterState = {
   sortBy: "relevance",
   amenities: [],
   neighborhood: "",
+  acceptsPets: "",
+  furnished: "",
 };
 
 interface PropertyFiltersProps {
@@ -42,7 +46,7 @@ interface PropertyFiltersProps {
   availableNeighborhoods?: string[];
 }
 
-const priceOptions = [
+const salePriceOptions = [
   { value: "", label: "Qualquer" },
   { value: "200000", label: "R$ 200K" },
   { value: "500000", label: "R$ 500K" },
@@ -52,6 +56,19 @@ const priceOptions = [
   { value: "10000000", label: "R$ 10M" },
   { value: "20000000", label: "R$ 20M" },
   { value: "50000000", label: "R$ 50M" },
+];
+
+const rentalPriceOptions = [
+  { value: "", label: "Qualquer" },
+  { value: "1000", label: "R$ 1.000" },
+  { value: "2000", label: "R$ 2.000" },
+  { value: "3000", label: "R$ 3.000" },
+  { value: "5000", label: "R$ 5.000" },
+  { value: "8000", label: "R$ 8.000" },
+  { value: "10000", label: "R$ 10.000" },
+  { value: "15000", label: "R$ 15.000" },
+  { value: "25000", label: "R$ 25.000" },
+  { value: "50000", label: "R$ 50.000" },
 ];
 
 const bedroomOptions = [
@@ -71,6 +88,12 @@ const sortOptions = [
   { value: "price-desc", label: "Maior Preço" },
   { value: "area-desc", label: "Maior Área" },
   { value: "bedrooms-desc", label: "Mais Quartos" },
+];
+
+const yesNoOptions = [
+  { value: "", label: "Todos" },
+  { value: "true", label: "Sim" },
+  { value: "false", label: "Não" },
 ];
 
 const SelectField = ({
@@ -126,6 +149,9 @@ const PropertyFilters = ({
       : [...current, amenity];
     onChange({ ...filters, amenities: updated });
   };
+
+  const isRentalFilter = filters.status === "aluguel";
+  const priceOptions = isRentalFilter ? rentalPriceOptions : salePriceOptions;
 
   const activeCount = Object.entries(filters).filter(
     ([key, val]) => {
@@ -229,13 +255,13 @@ const PropertyFilters = ({
                   options={bedroomOptions}
                 />
                 <SelectField
-                  label="Preço Mínimo"
+                  label={isRentalFilter ? "Aluguel Mínimo" : "Preço Mínimo"}
                   value={filters.minPrice}
                   onChange={(v) => update("minPrice", v)}
                   options={priceOptions}
                 />
                 <SelectField
-                  label="Preço Máximo"
+                  label={isRentalFilter ? "Aluguel Máximo" : "Preço Máximo"}
                   value={filters.maxPrice}
                   onChange={(v) => update("maxPrice", v)}
                   options={priceOptions}
@@ -277,6 +303,24 @@ const PropertyFilters = ({
                   />
                 )}
               </div>
+
+              {/* Rental-specific filters */}
+              {isRentalFilter && (
+                <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-5">
+                  <SelectField
+                    label="Aceita Pets"
+                    value={filters.acceptsPets}
+                    onChange={(v) => update("acceptsPets", v)}
+                    options={yesNoOptions}
+                  />
+                  <SelectField
+                    label="Mobiliado"
+                    value={filters.furnished}
+                    onChange={(v) => update("furnished", v)}
+                    options={yesNoOptions}
+                  />
+                </div>
+              )}
 
               {/* Amenities Filter */}
               <div className="mt-4 pb-2">

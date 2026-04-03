@@ -1,12 +1,13 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Bed, Bath, Car, Maximize, MapPin, Check, Phone, Mail } from "lucide-react";
+import { ArrowLeft, Bed, Bath, Car, Maximize, MapPin, Check, Phone, Mail, PawPrint, Sofa, CalendarDays, FileText } from "lucide-react";
 import { formatPrice } from "@/data/properties";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MortgageCalculator from "@/components/MortgageCalculator";
+import RentalCostCalculator from "@/components/RentalCostCalculator";
 import VirtualTourViewer from "@/components/VirtualTourViewer";
 import FavoriteButton from "@/components/FavoriteButton";
 import PropertyLocationMap from "@/components/PropertyLocationMap";
@@ -55,6 +56,12 @@ const PropertyDetail = () => {
     casa_condominio: "Casa em Condomínio", sitio_chacara: "Sítio / Chácara",
   };
 
+  const isRental = property.status === "aluguel";
+  const rentalPrice = Number(property.rental_price) || 0;
+  const condominiumFee = Number(property.condominium_fee) || 0;
+  const iptu = Number(property.iptu) || 0;
+  const displayPrice = isRental && rentalPrice > 0 ? rentalPrice : Number(property.price);
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -81,6 +88,16 @@ const PropertyDetail = () => {
                 <span className="border border-border px-3 py-1 font-body text-xs uppercase tracking-wider text-muted-foreground">
                   {typeLabels[property.type]}
                 </span>
+                {isRental && property.furnished && (
+                  <span className="flex items-center gap-1 border border-primary/30 bg-primary/10 px-3 py-1 font-body text-xs uppercase tracking-wider text-primary">
+                    <Sofa className="h-3 w-3" /> Mobiliado
+                  </span>
+                )}
+                {isRental && property.accepts_pets && (
+                  <span className="flex items-center gap-1 border border-green-500/30 bg-green-500/10 px-3 py-1 font-body text-xs uppercase tracking-wider text-green-400">
+                    <PawPrint className="h-3 w-3" /> Aceita Pets
+                  </span>
+                )}
                 <FavoriteButton propertyId={property.id} size="md" className="ml-auto" />
               </div>
 
@@ -91,7 +108,41 @@ const PropertyDetail = () => {
                 <span className="font-body text-base">{property.location}, {property.city} - {property.state}</span>
               </div>
 
-              <p className="font-display text-3xl font-semibold text-gradient-gold md:text-4xl">{formatPrice(Number(property.price))}</p>
+              <div className="flex flex-wrap items-baseline gap-3">
+                <p className="font-display text-3xl font-semibold text-gradient-gold md:text-4xl">
+                  {formatPrice(displayPrice)}
+                  {isRental && <span className="text-lg text-muted-foreground">/mês</span>}
+                </p>
+                {isRental && condominiumFee > 0 && (
+                  <span className="font-body text-sm text-muted-foreground">
+                    + {formatPrice(condominiumFee)} cond.
+                  </span>
+                )}
+              </div>
+
+              {/* Rental details section */}
+              {isRental && (
+                <div className="my-6 flex flex-wrap gap-4 rounded border border-border bg-secondary/30 p-4">
+                  {property.min_contract_months > 0 && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <FileText className="h-4 w-4 text-primary" />
+                      <span>Contrato mín. <strong className="text-foreground">{property.min_contract_months} meses</strong></span>
+                    </div>
+                  )}
+                  {iptu > 0 && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CalendarDays className="h-4 w-4 text-primary" />
+                      <span>IPTU <strong className="text-foreground">{formatPrice(iptu)}/mês</strong></span>
+                    </div>
+                  )}
+                  {property.available_from && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CalendarDays className="h-4 w-4 text-primary" />
+                      <span>Disponível a partir de <strong className="text-foreground">{new Date(property.available_from).toLocaleDateString("pt-BR")}</strong></span>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div className="my-8 flex flex-wrap gap-6 border-y border-border py-6">
                 {property.bedrooms > 0 && (
@@ -184,7 +235,9 @@ const PropertyDetail = () => {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="space-y-6">
               <div className="sticky top-24 space-y-6">
                 <div className="border border-border bg-card p-8">
-                  <h3 className="mb-2 font-display text-xl font-semibold text-foreground">Agende uma Visita</h3>
+                  <h3 className="mb-2 font-display text-xl font-semibold text-foreground">
+                    {isRental ? "Agende uma Visita" : "Agende uma Visita"}
+                  </h3>
                   <p className="mb-6 font-body text-sm text-muted-foreground">
                     Entre em contato com nossos consultores especializados.
                   </p>
@@ -200,8 +253,16 @@ const PropertyDetail = () => {
                   <p className="font-body text-xs text-center text-muted-foreground">Atendimento exclusivo e personalizado</p>
                 </div>
 
-                {/* Mortgage Calculator */}
-                <MortgageCalculator propertyPrice={Number(property.price)} />
+                {/* Show Rental Cost Calculator for rentals, Mortgage Calculator for sales */}
+                {isRental ? (
+                  <RentalCostCalculator
+                    rentalPrice={rentalPrice > 0 ? rentalPrice : displayPrice}
+                    condominiumFee={condominiumFee}
+                    iptu={iptu}
+                  />
+                ) : (
+                  <MortgageCalculator propertyPrice={Number(property.price)} />
+                )}
               </div>
             </motion.div>
           </div>

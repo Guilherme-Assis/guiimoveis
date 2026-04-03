@@ -47,6 +47,9 @@ const emptyProperty = {
   area: 0, land_area: 0, description: "",
   features: [] as string[], image_url: "", images: [] as string[], is_highlight: false, slug: "",
   latitude: "" as string | number, longitude: "" as string | number, virtual_tour_url: "",
+  rental_price: 0, condominium_fee: 0, iptu: 0,
+  min_contract_months: 12, accepts_pets: false, furnished: false,
+  available_from: "",
 };
 
 const Properties = () => {
@@ -91,6 +94,13 @@ const Properties = () => {
       is_highlight: p.is_highlight, slug: p.slug || "",
       latitude: (p as any).latitude || "", longitude: (p as any).longitude || "",
       virtual_tour_url: (p as any).virtual_tour_url || "",
+      rental_price: (p as any).rental_price || 0,
+      condominium_fee: (p as any).condominium_fee || 0,
+      iptu: (p as any).iptu || 0,
+      min_contract_months: (p as any).min_contract_months || 12,
+      accepts_pets: (p as any).accepts_pets || false,
+      furnished: (p as any).furnished || false,
+      available_from: (p as any).available_from || "",
     });
     setFeaturesInput((p.features || []).join(", "));
     setDialogOpen(true);
@@ -197,6 +207,7 @@ const Properties = () => {
       latitude: form.latitude ? Number(form.latitude) : null,
       longitude: form.longitude ? Number(form.longitude) : null,
       virtual_tour_url: form.virtual_tour_url.trim() || null,
+      available_from: form.available_from || null,
       broker_id: role === "broker" ? brokerId : (editing?.broker_id || null),
     };
 
@@ -430,6 +441,48 @@ const Properties = () => {
               )}
               <p className="font-body text-xs text-muted-foreground">{form.images.length} foto(s) na galeria</p>
             </div>
+
+            {/* Rental-specific fields */}
+            {form.status === "aluguel" && (
+              <>
+                <div className="luxury-divider" />
+                <p className="font-display text-sm font-semibold text-primary uppercase tracking-wider">Dados de Aluguel</p>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label className="font-body text-sm">Aluguel (R$/mês)</Label>
+                    <Input type="number" value={form.rental_price} onChange={(e) => setForm({ ...form, rental_price: Number(e.target.value) })} className="border-border bg-secondary" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="font-body text-sm">Condomínio (R$)</Label>
+                    <Input type="number" value={form.condominium_fee} onChange={(e) => setForm({ ...form, condominium_fee: Number(e.target.value) })} className="border-border bg-secondary" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="font-body text-sm">IPTU (R$/mês)</Label>
+                    <Input type="number" value={form.iptu} onChange={(e) => setForm({ ...form, iptu: Number(e.target.value) })} className="border-border bg-secondary" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label className="font-body text-sm">Contrato Mín. (meses)</Label>
+                    <Input type="number" value={form.min_contract_months} onChange={(e) => setForm({ ...form, min_contract_months: Number(e.target.value) })} className="border-border bg-secondary" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="font-body text-sm">Disponível a partir de</Label>
+                    <Input type="date" value={form.available_from} onChange={(e) => setForm({ ...form, available_from: e.target.value })} className="border-border bg-secondary" />
+                  </div>
+                </div>
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-3">
+                    <Switch checked={form.accepts_pets} onCheckedChange={(v) => setForm({ ...form, accepts_pets: v })} />
+                    <Label className="font-body text-sm">Aceita Pets</Label>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Switch checked={form.furnished} onCheckedChange={(v) => setForm({ ...form, furnished: v })} />
+                    <Label className="font-body text-sm">Mobiliado</Label>
+                  </div>
+                </div>
+              </>
+            )}
 
             <div className="space-y-2">
               <Label className="font-body text-sm">Descrição</Label>

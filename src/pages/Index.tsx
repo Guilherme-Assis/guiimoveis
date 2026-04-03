@@ -44,6 +44,9 @@ const Index = () => {
               image: p.image_url || "/placeholder.svg",
               images: p.images || [],
               isHighlight: p.is_highlight,
+              rentalPrice: Number(p.rental_price) || 0,
+              acceptsPets: p.accepts_pets || false,
+              furnished: p.furnished || false,
             }))
           );
         }
@@ -67,8 +70,22 @@ const Index = () => {
     if (filters.city) result = result.filter((p) => p.city === filters.city);
     if (filters.state) result = result.filter((p) => p.state === filters.state);
     if (filters.neighborhood) result = result.filter((p) => p.location === filters.neighborhood);
-    if (filters.minPrice) result = result.filter((p) => p.price >= Number(filters.minPrice));
-    if (filters.maxPrice) result = result.filter((p) => p.price <= Number(filters.maxPrice));
+    if (filters.minPrice) {
+      const min = Number(filters.minPrice);
+      const isRental = filters.status === "aluguel";
+      result = result.filter((p) => {
+        const price = isRental && (p as any).rentalPrice > 0 ? (p as any).rentalPrice : p.price;
+        return price >= min;
+      });
+    }
+    if (filters.maxPrice) {
+      const max = Number(filters.maxPrice);
+      const isRental = filters.status === "aluguel";
+      result = result.filter((p) => {
+        const price = isRental && (p as any).rentalPrice > 0 ? (p as any).rentalPrice : p.price;
+        return price <= max;
+      });
+    }
     if (filters.minBedrooms) result = result.filter((p) => p.bedrooms >= Number(filters.minBedrooms));
     if (filters.minArea) {
       const min = Number(filters.minArea);
@@ -85,7 +102,16 @@ const Index = () => {
         )
       );
     }
-
+    if (filters.acceptsPets === "true") {
+      result = result.filter((p) => (p as any).acceptsPets === true);
+    } else if (filters.acceptsPets === "false") {
+      result = result.filter((p) => (p as any).acceptsPets === false);
+    }
+    if (filters.furnished === "true") {
+      result = result.filter((p) => (p as any).furnished === true);
+    } else if (filters.furnished === "false") {
+      result = result.filter((p) => (p as any).furnished === false);
+    }
     switch (filters.sortBy) {
       case "price-asc":
         result.sort((a, b) => a.price - b.price);
