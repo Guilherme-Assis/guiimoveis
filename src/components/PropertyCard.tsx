@@ -1,12 +1,12 @@
 import { motion } from "framer-motion";
-import { Bed, Bath, Car, Maximize, MapPin } from "lucide-react";
+import { Bed, Bath, Car, Maximize, MapPin, PawPrint, Sofa } from "lucide-react";
 import { Property, formatPrice } from "@/data/properties";
 import { Link } from "react-router-dom";
 import FavoriteButton from "@/components/FavoriteButton";
 import { useS3Image } from "@/hooks/useS3Image";
 
 interface PropertyCardProps {
-  property: Property & { slug?: string };
+  property: Property & { slug?: string; rentalPrice?: number; acceptsPets?: boolean; furnished?: boolean };
   index: number;
 }
 
@@ -17,6 +17,11 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
     aluguel: "Aluguel",
     lançamento: "Lançamento",
   };
+
+  const isRental = property.status === "aluguel";
+  const displayPrice = isRental && property.rentalPrice && property.rentalPrice > 0
+    ? property.rentalPrice
+    : property.price;
 
   const linkTo = property.slug ? `/imovel/${property.slug}` : `/imovel/${property.id}`;
 
@@ -46,6 +51,11 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
             <span className="bg-gradient-gold px-3 py-1 font-body text-xs font-semibold uppercase tracking-wider text-primary-foreground">
               {statusLabels[property.status]}
             </span>
+            {isRental && property.furnished && (
+              <span className="bg-primary/80 px-2 py-1 font-body text-[10px] font-semibold uppercase tracking-wider text-primary-foreground backdrop-blur-sm">
+                Mobiliado
+              </span>
+            )}
           </div>
           <div className="absolute right-4 top-4">
             <FavoriteButton
@@ -55,7 +65,8 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
           </div>
           <div className="absolute bottom-4 left-4">
             <p className="font-display text-2xl font-semibold text-foreground">
-              {formatPrice(property.price)}
+              {formatPrice(displayPrice)}
+              {isRental && <span className="text-sm text-muted-foreground/80">/mês</span>}
             </p>
           </div>
         </div>
@@ -96,6 +107,11 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
                 <div className="flex items-center gap-1.5 text-muted-foreground">
                   <Maximize className="h-4 w-4 text-primary" />
                   <span className="font-body text-sm">{property.area}m²</span>
+                </div>
+              )}
+              {isRental && property.acceptsPets && (
+                <div className="flex items-center gap-1.5 text-green-400" title="Aceita Pets">
+                  <PawPrint className="h-4 w-4" />
                 </div>
               )}
             </div>
