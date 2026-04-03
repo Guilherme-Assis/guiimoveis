@@ -33,6 +33,9 @@ const PropertyDetail = () => {
     load();
   }, [slug]);
 
+  // Track property view
+  useTrackPropertyView(property?.id);
+
   const jsonLd = useMemo(() => {
     if (!property) return undefined;
     const isRental = property.status === "aluguel";

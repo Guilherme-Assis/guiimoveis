@@ -260,6 +260,9 @@ const DashboardTab = () => {
       {/* Conversion Funnel */}
       <ConversionFunnelChart leads={leads} visits={visits} proposals={proposals} />
 
+      {/* Property Views Analytics */}
+      <PropertyViewsChart />
+
       {/* Quick stats footer */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
         <Card className="border-border/40">
