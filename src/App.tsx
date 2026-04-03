@@ -23,6 +23,7 @@ const MapSearch = lazy(() => import("./pages/MapSearch"));
 const CityProperties = lazy(() => import("./pages/CityProperties"));
 const Lancamentos = lazy(() => import("./pages/Lancamentos"));
 const Compare = lazy(() => import("./pages/Compare"));
+const ApiDocs = lazy(() => import("./pages/ApiDocs"));
 const AdminLayout = lazy(() => import("./components/AdminLayout"));
 const Dashboard = lazy(() => import("./pages/admin/Dashboard"));
 const Properties = lazy(() => import("./pages/admin/Properties"));
