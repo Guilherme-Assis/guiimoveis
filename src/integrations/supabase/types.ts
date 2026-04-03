@@ -644,6 +644,38 @@ export type Database = {
         }
         Relationships: []
       }
+      property_views: {
+        Row: {
+          created_at: string
+          id: string
+          property_id: string
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          property_id: string
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          property_id?: string
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_views_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "db_properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
@@ -722,6 +754,13 @@ export type Database = {
           title: string
           type: Database["public"]["Enums"]["property_type"]
           virtual_tour_url: string
+        }[]
+      }
+      get_property_view_counts: {
+        Args: { days_back?: number }
+        Returns: {
+          property_id: string
+          view_count: number
         }[]
       }
       get_public_profile: {
