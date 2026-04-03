@@ -5,7 +5,7 @@ import { useNotifications, formatRelativeDate } from "@/hooks/useNotifications";
 import {
   Building2, Users, Home, LogOut, LayoutDashboard, UserCircle, ChevronRight, BookOpen, Contact, Menu, X, Bell, Clock, Check, CheckCheck,
   BarChart3, Columns3, CheckSquare, CalendarDays, FileText, Calendar, Download, Award, MessageSquare, ChevronDown,
-  FileSignature,
+  FileSignature, Trophy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
