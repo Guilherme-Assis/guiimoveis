@@ -77,6 +77,7 @@ const App = () => (
                 <Route path="/imoveis/:citySlug" element={<CityProperties />} />
                 <Route path="/lancamentos" element={<Lancamentos />} />
                 <Route path="/comparar" element={<Compare />} />
+                <Route path="/api-docs" element={<ApiDocs />} />
                 <Route path="/admin" element={<ProtectedRoute><AdminLayout><Dashboard /></AdminLayout></ProtectedRoute>} />
                 <Route path="/admin/properties" element={<ProtectedRoute><AdminLayout><Properties /></AdminLayout></ProtectedRoute>} />
                 <Route path="/admin/brokers" element={<ProtectedRoute allowedRoles={["admin"]}><AdminLayout><Brokers /></AdminLayout></ProtectedRoute>} />
