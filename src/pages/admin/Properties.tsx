@@ -47,6 +47,9 @@ const emptyProperty = {
   area: 0, land_area: 0, description: "",
   features: [] as string[], image_url: "", images: [] as string[], is_highlight: false, slug: "",
   latitude: "" as string | number, longitude: "" as string | number, virtual_tour_url: "",
+  rental_price: 0, condominium_fee: 0, iptu: 0,
+  min_contract_months: 12, accepts_pets: false, furnished: false,
+  available_from: "",
 };
 
 const Properties = () => {
