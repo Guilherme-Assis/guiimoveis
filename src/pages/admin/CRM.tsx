@@ -30,6 +30,7 @@ import ReportsTab from "@/components/crm/ReportsTab";
 import CommissionsTab from "@/components/crm/CommissionsTab";
 import MessageTemplatesTab from "@/components/crm/MessageTemplatesTab";
 import ContractsTab from "@/components/crm/ContractsTab";
+import BrokerPerformanceTab from "@/components/crm/BrokerPerformanceTab";
 
 const statusLabels: Record<string, string> = {
   novo: "Novo", em_contato: "Em Contato", qualificado: "Qualificado",
