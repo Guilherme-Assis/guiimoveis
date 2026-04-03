@@ -29,6 +29,7 @@ import KanbanTab from "@/components/crm/KanbanTab";
 import ReportsTab from "@/components/crm/ReportsTab";
 import CommissionsTab from "@/components/crm/CommissionsTab";
 import MessageTemplatesTab from "@/components/crm/MessageTemplatesTab";
+import ContractsTab from "@/components/crm/ContractsTab";
 
 const statusLabels: Record<string, string> = {
   novo: "Novo", em_contato: "Em Contato", qualificado: "Qualificado",
