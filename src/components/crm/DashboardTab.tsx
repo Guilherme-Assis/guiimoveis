@@ -12,6 +12,7 @@ import {
   TrendingUp, DollarSign, Users, Eye, CalendarDays,
   Target, CheckCircle2, XCircle,
 } from "lucide-react";
+import ConversionFunnelChart from "@/components/crm/ConversionFunnelChart";
 
 const COLORS = [
   "hsl(var(--primary))", "hsl(210, 70%, 55%)", "hsl(40, 85%, 55%)",
