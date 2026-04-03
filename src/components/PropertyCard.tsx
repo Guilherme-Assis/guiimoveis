@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
-import { Bed, Bath, Car, Maximize, MapPin, PawPrint, Sofa } from "lucide-react";
+import { Bed, Bath, Car, Maximize, MapPin, PawPrint, GitCompareArrows, Check } from "lucide-react";
 import { Property, formatPrice } from "@/data/properties";
 import { Link } from "react-router-dom";
 import FavoriteButton from "@/components/FavoriteButton";
 import { useS3Image } from "@/hooks/useS3Image";
+import { useCompare } from "@/contexts/CompareContext";
 
 interface PropertyCardProps {
   property: Property & { slug?: string; rentalPrice?: number; acceptsPets?: boolean; furnished?: boolean };
@@ -12,6 +13,9 @@ interface PropertyCardProps {
 
 const PropertyCard = ({ property, index }: PropertyCardProps) => {
   const resolvedImage = useS3Image(property.image);
+  const { addToCompare, removeFromCompare, isInCompare } = useCompare();
+  const inCompare = isInCompare(property.id);
+
   const statusLabels: Record<string, string> = {
     venda: "Venda",
     aluguel: "Aluguel",
@@ -24,6 +28,16 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
     : property.price;
 
   const linkTo = property.slug ? `/imovel/${property.slug}` : `/imovel/${property.id}`;
+
+  const handleCompareClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (inCompare) {
+      removeFromCompare(property.id);
+    } else {
+      addToCompare(property);
+    }
+  };
 
   return (
     <motion.div
@@ -57,7 +71,18 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
               </span>
             )}
           </div>
-          <div className="absolute right-4 top-4">
+          <div className="absolute right-4 top-4 flex items-center gap-1.5">
+            <button
+              onClick={handleCompareClick}
+              className={`flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-sm transition-colors ${
+                inCompare
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-background/60 text-muted-foreground hover:bg-primary/20 hover:text-primary"
+              }`}
+              title={inCompare ? "Remover da comparação" : "Comparar"}
+            >
+              {inCompare ? <Check className="h-4 w-4" /> : <GitCompareArrows className="h-4 w-4" />}
+            </button>
             <FavoriteButton
               propertyId={property.id}
               className="flex h-8 w-8 items-center justify-center rounded-full bg-background/60 backdrop-blur-sm"

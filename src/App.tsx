@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
+import { CompareProvider } from "@/contexts/CompareContext";
 import { lazy, Suspense, ReactNode } from "react";
 
 // Eager load: home page
@@ -21,6 +22,7 @@ const Favorites = lazy(() => import("./pages/Favorites"));
 const MapSearch = lazy(() => import("./pages/MapSearch"));
 const CityProperties = lazy(() => import("./pages/CityProperties"));
 const Lancamentos = lazy(() => import("./pages/Lancamentos"));
+const Compare = lazy(() => import("./pages/Compare"));
 const AdminLayout = lazy(() => import("./components/AdminLayout"));
 const Dashboard = lazy(() => import("./pages/admin/Dashboard"));
 const Properties = lazy(() => import("./pages/admin/Properties"));
@@ -29,6 +31,7 @@ const Profile = lazy(() => import("./pages/admin/Profile"));
 const BlogAdmin = lazy(() => import("./pages/admin/BlogAdmin"));
 const CRM = lazy(() => import("./pages/admin/CRM"));
 const PropertyChatWidget = lazy(() => import("./components/PropertyChatWidget"));
+const CompareBar = lazy(() => import("./components/CompareBar"));
 
 const queryClient = new QueryClient();
 
@@ -54,37 +57,41 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: ReactNode; allow
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/imovel/:slug" element={<PropertyDetail />} />
-              <Route path="/corretor/:slug" element={<BrokerProfile />} />
-              <Route path="/corretor/:slug/cartao" element={<BrokerCard />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:slug" element={<BlogPost />} />
-              <Route path="/favoritos" element={<Favorites />} />
-              <Route path="/mapa" element={<MapSearch />} />
-              <Route path="/imoveis/:citySlug" element={<CityProperties />} />
-              <Route path="/lancamentos" element={<Lancamentos />} />
-              <Route path="/admin" element={<ProtectedRoute><AdminLayout><Dashboard /></AdminLayout></ProtectedRoute>} />
-              <Route path="/admin/properties" element={<ProtectedRoute><AdminLayout><Properties /></AdminLayout></ProtectedRoute>} />
-              <Route path="/admin/brokers" element={<ProtectedRoute allowedRoles={["admin"]}><AdminLayout><Brokers /></AdminLayout></ProtectedRoute>} />
-              <Route path="/admin/profile" element={<ProtectedRoute><AdminLayout><Profile /></AdminLayout></ProtectedRoute>} />
-              <Route path="/admin/blog" element={<ProtectedRoute allowedRoles={["admin"]}><AdminLayout><BlogAdmin /></AdminLayout></ProtectedRoute>} />
-              <Route path="/admin/crm" element={<ProtectedRoute><AdminLayout><CRM /></AdminLayout></ProtectedRoute>} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+      <CompareProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/imovel/:slug" element={<PropertyDetail />} />
+                <Route path="/corretor/:slug" element={<BrokerProfile />} />
+                <Route path="/corretor/:slug/cartao" element={<BrokerCard />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:slug" element={<BlogPost />} />
+                <Route path="/favoritos" element={<Favorites />} />
+                <Route path="/mapa" element={<MapSearch />} />
+                <Route path="/imoveis/:citySlug" element={<CityProperties />} />
+                <Route path="/lancamentos" element={<Lancamentos />} />
+                <Route path="/comparar" element={<Compare />} />
+                <Route path="/admin" element={<ProtectedRoute><AdminLayout><Dashboard /></AdminLayout></ProtectedRoute>} />
+                <Route path="/admin/properties" element={<ProtectedRoute><AdminLayout><Properties /></AdminLayout></ProtectedRoute>} />
+                <Route path="/admin/brokers" element={<ProtectedRoute allowedRoles={["admin"]}><AdminLayout><Brokers /></AdminLayout></ProtectedRoute>} />
+                <Route path="/admin/profile" element={<ProtectedRoute><AdminLayout><Profile /></AdminLayout></ProtectedRoute>} />
+                <Route path="/admin/blog" element={<ProtectedRoute allowedRoles={["admin"]}><AdminLayout><BlogAdmin /></AdminLayout></ProtectedRoute>} />
+                <Route path="/admin/crm" element={<ProtectedRoute><AdminLayout><CRM /></AdminLayout></ProtectedRoute>} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </BrowserRouter>
+          <Suspense fallback={null}>
+            <CompareBar />
+            <PropertyChatWidget />
           </Suspense>
-        </BrowserRouter>
-        <Suspense fallback={null}>
-          <PropertyChatWidget />
-        </Suspense>
-      </TooltipProvider>
+        </TooltipProvider>
+      </CompareProvider>
     </AuthProvider>
   </QueryClientProvider>
 );
