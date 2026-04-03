@@ -23,6 +23,7 @@ const crmSubItems = [
   { label: "Comissões", icon: Award, tab: "commissions" },
   { label: "Templates", icon: MessageSquare, tab: "templates" },
   { label: "Contratos", icon: FileSignature, tab: "contracts" },
+  { label: "Performance", icon: Trophy, tab: "performance" },
 ];
 
 const navItems = [

@@ -243,6 +243,7 @@ const CRM = () => {
       {activeTab === "commissions" && <CommissionsTab />}
       {activeTab === "templates" && <MessageTemplatesTab />}
       {activeTab === "contracts" && <ContractsTab />}
+      {activeTab === "performance" && <BrokerPerformanceTab />}
     </div>
   );
 };
