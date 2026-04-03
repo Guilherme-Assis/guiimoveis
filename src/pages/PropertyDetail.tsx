@@ -16,6 +16,7 @@ import SocialShare from "@/components/SocialShare";
 import NeighborhoodRating from "@/components/NeighborhoodRating";
 import FloorPlanGallery from "@/components/FloorPlanGallery";
 import SEOHead from "@/components/SEOHead";
+import { useTrackPropertyView } from "@/hooks/useTrackPropertyView";
 
 const PropertyDetail = () => {
   const { slug } = useParams();
