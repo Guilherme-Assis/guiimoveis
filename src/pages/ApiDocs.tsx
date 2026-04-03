@@ -1,12 +1,31 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronDown, ChevronRight, Copy, Check, ExternalLink, Lock, Globe, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  ChevronDown,
+  ChevronRight,
+  Copy,
+  Check,
+  Lock,
+  Globe,
+  Search,
+  Play,
+  LogIn,
+  LogOut,
+  Loader2,
+  User,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
-const BASE_URL_PLACEHOLDER = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/api`;
+const BASE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/api`;
 
 interface Endpoint {
   method: "GET" | "POST" | "PATCH" | "DELETE";
@@ -297,17 +316,225 @@ const TAG_COLORS: Record<string, string> = {
   "Storage": "bg-orange-500/10 text-orange-400",
 };
 
-const EndpointCard = ({ endpoint }: { endpoint: Endpoint }) => {
+const STATUS_COLORS: Record<number, string> = {
+  200: "text-emerald-400",
+  201: "text-emerald-400",
+  400: "text-amber-400",
+  401: "text-red-400",
+  403: "text-red-400",
+  404: "text-amber-400",
+  500: "text-red-400",
+};
+
+const AuthPanel = ({
+  token,
+  userEmail,
+  onLogin,
+  onLogout,
+}: {
+  token: string | null;
+  userEmail: string | null;
+  onLogin: (email: string, password: string) => Promise<void>;
+  onLogout: () => void;
+}) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showToken, setShowToken] = useState(false);
+
+  const handleLogin = async () => {
+    if (!email || !password) return;
+    setLoading(true);
+    try {
+      await onLogin(email, password);
+      toast.success("Autenticado com sucesso!");
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao autenticar");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (token) {
+    return (
+      <Card className="border-emerald-500/30 bg-emerald-500/5">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-500/20">
+                <User className="h-4 w-4 text-emerald-400" />
+              </div>
+              <div className="min-w-0">
+                <p className="font-body text-xs text-emerald-400 font-semibold">Autenticado</p>
+                <p className="font-mono text-[11px] text-muted-foreground truncate">{userEmail}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowToken(!showToken)}
+                className="text-muted-foreground hover:text-foreground text-xs h-7"
+              >
+                {showToken ? <EyeOff className="h-3 w-3 mr-1" /> : <Eye className="h-3 w-3 mr-1" />}
+                Token
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onLogout}
+                className="text-red-400 hover:text-red-300 hover:bg-red-500/10 text-xs h-7"
+              >
+                <LogOut className="h-3 w-3 mr-1" /> Sair
+              </Button>
+            </div>
+          </div>
+          {showToken && (
+            <div className="mt-3">
+              <div className="flex items-center gap-2">
+                <code className="flex-1 rounded bg-background/80 border border-border/30 px-2 py-1.5 font-mono text-[10px] text-foreground overflow-x-auto max-h-16 block break-all">
+                  {token}
+                </code>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(token);
+                    toast.success("Token copiado!");
+                  }}
+                  className="shrink-0 rounded border border-border px-2 py-1 text-[10px] text-muted-foreground hover:text-foreground"
+                >
+                  <Copy className="h-3 w-3" />
+                </button>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="border-amber-500/30 bg-amber-500/5">
+      <CardContent className="p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <LogIn className="h-4 w-4 text-amber-400" />
+          <h3 className="font-display text-sm font-semibold text-foreground">Login para testar APIs protegidas</h3>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
+          <div className="space-y-1">
+            <Label className="font-body text-[11px] text-muted-foreground">E-mail</Label>
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="user@email.com"
+              className="h-8 text-sm bg-background border-border"
+              onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+            />
+          </div>
+          <div className="space-y-1">
+            <Label className="font-body text-[11px] text-muted-foreground">Senha</Label>
+            <div className="relative">
+              <Input
+                type={showPw ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="h-8 text-sm bg-background border-border pr-8"
+                onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPw(!showPw)}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                {showPw ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+              </button>
+            </div>
+          </div>
+          <div className="flex items-end">
+            <Button
+              onClick={handleLogin}
+              disabled={loading || !email || !password}
+              size="sm"
+              className="h-8 bg-gradient-gold text-primary-foreground font-body text-xs font-semibold"
+            >
+              {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <><LogIn className="h-3 w-3 mr-1" /> Entrar</>}
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+const EndpointCard = ({
+  endpoint,
+  token,
+}: {
+  endpoint: Endpoint;
+  token: string | null;
+}) => {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [tryOpen, setTryOpen] = useState(false);
+  const [body, setBody] = useState(endpoint.requestBody ? JSON.stringify(endpoint.requestBody, null, 2) : "");
+  const [pathOverride, setPathOverride] = useState("");
+  const [response, setResponse] = useState<{ status: number; data: any; time: number } | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const isExternal = endpoint.path.startsWith("—");
 
   const copyUrl = () => {
-    const url = endpoint.path.startsWith("—") ? endpoint.description.match(/\/functions\/v1\/\S+/)?.[0] || "" : `${BASE_URL_PLACEHOLDER}${endpoint.path}`;
+    const url = isExternal
+      ? endpoint.description.match(/\/functions\/v1\/\S+/)?.[0] || ""
+      : `${BASE_URL}${endpoint.path}`;
     navigator.clipboard.writeText(url);
     setCopied(true);
     toast.success("URL copiada!");
     setTimeout(() => setCopied(false), 2000);
   };
+
+  const executeRequest = useCallback(async () => {
+    if (isExternal) {
+      toast.error("Endpoint externo — use a URL diretamente.");
+      return;
+    }
+    if (endpoint.auth && !token) {
+      toast.error("Faça login primeiro para testar endpoints protegidos.");
+      return;
+    }
+
+    setLoading(true);
+    setResponse(null);
+
+    const resolvedPath = pathOverride || endpoint.path;
+    const url = `${BASE_URL}${resolvedPath}`;
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+    };
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const start = performance.now();
+    try {
+      const opts: RequestInit = { method: endpoint.method, headers };
+      if (["POST", "PATCH", "PUT"].includes(endpoint.method) && body.trim()) {
+        opts.body = body;
+      }
+      const res = await fetch(url, opts);
+      const elapsed = Math.round(performance.now() - start);
+      const data = await res.json().catch(() => null);
+      setResponse({ status: res.status, data, time: elapsed });
+    } catch (err: any) {
+      const elapsed = Math.round(performance.now() - start);
+      setResponse({ status: 0, data: { error: err.message }, time: elapsed });
+    } finally {
+      setLoading(false);
+    }
+  }, [endpoint, token, body, pathOverride, isExternal]);
 
   return (
     <div className="border border-border/50 rounded-lg overflow-hidden transition-all hover:border-border/80">
@@ -331,16 +558,29 @@ const EndpointCard = ({ endpoint }: { endpoint: Endpoint }) => {
               <h4 className="font-display text-sm font-semibold text-foreground">{endpoint.summary}</h4>
               <p className="mt-1 font-body text-xs text-muted-foreground">{endpoint.description}</p>
             </div>
-            <button onClick={copyUrl} className="shrink-0 flex items-center gap-1 rounded border border-border px-2 py-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors">
-              {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-              URL
-            </button>
+            <div className="flex gap-1.5 shrink-0">
+              <button onClick={copyUrl} className="flex items-center gap-1 rounded border border-border px-2 py-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors">
+                {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />} URL
+              </button>
+              {!isExternal && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setTryOpen(!tryOpen)}
+                  className={`h-7 text-[11px] gap-1 ${tryOpen ? "border-primary text-primary" : ""}`}
+                >
+                  <Play className="h-3 w-3" /> Try it
+                </Button>
+              )}
+            </div>
           </div>
 
           {endpoint.auth && (
             <div className="flex items-center gap-2 rounded bg-amber-500/5 border border-amber-500/20 px-3 py-2">
               <Lock className="h-3.5 w-3.5 text-amber-400" />
-              <span className="font-body text-[11px] text-amber-300">Requer autenticação — Header: <code className="bg-background/50 px-1 rounded">Authorization: Bearer &lt;token&gt;</code></span>
+              <span className="font-body text-[11px] text-amber-300">
+                Requer autenticação — {token ? "✅ Token ativo" : "⚠️ Faça login acima"}
+              </span>
             </div>
           )}
 
@@ -377,6 +617,69 @@ const EndpointCard = ({ endpoint }: { endpoint: Endpoint }) => {
               </pre>
             </div>
           )}
+
+          {/* ─── Try-it Panel ─── */}
+          {tryOpen && (
+            <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-3">
+              <h5 className="font-display text-xs font-semibold text-primary flex items-center gap-1.5">
+                <Play className="h-3.5 w-3.5" /> Testar Endpoint
+              </h5>
+
+              <div className="space-y-2">
+                <Label className="font-body text-[11px] text-muted-foreground">Path (edite para substituir {"{id}"}, {"{slug}"}, etc.)</Label>
+                <Input
+                  value={pathOverride || endpoint.path}
+                  onChange={(e) => setPathOverride(e.target.value)}
+                  className="h-7 font-mono text-xs bg-background border-border"
+                />
+              </div>
+
+              {["POST", "PATCH", "PUT"].includes(endpoint.method) && (
+                <div className="space-y-2">
+                  <Label className="font-body text-[11px] text-muted-foreground">Body (JSON)</Label>
+                  <textarea
+                    value={body}
+                    onChange={(e) => setBody(e.target.value)}
+                    rows={6}
+                    className="w-full rounded border border-border bg-background px-3 py-2 font-mono text-[11px] text-foreground resize-y focus:border-primary focus:outline-none"
+                  />
+                </div>
+              )}
+
+              <Button
+                onClick={executeRequest}
+                disabled={loading}
+                size="sm"
+                className="bg-primary text-primary-foreground font-body text-xs"
+              >
+                {loading ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <Play className="h-3 w-3 mr-1" />}
+                Executar {endpoint.method}
+              </Button>
+
+              {response && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3 font-mono text-xs">
+                    <span className={`font-bold ${STATUS_COLORS[response.status] || "text-muted-foreground"}`}>
+                      {response.status || "ERR"}
+                    </span>
+                    <span className="text-muted-foreground">{response.time}ms</span>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(JSON.stringify(response.data, null, 2));
+                        toast.success("Response copiado!");
+                      }}
+                      className="ml-auto text-muted-foreground hover:text-foreground"
+                    >
+                      <Copy className="h-3 w-3" />
+                    </button>
+                  </div>
+                  <pre className="rounded bg-background border border-border/30 p-3 font-mono text-[11px] text-foreground overflow-x-auto max-h-80">
+                    {JSON.stringify(response.data, null, 2)}
+                  </pre>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -386,6 +689,22 @@ const EndpointCard = ({ endpoint }: { endpoint: Endpoint }) => {
 const ApiDocs = () => {
   const [search, setSearch] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  const handleLogin = async (email: string, password: string) => {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    setToken(data.session?.access_token || null);
+    setUserEmail(data.user?.email || null);
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setToken(null);
+    setUserEmail(null);
+    toast.success("Desconectado");
+  };
 
   const allTags = [...new Set(ENDPOINTS.flatMap((e) => e.tags))];
 
@@ -420,13 +739,17 @@ const ApiDocs = () => {
           </p>
         </div>
 
+        <div className="mb-6">
+          <AuthPanel token={token} userEmail={userEmail} onLogin={handleLogin} onLogout={handleLogout} />
+        </div>
+
         <Card className="mb-6 border-border/40">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <span className="font-body text-xs font-semibold uppercase tracking-wider text-muted-foreground">Base URL</span>
-              <code className="flex-1 rounded bg-background border border-border/50 px-3 py-1.5 font-mono text-sm text-foreground">{BASE_URL_PLACEHOLDER}</code>
+              <code className="flex-1 rounded bg-background border border-border/50 px-3 py-1.5 font-mono text-sm text-foreground">{BASE_URL}</code>
               <button
-                onClick={() => { navigator.clipboard.writeText(BASE_URL_PLACEHOLDER); toast.success("URL copiada!"); }}
+                onClick={() => { navigator.clipboard.writeText(BASE_URL); toast.success("URL copiada!"); }}
                 className="shrink-0 rounded border border-border px-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
                 <Copy className="h-3.5 w-3.5" />
@@ -436,28 +759,6 @@ const ApiDocs = () => {
         </Card>
 
         <Card className="mb-6 border-border/40">
-          <CardContent className="p-4 space-y-2">
-            <h3 className="font-display text-sm font-semibold text-foreground">Autenticação</h3>
-            <p className="font-body text-xs text-muted-foreground">
-              Endpoints protegidos requerem um JWT válido no header Authorization. Obtenha o token via login no Supabase Auth.
-            </p>
-            <pre className="rounded bg-background border border-border/30 p-3 font-mono text-[11px] text-foreground">
-{`// Login para obter token
-const { data } = await supabase.auth.signInWithPassword({
-  email: "user@email.com",
-  password: "senha123"
-});
-const token = data.session.access_token;
-
-// Usar nas chamadas
-fetch("${BASE_URL_PLACEHOLDER}/properties", {
-  headers: { "Authorization": \`Bearer \${token}\` }
-});`}
-            </pre>
-          </CardContent>
-        </Card>
-
-        <Card className="mb-8 border-border/40">
           <CardContent className="p-4 space-y-2">
             <h3 className="font-display text-sm font-semibold text-foreground">Filtragem e Paginação</h3>
             <div className="grid gap-2 sm:grid-cols-2 text-xs font-body text-muted-foreground">
@@ -512,7 +813,7 @@ fetch("${BASE_URL_PLACEHOLDER}/properties", {
               </h2>
               <div className="space-y-2">
                 {endpoints.map((ep, i) => (
-                  <EndpointCard key={`${ep.method}-${ep.path}-${i}`} endpoint={ep} />
+                  <EndpointCard key={`${ep.method}-${ep.path}-${i}`} endpoint={ep} token={token} />
                 ))}
               </div>
             </div>
