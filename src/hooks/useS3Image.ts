@@ -50,7 +50,7 @@ function requestSignedUrl(key: string, cb: () => void) {
   if (!listeners.has(key)) listeners.set(key, new Set());
   listeners.get(key)!.add(cb);
 
-  if (!cache.has(key) && !pendingBatch.has(key)) {
+  if (!cache.has(key) || (cache.has(key) && cache.get(key)!.expiry < Date.now())) {
     pendingBatch.add(key);
     if (batchTimer) clearTimeout(batchTimer);
     batchTimer = setTimeout(flushBatch, 50); // batch within 50ms
