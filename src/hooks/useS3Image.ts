@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 const S3_PREFIX = "https://s3.sa-east-1.amazonaws.com/gui-imoveis/";
-const cache = new Map<string, string>();
+const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+const cache = new Map<string, { url: string; expiry: number }>();
 const pendingBatch = new Set<string>();
 let batchTimer: ReturnType<typeof setTimeout> | null = null;
 const listeners = new Map<string, Set<() => void>>();
