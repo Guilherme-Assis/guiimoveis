@@ -207,6 +207,7 @@ const Properties = () => {
       latitude: form.latitude ? Number(form.latitude) : null,
       longitude: form.longitude ? Number(form.longitude) : null,
       virtual_tour_url: form.virtual_tour_url.trim() || null,
+      available_from: form.available_from || null,
       broker_id: role === "broker" ? brokerId : (editing?.broker_id || null),
     };
 
