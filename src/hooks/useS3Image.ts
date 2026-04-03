@@ -12,6 +12,13 @@ function isS3Url(url: string): boolean {
   return url.startsWith(S3_PREFIX);
 }
 
+function getCached(key: string): string | null {
+  const entry = cache.get(key);
+  if (!entry) return null;
+  if (entry.expiry < Date.now()) { cache.delete(key); return null; }
+  return entry.url;
+}
+
 function notifyListeners(key: string) {
   listeners.get(key)?.forEach((cb) => cb());
 }
@@ -23,25 +30,18 @@ async function flushBatch() {
   if (keys.length === 0) return;
 
   try {
-    const { data, error } = await supabase.functions.invoke("s3-read", {
-      body: { keys },
-    });
-
+    const { data, error } = await supabase.functions.invoke("s3-read", { body: { keys } });
     if (error) {
-      console.error("s3-read error:", error);
-      // Fallback: use original URLs
       keys.forEach((k) => { cache.set(k, { url: k, expiry: Date.now() + CACHE_TTL }); notifyListeners(k); });
       return;
     }
-
     const urls = data?.urls as Record<string, string> | undefined;
     keys.forEach((k) => {
       const resolved = urls?.[k] || k;
       cache.set(k, { url: resolved, expiry: Date.now() + CACHE_TTL });
       notifyListeners(k);
     });
-  } catch (err) {
-    console.error("s3-read fetch error:", err);
+  } catch {
     keys.forEach((k) => { cache.set(k, { url: k, expiry: Date.now() + CACHE_TTL }); notifyListeners(k); });
   }
 }
@@ -50,83 +50,47 @@ function requestSignedUrl(key: string, cb: () => void) {
   if (!listeners.has(key)) listeners.set(key, new Set());
   listeners.get(key)!.add(cb);
 
-  if (!cache.has(key) || (cache.has(key) && cache.get(key)!.expiry < Date.now())) {
-    if (!pendingBatch.has(key)) {
-      pendingBatch.add(key);
-      if (batchTimer) clearTimeout(batchTimer);
-      batchTimer = setTimeout(flushBatch, 50);
-    }
+  if (!getCached(key) && !pendingBatch.has(key)) {
+    pendingBatch.add(key);
+    if (batchTimer) clearTimeout(batchTimer);
+    batchTimer = setTimeout(flushBatch, 50);
   }
 
-  return () => {
-    listeners.get(key)?.delete(cb);
-  };
+  return () => { listeners.get(key)?.delete(cb); };
 }
 
-/**
- * Resolves an S3 URL to a signed URL. Non-S3 URLs are returned as-is.
- */
 export function useS3Image(url: string | null | undefined): string {
   const [resolved, setResolved] = useState<string>(() => {
     if (!url) return "/placeholder.svg";
     if (!isS3Url(url)) return url;
-    return cache.get(url) || "/placeholder.svg";
+    return getCached(url) || "/placeholder.svg";
   });
 
   useEffect(() => {
     if (!url) { setResolved("/placeholder.svg"); return; }
     if (!isS3Url(url)) { setResolved(url); return; }
-
-    // Already cached
-    if (cache.has(url)) {
-      setResolved(cache.get(url)!);
-      return;
-    }
-
-    const unsub = requestSignedUrl(url, () => {
-      setResolved(cache.get(url) || url);
-    });
-
+    const cached = getCached(url);
+    if (cached) { setResolved(cached); return; }
+    const unsub = requestSignedUrl(url, () => { setResolved(getCached(url) || url); });
     return unsub;
   }, [url]);
 
   return resolved;
 }
 
-/**
- * Resolves multiple S3 URLs at once.
- */
 export function useS3Images(urls: (string | null | undefined)[]): string[] {
-  const [resolved, setResolved] = useState<string[]>(() =>
-    urls.map((u) => {
-      if (!u) return "/placeholder.svg";
-      if (!isS3Url(u)) return u;
-      return cache.get(u) || "/placeholder.svg";
-    })
-  );
+  const resolve = () => urls.map((u) => {
+    if (!u) return "/placeholder.svg";
+    if (!isS3Url(u)) return u;
+    return getCached(u) || "/placeholder.svg";
+  });
+
+  const [resolved, setResolved] = useState<string[]>(resolve);
 
   useEffect(() => {
-    const s3Urls = urls.filter((u): u is string => !!u && isS3Url(u) && !cache.has(u));
-
-    if (s3Urls.length === 0) {
-      setResolved(urls.map((u) => {
-        if (!u) return "/placeholder.svg";
-        if (!isS3Url(u)) return u;
-        return cache.get(u) || u;
-      }));
-      return;
-    }
-
-    const unsubs = s3Urls.map((url) =>
-      requestSignedUrl(url, () => {
-        setResolved(urls.map((u) => {
-          if (!u) return "/placeholder.svg";
-          if (!isS3Url(u)) return u;
-          return cache.get(u) || u;
-        }));
-      })
-    );
-
+    const s3Urls = urls.filter((u): u is string => !!u && isS3Url(u) && !getCached(u));
+    if (s3Urls.length === 0) { setResolved(resolve()); return; }
+    const unsubs = s3Urls.map((url) => requestSignedUrl(url, () => { setResolved(resolve()); }));
     return () => unsubs.forEach((fn) => fn());
   }, [JSON.stringify(urls)]);
 
