@@ -363,25 +363,32 @@ export type Database = {
       }
       db_properties: {
         Row: {
+          accepts_pets: boolean | null
           area: number
           availability: Database["public"]["Enums"]["property_availability"]
+          available_from: string | null
           bathrooms: number
           bedrooms: number
           broker_id: string | null
           city: string
+          condominium_fee: number | null
           created_at: string
           description: string | null
           features: string[] | null
+          furnished: boolean | null
           id: string
           image_url: string | null
           images: string[] | null
+          iptu: number | null
           is_highlight: boolean
           land_area: number
           latitude: number | null
           location: string
           longitude: number | null
+          min_contract_months: number | null
           parking_spaces: number
           price: number
+          rental_price: number | null
           slug: string | null
           state: string
           status: Database["public"]["Enums"]["property_status"]
@@ -391,25 +398,32 @@ export type Database = {
           virtual_tour_url: string | null
         }
         Insert: {
+          accepts_pets?: boolean | null
           area?: number
           availability?: Database["public"]["Enums"]["property_availability"]
+          available_from?: string | null
           bathrooms?: number
           bedrooms?: number
           broker_id?: string | null
           city: string
+          condominium_fee?: number | null
           created_at?: string
           description?: string | null
           features?: string[] | null
+          furnished?: boolean | null
           id?: string
           image_url?: string | null
           images?: string[] | null
+          iptu?: number | null
           is_highlight?: boolean
           land_area?: number
           latitude?: number | null
           location: string
           longitude?: number | null
+          min_contract_months?: number | null
           parking_spaces?: number
           price: number
+          rental_price?: number | null
           slug?: string | null
           state?: string
           status?: Database["public"]["Enums"]["property_status"]
@@ -419,25 +433,32 @@ export type Database = {
           virtual_tour_url?: string | null
         }
         Update: {
+          accepts_pets?: boolean | null
           area?: number
           availability?: Database["public"]["Enums"]["property_availability"]
+          available_from?: string | null
           bathrooms?: number
           bedrooms?: number
           broker_id?: string | null
           city?: string
+          condominium_fee?: number | null
           created_at?: string
           description?: string | null
           features?: string[] | null
+          furnished?: boolean | null
           id?: string
           image_url?: string | null
           images?: string[] | null
+          iptu?: number | null
           is_highlight?: boolean
           land_area?: number
           latitude?: number | null
           location?: string
           longitude?: number | null
+          min_contract_months?: number | null
           parking_spaces?: number
           price?: number
+          rental_price?: number | null
           slug?: string | null
           state?: string
           status?: Database["public"]["Enums"]["property_status"]
@@ -670,24 +691,31 @@ export type Database = {
       get_property_by_slug: {
         Args: { _slug: string }
         Returns: {
+          accepts_pets: boolean
           area: number
           availability: Database["public"]["Enums"]["property_availability"]
+          available_from: string
           bathrooms: number
           bedrooms: number
           broker_id: string
           city: string
+          condominium_fee: number
           description: string
           features: string[]
+          furnished: boolean
           id: string
           image_url: string
           images: string[]
+          iptu: number
           is_highlight: boolean
           land_area: number
           latitude: number
           location: string
           longitude: number
+          min_contract_months: number
           parking_spaces: number
           price: number
+          rental_price: number
           slug: string
           state: string
           status: Database["public"]["Enums"]["property_status"]
