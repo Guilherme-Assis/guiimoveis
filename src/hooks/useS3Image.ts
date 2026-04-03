@@ -30,7 +30,7 @@ async function flushBatch() {
     if (error) {
       console.error("s3-read error:", error);
       // Fallback: use original URLs
-      keys.forEach((k) => { cache.set(k, k); notifyListeners(k); });
+      keys.forEach((k) => { cache.set(k, { url: k, expiry: Date.now() + CACHE_TTL }); notifyListeners(k); });
       return;
     }
 
