@@ -44,6 +44,9 @@ const Index = () => {
               image: p.image_url || "/placeholder.svg",
               images: p.images || [],
               isHighlight: p.is_highlight,
+              rentalPrice: Number(p.rental_price) || 0,
+              acceptsPets: p.accepts_pets || false,
+              furnished: p.furnished || false,
             }))
           );
         }
