@@ -42,7 +42,7 @@ async function flushBatch() {
     });
   } catch (err) {
     console.error("s3-read fetch error:", err);
-    keys.forEach((k) => { cache.set(k, k); notifyListeners(k); });
+    keys.forEach((k) => { cache.set(k, { url: k, expiry: Date.now() + CACHE_TTL }); notifyListeners(k); });
   }
 }
 
