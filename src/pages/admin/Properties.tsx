@@ -94,6 +94,13 @@ const Properties = () => {
       is_highlight: p.is_highlight, slug: p.slug || "",
       latitude: (p as any).latitude || "", longitude: (p as any).longitude || "",
       virtual_tour_url: (p as any).virtual_tour_url || "",
+      rental_price: (p as any).rental_price || 0,
+      condominium_fee: (p as any).condominium_fee || 0,
+      iptu: (p as any).iptu || 0,
+      min_contract_months: (p as any).min_contract_months || 12,
+      accepts_pets: (p as any).accepts_pets || false,
+      furnished: (p as any).furnished || false,
+      available_from: (p as any).available_from || "",
     });
     setFeaturesInput((p.features || []).join(", "));
     setDialogOpen(true);
