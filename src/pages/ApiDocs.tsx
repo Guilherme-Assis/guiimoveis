@@ -325,6 +325,7 @@ const METHOD_COLORS: Record<string, string> = {
 };
 
 const TAG_COLORS: Record<string, string> = {
+  "Autenticação": "bg-rose-500/10 text-rose-400",
   "Imóveis": "bg-primary/10 text-primary",
   "Corretores": "bg-violet-500/10 text-violet-400",
   "CRM": "bg-sky-500/10 text-sky-400",
