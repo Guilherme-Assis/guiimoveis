@@ -239,6 +239,137 @@ serve(async (req) => {
     return errorResponse("Unknown auth action. Available: POST /auth/login, POST /auth/refresh, GET /auth/me", 404);
   }
 
+  // === UPLOAD ENDPOINTS ===
+  if (resource === "upload") {
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return errorResponse("Authorization required", 401);
+    }
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const uploadClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: userData, error: authErr } = await uploadClient.auth.getUser();
+    if (authErr || !userData.user) return errorResponse("Invalid or expired token", 401);
+
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const AWS_S3_API_KEY = Deno.env.get("AWS_S3_API_KEY");
+    if (!LOVABLE_API_KEY || !AWS_S3_API_KEY) {
+      return errorResponse("S3 integration not configured", 500);
+    }
+
+    const SIGN_WRITE_URL = "https://connector-gateway.lovable.dev/api/v1/sign_storage_url?provider=aws_s3&mode=write";
+    const SIGN_READ_URL = "https://connector-gateway.lovable.dev/api/v1/sign_storage_url?provider=aws_s3&mode=read";
+    const GATEWAY_URL = "https://connector-gateway.lovable.dev/aws_s3";
+
+    const uploadAction = action || params.get("action");
+
+    if (uploadAction === "get_upload_url" && method === "POST") {
+      try {
+        const body = await req.json();
+        const filename = typeof body.filename === "string" ? body.filename.trim() : "";
+        if (!filename) return errorResponse("filename is required", 400);
+        if (filename.length > 255) return errorResponse("filename too long", 400);
+
+        const ext = filename.split(".").pop()?.toLowerCase() || "jpg";
+        const allowedExts = ["jpg", "jpeg", "png", "gif", "webp", "svg", "bmp", "tiff"];
+        if (!allowedExts.includes(ext)) return errorResponse(`File type .${ext} not allowed`, 400);
+
+        const objectKey = `properties/${crypto.randomUUID()}.${ext}`;
+
+        const signResp = await fetch(SIGN_WRITE_URL, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${LOVABLE_API_KEY}`,
+            "X-Connection-Api-Key": AWS_S3_API_KEY,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ object_path: objectKey }),
+        });
+
+        if (!signResp.ok) {
+          console.error("Sign upload error:", await signResp.text());
+          return errorResponse("Failed to generate upload URL", 500);
+        }
+
+        const { url: uploadUrl, expires_in } = await signResp.json();
+
+        // Also get a read URL for the public path
+        const readResp = await fetch(SIGN_READ_URL, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${LOVABLE_API_KEY}`,
+            "X-Connection-Api-Key": AWS_S3_API_KEY,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ object_path: objectKey }),
+        });
+
+        let publicUrl = "";
+        if (readResp.ok) {
+          const readData = await readResp.json();
+          const parsedUrl = new URL(readData.url);
+          publicUrl = `${parsedUrl.origin}${parsedUrl.pathname}`;
+        }
+
+        return jsonResponse({ upload_url: uploadUrl, object_key: objectKey, public_url: publicUrl, expires_in });
+      } catch {
+        return errorResponse("Invalid request body", 400);
+      }
+    }
+
+    if (uploadAction === "get_read_url" && method === "POST") {
+      try {
+        const body = await req.json();
+        const objectKey = typeof body.object_key === "string" ? body.object_key.trim() : "";
+        if (!objectKey) return errorResponse("object_key is required", 400);
+
+        const signResp = await fetch(SIGN_READ_URL, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${LOVABLE_API_KEY}`,
+            "X-Connection-Api-Key": AWS_S3_API_KEY,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ object_path: objectKey }),
+        });
+
+        if (!signResp.ok) {
+          console.error("Sign read error:", await signResp.text());
+          return errorResponse("Failed to generate read URL", 500);
+        }
+
+        const { url: readUrl, expires_in } = await signResp.json();
+        return jsonResponse({ read_url: readUrl, expires_in });
+      } catch {
+        return errorResponse("Invalid request body", 400);
+      }
+    }
+
+    if (uploadAction === "list" && method === "GET") {
+      const prefix = params.get("prefix") || "properties/";
+      const listParams = new URLSearchParams({
+        "list-type": "2",
+        prefix,
+        "max-keys": "100",
+      });
+
+      const listResp = await fetch(`${GATEWAY_URL}/?${listParams}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "X-Connection-Api-Key": AWS_S3_API_KEY,
+        },
+      });
+
+      const xml = await listResp.text();
+      return jsonResponse({ data: xml });
+    }
+
+    return errorResponse("Unknown upload action. Use: POST /upload/get_upload_url, POST /upload/get_read_url, GET /upload/list", 400);
+  }
+
   // Validate resource
   const table = RESOURCE_TABLE[resource];
   if (!table) {
