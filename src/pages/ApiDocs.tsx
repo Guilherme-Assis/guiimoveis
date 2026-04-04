@@ -41,6 +41,26 @@ interface Endpoint {
 
 const ENDPOINTS: Endpoint[] = [
   {
+    method: "POST", path: "/auth/login", summary: "Login — obter token JWT", auth: false,
+    description: "Autentica com email e senha. Retorna access_token e refresh_token para usar nos endpoints protegidos.",
+    requestBody: { email: "seu@email.com", password: "sua_senha" },
+    responseExample: { access_token: "eyJ...", refresh_token: "abc...", expires_in: 3600, token_type: "bearer", user: { id: "uuid", email: "seu@email.com" } },
+    tags: ["Autenticação"],
+  },
+  {
+    method: "POST", path: "/auth/refresh", summary: "Renovar token JWT", auth: false,
+    description: "Renova um token expirado usando o refresh_token obtido no login.",
+    requestBody: { refresh_token: "abc..." },
+    responseExample: { access_token: "eyJ...", refresh_token: "new_abc...", expires_in: 3600, token_type: "bearer" },
+    tags: ["Autenticação"],
+  },
+  {
+    method: "GET", path: "/auth/me", summary: "Dados do usuário autenticado", auth: true,
+    description: "Retorna informações do usuário logado, incluindo roles e perfil completo.",
+    responseExample: { user: { id: "uuid", email: "user@email.com", roles: ["admin"], profile: { display_name: "João", avatar_url: null, phone: "11999999999" } } },
+    tags: ["Autenticação"],
+  },
+  {
     method: "GET", path: "/properties", summary: "Listar imóveis disponíveis", auth: false,
     description: "Retorna lista de imóveis com filtros, paginação e ordenação. Acesso público.",
     queryParams: [
