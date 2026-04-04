@@ -386,6 +386,16 @@ serve(async (req) => {
             { method: "GET", path: "/auth/me", headers: "Authorization: Bearer <token>", returns: "user info, roles, profile" },
           ],
         },
+        upload: {
+          description: "S3 image upload endpoints - requires Bearer token from /auth/login",
+          endpoints: [
+            { method: "POST", path: "/upload/get_upload_url", body: '{ "filename": "photo.jpg" }', returns: "upload_url (PUT to S3), object_key, public_url" },
+            { method: "POST", path: "/upload/get_read_url", body: '{ "object_key": "properties/uuid.jpg" }', returns: "read_url (signed temporary URL)" },
+            { method: "GET", path: "/upload/list?prefix=properties/", returns: "XML listing of S3 objects" },
+          ],
+          usage: "1. POST /upload/get_upload_url with filename → get upload_url. 2. PUT file binary to upload_url. 3. Use public_url as image reference in properties.",
+          ],
+        },
         endpoints: Object.keys(RESOURCE_TABLE).map((r) => ({
           resource: r,
           table: RESOURCE_TABLE[r],
