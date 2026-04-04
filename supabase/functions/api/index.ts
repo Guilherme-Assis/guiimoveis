@@ -82,6 +82,81 @@ serve(async (req) => {
   const params = url.searchParams;
   const method = req.method;
 
+  // === AUTH ENDPOINTS ===
+  if (resource === "auth") {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const authClient = createClient(supabaseUrl, supabaseAnonKey);
+
+    if (action === "login" && method === "POST") {
+      try {
+        const body = await req.json();
+        const email = typeof body.email === "string" ? body.email.trim() : "";
+        const password = typeof body.password === "string" ? body.password : "";
+        if (!email || !password) {
+          return errorResponse("email and password are required", 400);
+        }
+        if (email.length > 255 || password.length > 128) {
+          return errorResponse("Invalid input length", 400);
+        }
+        const { data, error } = await authClient.auth.signInWithPassword({ email, password });
+        if (error) return errorResponse("Invalid login credentials", 401);
+        return jsonResponse({
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token,
+          expires_in: data.session.expires_in,
+          token_type: "bearer",
+          user: {
+            id: data.user.id,
+            email: data.user.email,
+          },
+        });
+      } catch {
+        return errorResponse("Invalid request body", 400);
+      }
+    }
+
+    if (action === "refresh" && method === "POST") {
+      try {
+        const body = await req.json();
+        const refreshToken = typeof body.refresh_token === "string" ? body.refresh_token : "";
+        if (!refreshToken) return errorResponse("refresh_token is required", 400);
+        const { data, error } = await authClient.auth.refreshSession({ refresh_token: refreshToken });
+        if (error || !data.session) return errorResponse("Invalid or expired refresh token", 401);
+        return jsonResponse({
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token,
+          expires_in: data.session.expires_in,
+          token_type: "bearer",
+        });
+      } catch {
+        return errorResponse("Invalid request body", 400);
+      }
+    }
+
+    if (action === "me" && method === "GET") {
+      const authHeader = req.headers.get("Authorization");
+      if (!authHeader?.startsWith("Bearer ")) return errorResponse("Authorization required", 401);
+      const meClient = createClient(supabaseUrl, supabaseAnonKey, {
+        global: { headers: { Authorization: authHeader } },
+      });
+      const { data, error } = await meClient.auth.getUser();
+      if (error || !data.user) return errorResponse("Invalid token", 401);
+      const { data: roleData } = await meClient.from("user_roles").select("role").eq("user_id", data.user.id);
+      const { data: profileData } = await meClient.from("profiles").select("display_name, avatar_url, phone").eq("user_id", data.user.id).maybeSingle();
+      return jsonResponse({
+        user: {
+          id: data.user.id,
+          email: data.user.email,
+          roles: roleData?.map((r: any) => r.role) || [],
+          profile: profileData || null,
+        },
+      });
+    }
+
+    return errorResponse("Unknown auth action. Available: POST /auth/login, POST /auth/refresh, GET /auth/me", 404);
+  }
+
   // Validate resource
   const table = RESOURCE_TABLE[resource];
   if (!table) {
