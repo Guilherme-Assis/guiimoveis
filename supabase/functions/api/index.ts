@@ -7,6 +7,9 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const S3_PREFIX = "https://s3.sa-east-1.amazonaws.com/gui-imoveis/";
+const SIGN_URL = "https://connector-gateway.lovable.dev/api/v1/sign_storage_url?provider=aws_s3&mode=read";
+
 function jsonResponse(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
@@ -18,11 +21,93 @@ function errorResponse(message: string, status: number) {
   return jsonResponse({ error: message }, status);
 }
 
-// Parse URL path: /api/{resource}/{id?}
+// ── S3 Signed URL Resolution ──
+
+function isS3Url(url: string): boolean {
+  return typeof url === "string" && url.startsWith(S3_PREFIX);
+}
+
+/** Collect all S3 URLs from rows (image_url, images, cover_image_url, avatar_url) */
+function collectS3Urls(rows: any[]): string[] {
+  const urls = new Set<string>();
+  for (const row of rows) {
+    if (!row || typeof row !== "object") continue;
+    if (isS3Url(row.image_url)) urls.add(row.image_url);
+    if (isS3Url(row.cover_image_url)) urls.add(row.cover_image_url);
+    if (isS3Url(row.avatar_url)) urls.add(row.avatar_url);
+    if (Array.isArray(row.images)) {
+      for (const img of row.images) {
+        if (isS3Url(img)) urls.add(img);
+      }
+    }
+  }
+  return Array.from(urls);
+}
+
+/** Sign a batch of S3 URLs and return a mapping original → signed */
+async function signS3Urls(urls: string[]): Promise<Record<string, string>> {
+  if (urls.length === 0) return {};
+
+  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+  const AWS_S3_API_KEY = Deno.env.get("AWS_S3_API_KEY");
+  if (!LOVABLE_API_KEY || !AWS_S3_API_KEY) return {};
+
+  const results: Record<string, string> = {};
+
+  await Promise.all(
+    urls.map(async (key) => {
+      try {
+        const objectPath = key.replace(S3_PREFIX, "");
+        const resp = await fetch(SIGN_URL, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${LOVABLE_API_KEY}`,
+            "X-Connection-Api-Key": AWS_S3_API_KEY,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ object_path: objectPath }),
+        });
+        if (resp.ok) {
+          const { url } = await resp.json();
+          results[key] = url;
+        }
+      } catch {
+        // keep original on failure
+      }
+    })
+  );
+
+  return results;
+}
+
+/** Replace S3 URLs in rows with signed versions */
+function applySignedUrls(rows: any[], mapping: Record<string, string>): void {
+  for (const row of rows) {
+    if (!row || typeof row !== "object") continue;
+    if (mapping[row.image_url]) row.image_url = mapping[row.image_url];
+    if (mapping[row.cover_image_url]) row.cover_image_url = mapping[row.cover_image_url];
+    if (mapping[row.avatar_url]) row.avatar_url = mapping[row.avatar_url];
+    if (Array.isArray(row.images)) {
+      row.images = row.images.map((img: string) => mapping[img] || img);
+    }
+  }
+}
+
+/** Resolve S3 URLs in response data (single row or array) */
+async function resolveS3Images(data: any): Promise<void> {
+  if (!data) return;
+  const rows = Array.isArray(data) ? data : [data];
+  const s3Urls = collectS3Urls(rows);
+  if (s3Urls.length === 0) return;
+  const mapping = await signS3Urls(s3Urls);
+  applySignedUrls(rows, mapping);
+}
+
+// ── URL Parsing ──
+
 function parsePath(url: URL): { resource: string; id: string | null; action: string | null } {
   const parts = url.pathname.replace(/^\/api\//, "").split("/").filter(Boolean);
   const resource = parts[0] || "";
-  // Check if second part is an action or an id
   const second = parts[1] || null;
   const actions = ["search", "stats", "by-slug", "counts", "login", "refresh", "me"];
   if (second && actions.includes(second)) {
@@ -31,7 +116,8 @@ function parsePath(url: URL): { resource: string; id: string | null; action: str
   return { resource, id: second, action: parts[2] || null };
 }
 
-// Table mapping
+// ── Table & Resource Config ──
+
 const RESOURCE_TABLE: Record<string, string> = {
   properties: "db_properties",
   brokers: "brokers",
@@ -49,12 +135,12 @@ const RESOURCE_TABLE: Record<string, string> = {
   roles: "user_roles",
 };
 
-// Public resources (no auth needed for GET)
 const PUBLIC_READ = new Set(["properties", "blog-posts"]);
 
-// Allowed query params for filtering
+/** Resources that may contain S3 image URLs */
+const IMAGE_RESOURCES = new Set(["properties", "blog-posts", "profiles", "brokers"]);
+
 function applyFilters(query: any, params: URLSearchParams, resource: string) {
-  // Generic filters
   for (const [key, value] of params.entries()) {
     if (["limit", "offset", "order", "select", "action"].includes(key)) continue;
     if (key.startsWith("eq.")) query = query.eq(key.slice(3), value);
@@ -66,7 +152,6 @@ function applyFilters(query: any, params: URLSearchParams, resource: string) {
     else if (key.startsWith("in.")) query = query.in(key.slice(3), value.split(","));
   }
 
-  // Defaults for properties
   if (resource === "properties" && !params.has("eq.availability")) {
     query = query.eq("availability", "available");
   }
@@ -106,10 +191,7 @@ serve(async (req) => {
           refresh_token: data.session.refresh_token,
           expires_in: data.session.expires_in,
           token_type: "bearer",
-          user: {
-            id: data.user.id,
-            email: data.user.email,
-          },
+          user: { id: data.user.id, email: data.user.email },
         });
       } catch {
         return errorResponse("Invalid request body", 400);
@@ -160,7 +242,6 @@ serve(async (req) => {
   // Validate resource
   const table = RESOURCE_TABLE[resource];
   if (!table) {
-    // Return API docs summary at root
     if (!resource || resource === "" || resource === "docs") {
       return jsonResponse({
         name: "GUI Imóveis API",
@@ -187,6 +268,9 @@ serve(async (req) => {
             ...(r === "property-views" ? [`/${r}/counts?days=30`] : []),
           ],
         })),
+        notes: [
+          "All image fields (image_url, images, cover_image_url, avatar_url) with S3 URLs are automatically resolved to signed download URLs.",
+        ],
         authentication: "Use POST /auth/login to get a Bearer token. Include it in Authorization header for protected endpoints.",
         filtering: {
           description: "Use query params with prefixes: eq., gt., gte., lt., lte., like., in.",
@@ -215,14 +299,12 @@ serve(async (req) => {
   const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
   const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 
-  // For authenticated requests, pass through the user's JWT for RLS
   const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     global: {
       headers: authHeader ? { Authorization: authHeader } : {},
     },
   });
 
-  // For non-public resources, verify auth
   if (!isPublicRead) {
     if (!authHeader?.startsWith("Bearer ")) {
       return errorResponse("Authorization header required. Use: Bearer <jwt_token>", 401);
@@ -233,6 +315,8 @@ serve(async (req) => {
     }
   }
 
+  const shouldResolveImages = IMAGE_RESOURCES.has(resource);
+
   try {
     // === SPECIAL ACTIONS ===
     if (resource === "properties" && action === "by-slug") {
@@ -240,7 +324,9 @@ serve(async (req) => {
       if (!slug) return errorResponse("slug query param required", 400);
       const { data, error } = await supabase.rpc("get_property_by_slug", { _slug: slug });
       if (error) return errorResponse(error.message, 400);
-      return jsonResponse({ data: data?.[0] || null });
+      const row = data?.[0] || null;
+      if (row) await resolveS3Images(row);
+      return jsonResponse({ data: row });
     }
 
     if (resource === "properties" && action === "search") {
@@ -256,6 +342,7 @@ serve(async (req) => {
       query = query.limit(body.limit || 50);
       const { data, error } = await query;
       if (error) return errorResponse(error.message, 400);
+      if (data) await resolveS3Images(data);
       return jsonResponse({ data, count: data?.length || 0 });
     }
 
@@ -278,6 +365,7 @@ serve(async (req) => {
           const { data, error } = await supabase.from(table).select(selectCols).eq("id", id).maybeSingle();
           if (error) return errorResponse(error.message, 400);
           if (!data) return errorResponse("Not found", 404);
+          if (shouldResolveImages) await resolveS3Images(data);
           return jsonResponse({ data });
         }
         let query = supabase.from(table).select(selectCols, { count: "exact" });
@@ -291,6 +379,7 @@ serve(async (req) => {
         query = query.range(offset, offset + limit - 1);
         const { data, error, count } = await query;
         if (error) return errorResponse(error.message, 400);
+        if (shouldResolveImages && data) await resolveS3Images(data);
         return jsonResponse({ data, count, limit, offset });
       }
 
@@ -299,10 +388,12 @@ serve(async (req) => {
         if (Array.isArray(body)) {
           const { data, error } = await supabase.from(table).insert(body).select();
           if (error) return errorResponse(error.message, 400);
+          if (shouldResolveImages && data) await resolveS3Images(data);
           return jsonResponse({ data }, 201);
         }
         const { data, error } = await supabase.from(table).insert(body).select().single();
         if (error) return errorResponse(error.message, 400);
+        if (shouldResolveImages) await resolveS3Images(data);
         return jsonResponse({ data }, 201);
       }
 
@@ -312,6 +403,7 @@ serve(async (req) => {
         const body = await req.json();
         const { data, error } = await supabase.from(table).update(body).eq("id", id).select().single();
         if (error) return errorResponse(error.message, 400);
+        if (shouldResolveImages) await resolveS3Images(data);
         return jsonResponse({ data });
       }
 
@@ -327,6 +419,6 @@ serve(async (req) => {
     }
   } catch (e) {
     console.error("API error:", e);
-    return errorResponse(e instanceof Error ? e.message : "Internal server error", 500);
+    return errorResponse("Internal server error", 500);
   }
 });
