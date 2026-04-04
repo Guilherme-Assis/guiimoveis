@@ -24,7 +24,7 @@ function parsePath(url: URL): { resource: string; id: string | null; action: str
   const resource = parts[0] || "";
   // Check if second part is an action or an id
   const second = parts[1] || null;
-  const actions = ["search", "stats", "by-slug", "counts"];
+  const actions = ["search", "stats", "by-slug", "counts", "login", "refresh", "me"];
   if (second && actions.includes(second)) {
     return { resource, id: null, action: second };
   }
