@@ -166,6 +166,14 @@ serve(async (req) => {
         name: "GUI Imóveis API",
         version: "1.0.0",
         base_url: `${Deno.env.get("SUPABASE_URL")}/functions/v1/api`,
+        auth: {
+          description: "Authentication endpoints - no Bearer token needed for login/refresh",
+          endpoints: [
+            { method: "POST", path: "/auth/login", body: '{ "email": "...", "password": "..." }', returns: "access_token, refresh_token, user" },
+            { method: "POST", path: "/auth/refresh", body: '{ "refresh_token": "..." }', returns: "new access_token, refresh_token" },
+            { method: "GET", path: "/auth/me", headers: "Authorization: Bearer <token>", returns: "user info, roles, profile" },
+          ],
+        },
         endpoints: Object.keys(RESOURCE_TABLE).map((r) => ({
           resource: r,
           table: RESOURCE_TABLE[r],
@@ -179,7 +187,7 @@ serve(async (req) => {
             ...(r === "property-views" ? [`/${r}/counts?days=30`] : []),
           ],
         })),
-        authentication: "Bearer token in Authorization header (Supabase JWT)",
+        authentication: "Use POST /auth/login to get a Bearer token. Include it in Authorization header for protected endpoints.",
         filtering: {
           description: "Use query params with prefixes: eq., gt., gte., lt., lte., like., in.",
           examples: [
