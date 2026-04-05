@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Bed, Bath, Car, Maximize, MapPin, PawPrint, GitCompareArrows, Check } from "lucide-react";
+import { Bed, Bath, Car, Maximize, MapPin, PawPrint, GitCompareArrows, Check, Handshake } from "lucide-react";
 import { Property, formatPrice } from "@/data/properties";
 import { Link } from "react-router-dom";
 import FavoriteButton from "@/components/FavoriteButton";
