@@ -14,8 +14,8 @@ const Footer = () => {
               </span>
             </Link>
             <p className="font-body text-sm leading-relaxed text-muted-foreground">
-              Especialistas em imóveis de alto padrão. Há mais de 20 anos
-              conectando pessoas ao endereço dos seus sonhos.
+              Comunidade de corretores autônomos. Divulgue imóveis, encontre
+              parceiros e feche negócios com quem entende do mercado.
             </p>
           </div>
 

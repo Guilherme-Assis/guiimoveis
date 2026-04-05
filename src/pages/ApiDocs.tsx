@@ -771,7 +771,7 @@ const ApiDocs = () => {
             <Badge className="bg-primary/10 text-primary border-primary/30">v1.0</Badge>
           </div>
           <p className="font-body text-muted-foreground max-w-2xl">
-            REST API completa para integração com o sistema GUI Imóveis. Todos os endpoints respeitam as políticas de segurança (RLS) do banco de dados.
+            REST API completa para integração com a comunidade ÉLITE. Conecte seu app, divulgue imóveis e gerencie parcerias entre corretores autônomos. Todos os endpoints respeitam as políticas de segurança (RLS).
           </p>
         </div>
 
