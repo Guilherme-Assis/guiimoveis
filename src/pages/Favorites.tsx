@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -40,20 +40,29 @@ const Favorites = () => {
     loadFavorites();
   }, [loadFavorites]);
 
-  // Listen for real-time changes to favorites table for this user
+  // Listen for favorites changes — handles adds from other pages
   useEffect(() => {
     if (!user) return;
     const channel = supabase
       .channel("favorites-changes")
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "favorites", filter: `user_id=eq.${user.id}` },
+        { event: "INSERT", schema: "public", table: "favorites", filter: `user_id=eq.${user.id}` },
         () => { loadFavorites(); }
       )
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
   }, [user, loadFavorites]);
+
+  // Optimistic removal — called by FavoriteButton via custom event
+  useEffect(() => {
+    const handler = (e: CustomEvent<{ propertyId: string }>) => {
+      setProperties((prev) => prev.filter((p) => p.id !== e.detail.propertyId));
+    };
+    window.addEventListener("favorite-removed" as any, handler);
+    return () => window.removeEventListener("favorite-removed" as any, handler);
+  }, []);
 
   const adaptProperty = (p: any) => ({
     id: p.id,
@@ -125,9 +134,17 @@ const Favorites = () => {
           </div>
         ) : (
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {properties.map((p, i) => (
-              <PropertyCard key={p.id} property={adaptProperty(p)} index={i} />
-            ))}
+            <AnimatePresence mode="popLayout">
+              {properties.map((p, i) => (
+                <motion.div
+                  key={p.id}
+                  layout
+                  exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.25 } }}
+                >
+                  <PropertyCard property={adaptProperty(p)} index={i} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
         )}
       </section>
