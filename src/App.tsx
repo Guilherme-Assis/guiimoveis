@@ -58,6 +58,7 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: ReactNode; allow
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <ThemeProvider>
     <AuthProvider>
       <CompareProvider>
         <TooltipProvider>
