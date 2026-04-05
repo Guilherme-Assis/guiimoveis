@@ -84,9 +84,18 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
               <p className="text-xs text-muted-foreground">Tudo em dia!</p>
             </div>
           ) : (
-            <div className="divide-y divide-border/20">
+             <div className="divide-y divide-border/20">
               {notifications.slice(0, 15).map((notif) => (
-                <div key={notif.id} className="group flex items-start gap-3 px-4 py-3 transition-colors hover:bg-muted/30">
+                <div
+                  key={notif.id}
+                  className={`group flex items-start gap-3 px-4 py-3 transition-colors hover:bg-muted/30 ${notif.link ? "cursor-pointer" : ""}`}
+                  onClick={() => {
+                    if (notif.link) {
+                      markAsRead(notif.id);
+                      navigate(notif.link);
+                    }
+                  }}
+                >
                   <div className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border ${notif.color}`}>
                     <notif.icon className="h-3.5 w-3.5" />
                   </div>
