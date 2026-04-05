@@ -172,9 +172,12 @@ const Header = () => {
               )
             )}
             <div className="luxury-divider my-2" />
-            <a href="tel:+5511999999999" className="flex items-center gap-2 font-body text-sm text-muted-foreground">
-              <Phone className="h-3.5 w-3.5 text-primary" /> (11) 99999-9999
-            </a>
+            <div className="flex items-center justify-between">
+              <a href="tel:+5511999999999" className="flex items-center gap-2 font-body text-sm text-muted-foreground">
+                <Phone className="h-3.5 w-3.5 text-primary" /> (11) 99999-9999
+              </a>
+              <ThemeToggle />
+            </div>
           </nav>
         </motion.div>
       )}

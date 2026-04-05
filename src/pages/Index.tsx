@@ -124,6 +124,8 @@ const Index = () => {
   // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
+    // Save non-default filters as recent search
+    addSearch(filters);
   }, [filters]);
 
   const availableCities = useMemo(() => [...new Set(filterOptions.map((p) => p.city))].sort(), [filterOptions]);
