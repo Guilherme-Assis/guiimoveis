@@ -26,11 +26,44 @@ import { useToast } from "@/hooks/use-toast";
 
 const PropertyDetail = () => {
   const { slug } = useParams();
-  const { user } = useAuth();
+  const { user, role, brokerId } = useAuth();
+  const { toast } = useToast();
   const [property, setProperty] = useState<any>(null);
   const [broker, setBroker] = useState<any>(null);
   const [brokerProfile, setBrokerProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [partnershipOpen, setPartnershipOpen] = useState(false);
+  const [partnerSplit, setPartnerSplit] = useState([50]);
+  const [partnerMessage, setPartnerMessage] = useState("");
+  const [submittingPartnership, setSubmittingPartnership] = useState(false);
+
+  const isOwnProperty = role === "broker" && brokerId && broker?.id === brokerId;
+  const canPropose = role === "broker" && brokerId && broker && !isOwnProperty;
+
+  const handleProposePartnership = async () => {
+    if (!brokerId || !property?.id || !broker?.id) return;
+    setSubmittingPartnership(true);
+    try {
+      const { error } = await supabase.from("partnerships").insert({
+        property_id: property.id,
+        owner_broker_id: broker.id,
+        partner_broker_id: brokerId,
+        commission_split_owner: 100 - partnerSplit[0],
+        commission_split_partner: partnerSplit[0],
+        message: partnerMessage || null,
+        status: "pendente",
+      });
+      if (error) throw error;
+      toast({ title: "Parceria proposta! 🤝", description: "O corretor responsável será notificado." });
+      setPartnershipOpen(false);
+      setPartnerMessage("");
+      setPartnerSplit([50]);
+    } catch (err: any) {
+      toast({ title: "Erro ao propor parceria", description: err.message || "Tente novamente.", variant: "destructive" });
+    } finally {
+      setSubmittingPartnership(false);
+    }
+  };
 
   useEffect(() => {
     const load = async () => {
