@@ -3,75 +3,33 @@ import { corsHeaders } from "npm:@supabase/supabase-js/cors";
 
 const OVERPASS_URL = "https://overpass-api.de/api/interpreter";
 
-interface OverpassElement {
-  type: string;
-  id: number;
-  tags?: Record<string, string>;
-}
+const categoryConfig: Record<string, { label: string; description: string; thresholds: number[] }> = {
+  schools: { label: "Escolas", description: "Instituições de ensino próximas", thresholds: [1, 3, 5, 8] },
+  shopping: { label: "Comércio", description: "Mercados, farmácias e lojas", thresholds: [2, 5, 10, 20] },
+  transport: { label: "Transporte", description: "Acesso a metrô e ônibus", thresholds: [2, 5, 10, 20] },
+  safety: { label: "Segurança", description: "Delegacias e postos policiais", thresholds: [1, 2, 3, 5] },
+  nature: { label: "Áreas Verdes", description: "Parques e praças próximos", thresholds: [1, 2, 4, 7] },
+  restaurants: { label: "Gastronomia", description: "Restaurantes e cafés", thresholds: [2, 5, 10, 20] },
+};
 
-interface CategoryQuery {
-  key: string;
-  label: string;
-  description: string;
-  query: string;
-}
-
-const categories: CategoryQuery[] = [
-  {
-    key: "schools",
-    label: "Escolas",
-    description: "Instituições de ensino próximas",
-    query: `node["amenity"="school"](around:{radius},{lat},{lng});way["amenity"="school"](around:{radius},{lat},{lng});`,
-  },
-  {
-    key: "shopping",
-    label: "Comércio",
-    description: "Mercados, farmácias e lojas",
-    query: `node["shop"](around:{radius},{lat},{lng});node["amenity"="pharmacy"](around:{radius},{lat},{lng});`,
-  },
-  {
-    key: "transport",
-    label: "Transporte",
-    description: "Acesso a metrô e ônibus",
-    query: `node["highway"="bus_stop"](around:{radius},{lat},{lng});node["station"="subway"](around:{radius},{lat},{lng});node["railway"="station"](around:{radius},{lat},{lng});`,
-  },
-  {
-    key: "safety",
-    label: "Segurança",
-    description: "Delegacias e postos policiais",
-    query: `node["amenity"="police"](around:{radius},{lat},{lng});way["amenity"="police"](around:{radius},{lat},{lng});`,
-  },
-  {
-    key: "nature",
-    label: "Áreas Verdes",
-    description: "Parques e praças próximos",
-    query: `node["leisure"="park"](around:{radius},{lat},{lng});way["leisure"="park"](around:{radius},{lat},{lng});node["leisure"="garden"](around:{radius},{lat},{lng});`,
-  },
-  {
-    key: "restaurants",
-    label: "Gastronomia",
-    description: "Restaurantes e cafés",
-    query: `node["amenity"="restaurant"](around:{radius},{lat},{lng});node["amenity"="cafe"](around:{radius},{lat},{lng});`,
-  },
-];
-
-function countToRating(count: number, key: string): number {
-  // Different thresholds per category
-  const thresholds: Record<string, number[]> = {
-    schools: [1, 3, 5, 8],
-    shopping: [2, 5, 10, 20],
-    transport: [2, 5, 10, 20],
-    safety: [1, 2, 3, 5],
-    nature: [1, 2, 4, 7],
-    restaurants: [2, 5, 10, 20],
-  };
-  const t = thresholds[key] || [1, 3, 5, 10];
+function countToRating(count: number, thresholds: number[]): number {
   if (count === 0) return 1;
-  if (count < t[0]) return 1;
-  if (count < t[1]) return 2;
-  if (count < t[2]) return 3;
-  if (count < t[3]) return 4;
+  if (count < thresholds[0]) return 1;
+  if (count < thresholds[1]) return 2;
+  if (count < thresholds[2]) return 3;
+  if (count < thresholds[3]) return 4;
   return 5;
+}
+
+function classifyTag(tags: Record<string, string> | undefined): string | null {
+  if (!tags) return null;
+  if (tags.amenity === "school") return "schools";
+  if (tags.shop || tags.amenity === "pharmacy" || tags.amenity === "marketplace") return "shopping";
+  if (tags.highway === "bus_stop" || tags.station === "subway" || tags.railway === "station" || tags.amenity === "bus_station") return "transport";
+  if (tags.amenity === "police") return "safety";
+  if (tags.leisure === "park" || tags.leisure === "garden") return "nature";
+  if (tags.amenity === "restaurant" || tags.amenity === "cafe") return "restaurants";
+  return null;
 }
 
 Deno.serve(async (req) => {
@@ -89,63 +47,62 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Build a single combined Overpass query for efficiency
-    let combinedQuery = "[out:json][timeout:30];(";
-    for (const cat of categories) {
-      combinedQuery += cat.query
-        .replace(/{radius}/g, String(radius))
-        .replace(/{lat}/g, String(latitude))
-        .replace(/{lng}/g, String(longitude));
-    }
-    combinedQuery += ");out count;";
+    // Single combined Overpass query
+    const query = `[out:json][timeout:25];
+(
+  node["amenity"="school"](around:${radius},${latitude},${longitude});
+  way["amenity"="school"](around:${radius},${latitude},${longitude});
+  node["shop"](around:${radius},${latitude},${longitude});
+  node["amenity"="pharmacy"](around:${radius},${latitude},${longitude});
+  node["highway"="bus_stop"](around:${radius},${latitude},${longitude});
+  node["station"="subway"](around:${radius},${latitude},${longitude});
+  node["railway"="station"](around:${radius},${latitude},${longitude});
+  node["amenity"="police"](around:${radius},${latitude},${longitude});
+  way["amenity"="police"](around:${radius},${latitude},${longitude});
+  node["leisure"="park"](around:${radius},${latitude},${longitude});
+  way["leisure"="park"](around:${radius},${latitude},${longitude});
+  node["leisure"="garden"](around:${radius},${latitude},${longitude});
+  node["amenity"="restaurant"](around:${radius},${latitude},${longitude});
+  node["amenity"="cafe"](around:${radius},${latitude},${longitude});
+);out tags;`;
 
-    // Unfortunately count doesn't give per-category breakdown, so we query each
+    const res = await fetch(OVERPASS_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `data=${encodeURIComponent(query)}`,
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Overpass API error ${res.status}: ${text.substring(0, 200)}`);
+    }
+
+    const data = await res.json();
+
+    // Count per category
+    const counts: Record<string, number> = { schools: 0, shopping: 0, transport: 0, safety: 0, nature: 0, restaurants: 0 };
+    for (const el of (data.elements || [])) {
+      const cat = classifyTag(el.tags);
+      if (cat) counts[cat]++;
+    }
+
+    // Build results
     const results: Record<string, { rating: number; count: number; label: string; description: string }> = {};
-
-    for (const cat of categories) {
-      const query = `[out:json][timeout:15];(${cat.query
-        .replace(/{radius}/g, String(radius))
-        .replace(/{lat}/g, String(latitude))
-        .replace(/{lng}/g, String(longitude))});out count;`;
-
-      try {
-        const res = await fetch(OVERPASS_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: `data=${encodeURIComponent(query)}`,
-        });
-        const data = await res.json();
-        const count = data.elements?.[0]?.tags?.total
-          ? parseInt(data.elements[0].tags.total)
-          : (data.elements?.length || 0);
-
-        results[cat.key] = {
-          rating: countToRating(count, cat.key),
-          count,
-          label: cat.label,
-          description: cat.description,
-        };
-      } catch {
-        results[cat.key] = {
-          rating: 0,
-          count: 0,
-          label: cat.label,
-          description: cat.description,
-        };
-      }
+    for (const [key, cfg] of Object.entries(categoryConfig)) {
+      results[key] = {
+        rating: countToRating(counts[key], cfg.thresholds),
+        count: counts[key],
+        label: cfg.label,
+        description: cfg.description,
+      };
     }
 
-    // If property_id provided, save to database
+    // Save to database if property_id provided
     if (property_id) {
-      const authHeader = req.headers.get("Authorization");
       const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
       const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
       const supabase = createClient(supabaseUrl, supabaseKey);
-
-      await supabase
-        .from("db_properties")
-        .update({ neighborhood_data: results })
-        .eq("id", property_id);
+      await supabase.from("db_properties").update({ neighborhood_data: results }).eq("id", property_id);
     }
 
     return new Response(JSON.stringify(results), {
@@ -153,6 +110,7 @@ Deno.serve(async (req) => {
     });
   } catch (error) {
     const msg = error instanceof Error ? error.message : "Unknown error";
+    console.error("neighborhood-data error:", msg);
     return new Response(JSON.stringify({ error: msg }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
