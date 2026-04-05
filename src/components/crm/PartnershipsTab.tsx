@@ -398,7 +398,7 @@ const ProposeDialog = ({
                 onValueChange={setSplit}
                 min={10}
                 max={90}
-                step={5}
+                step={1}
                 className="mb-3"
               />
               <div className="flex justify-between text-sm">

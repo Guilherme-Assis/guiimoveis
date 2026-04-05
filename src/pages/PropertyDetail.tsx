@@ -481,7 +481,7 @@ const PropertyDetail = () => {
           <div className="space-y-6 pt-2">
             <div>
               <label className="mb-2 block font-body text-sm font-medium text-foreground">Divisão de Comissão</label>
-              <Slider value={partnerSplit} onValueChange={setPartnerSplit} min={10} max={90} step={5} className="mb-2" />
+              <Slider value={partnerSplit} onValueChange={setPartnerSplit} min={10} max={90} step={1} className="mb-2" />
               <div className="flex justify-between font-body text-xs text-muted-foreground">
                 <span>Dono: {100 - partnerSplit[0]}%</span>
                 <span>Você: {partnerSplit[0]}%</span>
