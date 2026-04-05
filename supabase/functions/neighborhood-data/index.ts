@@ -53,7 +53,7 @@ node["amenity"~"school|pharmacy|police|restaurant|cafe"](around:${radius},${lati
 node["shop"](around:${radius},${latitude},${longitude});
 node["highway"="bus_stop"](around:${radius},${latitude},${longitude});
 node["leisure"~"park|garden"](around:${radius},${latitude},${longitude});
-);out tags;
+);out tags;`;
 
     const res = await fetch(OVERPASS_URL, {
       method: "POST",
