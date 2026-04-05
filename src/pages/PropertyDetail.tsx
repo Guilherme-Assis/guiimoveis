@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Bed, Bath, Car, Maximize, MapPin, Check, Phone, Mail, PawPrint, Sofa, CalendarDays, FileText } from "lucide-react";
+import { ArrowLeft, Bed, Bath, Car, Maximize, MapPin, Check, Phone, Mail, PawPrint, Sofa, CalendarDays, FileText, User, MessageCircle } from "lucide-react";
 import { formatPrice } from "@/data/properties";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
@@ -21,13 +21,26 @@ import { useTrackPropertyView } from "@/hooks/useTrackPropertyView";
 const PropertyDetail = () => {
   const { slug } = useParams();
   const [property, setProperty] = useState<any>(null);
+  const [broker, setBroker] = useState<any>(null);
+  const [brokerProfile, setBrokerProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
       if (!slug) return;
       const { data } = await supabase.rpc("get_property_by_slug", { _slug: slug });
-      setProperty(data?.[0] || null);
+      const prop = data?.[0] || null;
+      setProperty(prop);
+
+      if (prop?.broker_id) {
+        const { data: bData } = await supabase.rpc("get_active_broker", { _broker_id: prop.broker_id });
+        const b = bData?.[0] || null;
+        setBroker(b);
+        if (b?.user_id) {
+          const { data: pData } = await supabase.rpc("get_public_profile", { _user_id: b.user_id });
+          setBrokerProfile(pData?.[0] || null);
+        }
+      }
       setLoading(false);
     };
     load();
@@ -297,24 +310,58 @@ const PropertyDetail = () => {
           <div className="lg:col-span-1">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="space-y-6">
               <div className="sticky top-24 space-y-6">
-                <div className="border border-border bg-card p-8">
-                  <h3 className="mb-2 font-display text-xl font-semibold text-foreground">
-                    Agende uma Visita
-                  </h3>
-                  <p className="mb-6 font-body text-sm text-muted-foreground">
-                    Entre em contato com nossos consultores especializados.
-                  </p>
-                  <div className="flex flex-col gap-3">
-                    <a href="tel:+5511999999999" className="flex items-center justify-center gap-2 bg-gradient-gold py-3 font-body text-sm font-semibold uppercase tracking-wider text-primary-foreground transition-all hover:shadow-[var(--shadow-gold)]">
-                      <Phone className="h-4 w-4" /> Ligar Agora
-                    </a>
-                    <a href="mailto:contato@eliteimoveis.com" className="flex items-center justify-center gap-2 border border-primary py-3 font-body text-sm font-semibold uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-primary-foreground">
-                      <Mail className="h-4 w-4" /> Enviar E-mail
-                    </a>
+                {broker ? (
+                  <div className="border border-border bg-card p-8">
+                    <h3 className="mb-4 font-display text-xl font-semibold text-foreground">
+                      Corretor Responsável
+                    </h3>
+                    <div className="flex items-center gap-4 mb-4">
+                      {brokerProfile?.avatar_url ? (
+                        <img src={brokerProfile.avatar_url} alt={brokerProfile?.display_name || "Corretor"} className="h-14 w-14 rounded-full object-cover border-2 border-primary/30" />
+                      ) : (
+                        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 border-2 border-primary/30">
+                          <User className="h-6 w-6 text-primary" />
+                        </div>
+                      )}
+                      <div>
+                        <p className="font-display text-lg font-semibold text-foreground">{brokerProfile?.display_name || "Corretor"}</p>
+                        <p className="font-body text-xs text-muted-foreground">CRECI {broker.creci}</p>
+                        {broker.company_name && <p className="font-body text-xs text-muted-foreground">{broker.company_name}</p>}
+                      </div>
+                    </div>
+                    {brokerProfile?.bio && (
+                      <p className="mb-4 font-body text-sm text-muted-foreground leading-relaxed">{brokerProfile.bio}</p>
+                    )}
+                    <div className="flex flex-col gap-3">
+                      {brokerProfile?.phone && (
+                        <a href={`https://wa.me/55${brokerProfile.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 bg-gradient-gold py-3 font-body text-sm font-semibold uppercase tracking-wider text-primary-foreground transition-all hover:shadow-[var(--shadow-gold)]">
+                          <MessageCircle className="h-4 w-4" /> WhatsApp
+                        </a>
+                      )}
+                      {brokerProfile?.phone && (
+                        <a href={`tel:+55${brokerProfile.phone.replace(/\D/g, "")}`} className="flex items-center justify-center gap-2 border border-primary py-3 font-body text-sm font-semibold uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-primary-foreground">
+                          <Phone className="h-4 w-4" /> Ligar
+                        </a>
+                      )}
+                      {broker.slug && (
+                        <Link to={`/corretor/${broker.slug || broker.id}`} className="flex items-center justify-center gap-2 border border-border py-3 font-body text-sm font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:border-primary hover:text-primary">
+                          <User className="h-4 w-4" /> Ver Perfil Completo
+                        </Link>
+                      )}
+                    </div>
+                    <div className="luxury-divider my-6" />
+                    <p className="font-body text-xs text-center text-muted-foreground">Corretor autônomo da comunidade ÉLITE</p>
                   </div>
-                  <div className="luxury-divider my-6" />
-                  <p className="font-body text-xs text-center text-muted-foreground">Atendimento exclusivo e personalizado</p>
-                </div>
+                ) : (
+                  <div className="border border-border bg-card p-8">
+                    <h3 className="mb-2 font-display text-xl font-semibold text-foreground">
+                      Interessado?
+                    </h3>
+                    <p className="mb-6 font-body text-sm text-muted-foreground">
+                      Este imóvel ainda não possui um corretor vinculado.
+                    </p>
+                  </div>
+                )}
 
                 {/* Show Rental Cost Calculator for rentals, Mortgage Calculator for sales */}
                 {isRental ? (
