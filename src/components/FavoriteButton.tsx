@@ -38,6 +38,7 @@ const FavoriteButton = ({ propertyId, className = "", size = "sm" }: FavoriteBut
     if (isFavorite) {
       await supabase.from("favorites").delete().eq("user_id", user.id).eq("property_id", propertyId);
       setIsFavorite(false);
+      window.dispatchEvent(new CustomEvent("favorite-removed", { detail: { propertyId } }));
     } else {
       await supabase.from("favorites").insert({ user_id: user.id, property_id: propertyId });
       setIsFavorite(true);
