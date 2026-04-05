@@ -16,6 +16,7 @@ import PropertyImageGallery from "@/components/PropertyImageGallery";
 import SocialShare from "@/components/SocialShare";
 import NeighborhoodRating from "@/components/NeighborhoodRating";
 import FloorPlanGallery from "@/components/FloorPlanGallery";
+import SimilarProperties from "@/components/SimilarProperties";
 import SEOHead from "@/components/SEOHead";
 import { useTrackPropertyView } from "@/hooks/useTrackPropertyView";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
