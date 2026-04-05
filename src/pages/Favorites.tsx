@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Heart } from "lucide-react";
@@ -13,35 +13,54 @@ const Favorites = () => {
   const [properties, setProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (!user) { setLoading(false); return; }
+  const loadFavorites = useCallback(async () => {
+    if (!user) { setProperties([]); setLoading(false); return; }
+    setLoading(true);
 
-    const load = async () => {
-      const { data: favs } = await supabase
-        .from("favorites")
-        .select("property_id")
-        .eq("user_id", user.id);
+    const { data: favs } = await supabase
+      .from("favorites")
+      .select("property_id")
+      .eq("user_id", user.id);
 
-      if (favs && favs.length > 0) {
-        const ids = favs.map((f) => f.property_id);
-        const { data: props } = await supabase
-          .from("db_properties")
-          .select("*")
-          .in("id", ids)
-          .eq("availability", "available");
-        setProperties(props || []);
-      }
-      setLoading(false);
-    };
-    load();
+    if (favs && favs.length > 0) {
+      const ids = favs.map((f) => f.property_id);
+      const { data: props } = await supabase
+        .from("db_properties")
+        .select("id,slug,title,type,status,price,location,city,state,bedrooms,bathrooms,parking_spaces,area,land_area,image_url,is_highlight,rental_price,accepts_pets,furnished,features,open_for_partnership")
+        .in("id", ids)
+        .eq("availability", "available");
+      setProperties(props || []);
+    } else {
+      setProperties([]);
+    }
+    setLoading(false);
   }, [user]);
+
+  useEffect(() => {
+    loadFavorites();
+  }, [loadFavorites]);
+
+  // Listen for real-time changes to favorites table for this user
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel("favorites-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "favorites", filter: `user_id=eq.${user.id}` },
+        () => { loadFavorites(); }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [user, loadFavorites]);
 
   const adaptProperty = (p: any) => ({
     id: p.id,
     slug: p.slug,
     title: p.title,
-    type: p.type,
-    status: p.status,
+    type: p.type === "mansao" ? "mansão" : p.type,
+    status: p.status === "lancamento" ? "lançamento" : p.status,
     price: Number(p.price),
     location: p.location,
     city: p.city,
@@ -51,11 +70,15 @@ const Favorites = () => {
     parkingSpaces: p.parking_spaces,
     area: Number(p.area),
     landArea: Number(p.land_area),
-    description: p.description || "",
+    description: "",
     features: p.features || [],
     image: p.image_url || "/placeholder.svg",
-    images: p.images || [],
+    images: [],
     isHighlight: p.is_highlight,
+    rentalPrice: Number(p.rental_price) || 0,
+    acceptsPets: p.accepts_pets || false,
+    furnished: p.furnished || false,
+    openForPartnership: p.open_for_partnership || false,
   });
 
   if (authLoading || loading) {
@@ -89,12 +112,13 @@ const Favorites = () => {
             <Heart className="h-8 w-8 text-primary" /> Meus Favoritos
           </h1>
           <p className="mb-12 font-body text-muted-foreground">
-            Imóveis que você salvou para ver depois.
+            {properties.length} {properties.length === 1 ? "imóvel salvo" : "imóveis salvos"} para ver depois.
           </p>
         </motion.div>
 
         {properties.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
+            <Heart className="mb-4 h-16 w-16 text-muted-foreground/20" />
             <p className="font-display text-xl text-foreground">Nenhum favorito ainda</p>
             <p className="mt-2 font-body text-sm text-muted-foreground">Explore imóveis e salve seus preferidos.</p>
             <Link to="/" className="mt-4 font-body text-primary hover:underline">Ver imóveis</Link>
