@@ -37,8 +37,8 @@ const PropertyDetail = () => {
   const [partnerMessage, setPartnerMessage] = useState("");
   const [submittingPartnership, setSubmittingPartnership] = useState(false);
 
-  const isOwnProperty = role === "broker" && brokerId && broker?.id === brokerId;
-  const canPropose = role === "broker" && brokerId && broker && !isOwnProperty;
+  const isOwnProperty = brokerId && broker?.id === brokerId;
+  const canPropose = brokerId && broker && !isOwnProperty;
 
   const handleProposePartnership = async () => {
     if (!brokerId || !property?.id || !broker?.id) return;
