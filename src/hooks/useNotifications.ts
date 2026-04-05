@@ -94,6 +94,20 @@ export const useNotifications = () => {
     enabled: !!brokerId || role === "admin",
   });
 
+  const { data: partnershipNotifs = [] } = useQuery({
+    queryKey: ["notif-partnerships", brokerId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("partnerships")
+        .select("*, db_properties(title), owner_broker:brokers!partnerships_owner_broker_id_fkey(company_name, creci), partner_broker:brokers!partnerships_partner_broker_id_fkey(company_name, creci)")
+        .order("updated_at", { ascending: false })
+        .limit(30);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!brokerId || role === "admin",
+  });
+
   const allNotifications: AppNotification[] = useMemo(() => {
     const notifs: AppNotification[] = [];
     const now = new Date();
