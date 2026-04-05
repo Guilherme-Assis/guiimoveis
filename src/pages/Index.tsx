@@ -1,101 +1,162 @@
-import { useRef, useState, useMemo, useEffect } from "react";
+import { useRef, useState, useMemo, useEffect, useCallback } from "react";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import PropertyFilters, { FilterState, defaultFilters } from "@/components/PropertyFilters";
 import PropertyCard from "@/components/PropertyCard";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
-import { Property, typeLabelsMap } from "@/data/properties";
+import { Property } from "@/data/properties";
 import { Link } from "react-router-dom";
 import { slugifyCity } from "@/data/properties";
-import { MapPin } from "lucide-react";
+import { MapPin, ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+const PAGE_SIZE = 18;
+
+const mapRow = (p: any): Property & { rentalPrice: number; acceptsPets: boolean; furnished: boolean; openForPartnership: boolean } => ({
+  id: p.id,
+  slug: p.slug,
+  title: p.title,
+  type: p.type === "mansao" ? "mansão" : p.type,
+  status: p.status === "lancamento" ? "lançamento" : p.status,
+  price: Number(p.price),
+  location: p.location,
+  city: p.city,
+  state: p.state,
+  bedrooms: p.bedrooms,
+  bathrooms: p.bathrooms,
+  parkingSpaces: p.parking_spaces,
+  area: Number(p.area),
+  landArea: Number(p.land_area),
+  description: "",
+  features: p.features || [],
+  image: p.image_url || "/placeholder.svg",
+  images: [],
+  isHighlight: p.is_highlight,
+  rentalPrice: Number(p.rental_price) || 0,
+  acceptsPets: p.accepts_pets || false,
+  furnished: p.furnished || false,
+  openForPartnership: p.open_for_partnership || false,
+});
+
+const LISTING_COLUMNS = "id,slug,title,type,status,price,location,city,state,bedrooms,bathrooms,parking_spaces,area,land_area,image_url,is_highlight,rental_price,accepts_pets,furnished,features,open_for_partnership";
 
 const Index = () => {
   const listingsRef = useRef<HTMLDivElement>(null);
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
-  const [dbProperties, setDbProperties] = useState<Property[]>([]);
+  const [dbProperties, setDbProperties] = useState<(Property & { rentalPrice: number; acceptsPets: boolean; furnished: boolean })[]>([]);
   const [loading, setLoading] = useState(true);
+  const [totalCount, setTotalCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Separate query for filter options (cities/states/neighborhoods) — lightweight
+  const [filterOptions, setFilterOptions] = useState<{ city: string; state: string; location: string }[]>([]);
 
   useEffect(() => {
     supabase
       .from("db_properties")
-      .select("*")
+      .select("city,state,location")
       .eq("availability", "available")
       .then(({ data }) => {
-        if (data) {
-          setDbProperties(
-            data.map((p: any) => ({
-              id: p.id,
-              slug: p.slug,
-              title: p.title,
-              type: p.type === "mansao" ? "mansão" : p.type,
-              status: p.status === "lancamento" ? "lançamento" : p.status,
-              price: Number(p.price),
-              location: p.location,
-              city: p.city,
-              state: p.state,
-              bedrooms: p.bedrooms,
-              bathrooms: p.bathrooms,
-              parkingSpaces: p.parking_spaces,
-              area: Number(p.area),
-              landArea: Number(p.land_area),
-              description: p.description || "",
-              features: p.features || [],
-              image: p.image_url || "/placeholder.svg",
-              images: p.images || [],
-              isHighlight: p.is_highlight,
-              rentalPrice: Number(p.rental_price) || 0,
-              acceptsPets: p.accepts_pets || false,
-              furnished: p.furnished || false,
-              openForPartnership: (p as any).open_for_partnership || false,
-            }))
-          );
-        }
-        setLoading(false);
+        if (data) setFilterOptions(data as any);
       });
   }, []);
 
-  const availableCities = useMemo(() => [...new Set(dbProperties.map((p) => p.city))].sort(), [dbProperties]);
-  const availableStates = useMemo(() => [...new Set(dbProperties.map((p) => p.state))].sort(), [dbProperties]);
-  const availableNeighborhoods = useMemo(() => {
-    let filtered = dbProperties;
-    if (filters.city) filtered = filtered.filter((p) => p.city === filters.city);
-    return [...new Set(filtered.map((p) => p.location))].sort();
-  }, [dbProperties, filters.city]);
+  // Main data fetch with server-side filtering & pagination
+  const fetchProperties = useCallback(async () => {
+    setLoading(true);
 
-  const filteredProperties = useMemo(() => {
-    let result = [...dbProperties];
+    let query = supabase
+      .from("db_properties")
+      .select(LISTING_COLUMNS, { count: "exact" })
+      .eq("availability", "available");
 
-    if (filters.type) result = result.filter((p) => p.type === filters.type);
-    if (filters.status) result = result.filter((p) => p.status === filters.status);
-    if (filters.city) result = result.filter((p) => p.city === filters.city);
-    if (filters.state) result = result.filter((p) => p.state === filters.state);
-    if (filters.neighborhood) result = result.filter((p) => p.location === filters.neighborhood);
+    // Apply server-side filters
+    if (filters.type) query = query.eq("type", filters.type === "mansão" ? "mansao" : filters.type);
+    if (filters.status) query = query.eq("status", filters.status === "lançamento" ? "lancamento" : filters.status);
+    if (filters.city) query = query.eq("city", filters.city);
+    if (filters.state) query = query.eq("state", filters.state);
+    if (filters.neighborhood) query = query.eq("location", filters.neighborhood);
+    if (filters.minBedrooms) query = query.gte("bedrooms", Number(filters.minBedrooms));
+    if (filters.acceptsPets === "true") query = query.eq("accepts_pets", true);
+    if (filters.acceptsPets === "false") query = query.eq("accepts_pets", false);
+    if (filters.furnished === "true") query = query.eq("furnished", true);
+    if (filters.furnished === "false") query = query.eq("furnished", false);
+
+    // Price filters
     if (filters.minPrice) {
-      const min = Number(filters.minPrice);
       const isRental = filters.status === "aluguel";
-      result = result.filter((p) => {
-        const price = isRental && (p as any).rentalPrice > 0 ? (p as any).rentalPrice : p.price;
-        return price >= min;
-      });
+      if (isRental) {
+        query = query.gte("rental_price", Number(filters.minPrice));
+      } else {
+        query = query.gte("price", Number(filters.minPrice));
+      }
     }
     if (filters.maxPrice) {
-      const max = Number(filters.maxPrice);
       const isRental = filters.status === "aluguel";
-      result = result.filter((p) => {
-        const price = isRental && (p as any).rentalPrice > 0 ? (p as any).rentalPrice : p.price;
-        return price <= max;
-      });
+      if (isRental) {
+        query = query.lte("rental_price", Number(filters.maxPrice));
+      } else {
+        query = query.lte("price", Number(filters.maxPrice));
+      }
     }
-    if (filters.minBedrooms) result = result.filter((p) => p.bedrooms >= Number(filters.minBedrooms));
-    if (filters.minArea) {
-      const min = Number(filters.minArea);
-      result = result.filter((p) => (p.area || p.landArea) >= min);
+
+    // Area filters
+    if (filters.minArea) query = query.gte("area", Number(filters.minArea));
+    if (filters.maxArea) query = query.lte("area", Number(filters.maxArea));
+
+    // Sorting
+    switch (filters.sortBy) {
+      case "price-asc":
+        query = query.order("price", { ascending: true });
+        break;
+      case "price-desc":
+        query = query.order("price", { ascending: false });
+        break;
+      case "area-desc":
+        query = query.order("area", { ascending: false });
+        break;
+      case "bedrooms-desc":
+        query = query.order("bedrooms", { ascending: false });
+        break;
+      default:
+        query = query.order("is_highlight", { ascending: false }).order("created_at", { ascending: false });
     }
-    if (filters.maxArea) {
-      const max = Number(filters.maxArea);
-      result = result.filter((p) => (p.area || p.landArea) <= max);
+
+    // Pagination
+    const from = (currentPage - 1) * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+    query = query.range(from, to);
+
+    const { data, count } = await query;
+
+    if (data) {
+      setDbProperties(data.map(mapRow));
+      setTotalCount(count ?? 0);
     }
+    setLoading(false);
+  }, [filters, currentPage]);
+
+  useEffect(() => {
+    fetchProperties();
+  }, [fetchProperties]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters]);
+
+  const availableCities = useMemo(() => [...new Set(filterOptions.map((p) => p.city))].sort(), [filterOptions]);
+  const availableStates = useMemo(() => [...new Set(filterOptions.map((p) => p.state))].sort(), [filterOptions]);
+  const availableNeighborhoods = useMemo(() => {
+    let filtered = filterOptions;
+    if (filters.city) filtered = filtered.filter((p) => p.city === filters.city);
+    return [...new Set(filtered.map((p) => p.location))].sort();
+  }, [filterOptions, filters.city]);
+
+  // Client-side amenity filtering (features are arrays, hard to filter server-side)
+  const displayProperties = useMemo(() => {
+    let result = dbProperties;
     if (filters.amenities && filters.amenities.length > 0) {
       result = result.filter((p) =>
         filters.amenities.every((amenity) =>
@@ -103,54 +164,48 @@ const Index = () => {
         )
       );
     }
-    if (filters.acceptsPets === "true") {
-      result = result.filter((p) => (p as any).acceptsPets === true);
-    } else if (filters.acceptsPets === "false") {
-      result = result.filter((p) => (p as any).acceptsPets === false);
-    }
-    if (filters.furnished === "true") {
-      result = result.filter((p) => (p as any).furnished === true);
-    } else if (filters.furnished === "false") {
-      result = result.filter((p) => (p as any).furnished === false);
-    }
-    switch (filters.sortBy) {
-      case "price-asc":
-        result.sort((a, b) => a.price - b.price);
-        break;
-      case "price-desc":
-        result.sort((a, b) => b.price - a.price);
-        break;
-      case "area-desc":
-        result.sort((a, b) => (b.area || b.landArea) - (a.area || a.landArea));
-        break;
-      case "bedrooms-desc":
-        result.sort((a, b) => b.bedrooms - a.bedrooms);
-        break;
-      default:
-        result.sort((a, b) => (b.isHighlight ? 1 : 0) - (a.isHighlight ? 1 : 0));
-    }
-
     return result;
-  }, [filters, dbProperties]);
+  }, [dbProperties, filters.amenities]);
 
-  // Compute city groups for SEO links
+  // City groups for SEO
   const cityGroups = useMemo(() => {
     const map = new Map<string, { city: string; state: string; count: number }>();
-    dbProperties.forEach((p) => {
+    filterOptions.forEach((p) => {
       const key = `${p.city}-${p.state}`;
       const existing = map.get(key);
-      if (existing) {
-        existing.count++;
-      } else {
-        map.set(key, { city: p.city, state: p.state, count: 1 });
-      }
+      if (existing) existing.count++;
+      else map.set(key, { city: p.city, state: p.state, count: 1 });
     });
     return Array.from(map.values()).sort((a, b) => b.count - a.count);
-  }, [dbProperties]);
+  }, [filterOptions]);
+
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
   const scrollToListings = () => {
     listingsRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
+    listingsRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  // Generate page numbers to display
+  const pageNumbers = useMemo(() => {
+    const pages: (number | "...")[] = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (currentPage > 3) pages.push("...");
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+      for (let i = start; i <= end; i++) pages.push(i);
+      if (currentPage < totalPages - 2) pages.push("...");
+      pages.push(totalPages);
+    }
+    return pages;
+  }, [currentPage, totalPages]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -161,7 +216,7 @@ const Index = () => {
         <PropertyFilters
           filters={filters}
           onChange={setFilters}
-          resultCount={filteredProperties.length}
+          resultCount={totalCount}
           availableCities={availableCities}
           availableStates={availableStates}
           availableNeighborhoods={availableNeighborhoods}
@@ -172,12 +227,58 @@ const Index = () => {
             <div className="flex items-center justify-center py-20">
               <p className="font-body text-muted-foreground">Carregando imóveis...</p>
             </div>
-          ) : filteredProperties.length > 0 ? (
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {filteredProperties.map((property, i) => (
-                <PropertyCard key={property.id} property={property} index={i} />
-              ))}
-            </div>
+          ) : displayProperties.length > 0 ? (
+            <>
+              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                {displayProperties.map((property, i) => (
+                  <PropertyCard key={property.id} property={property} index={i} />
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <nav className="mt-12 flex items-center justify-center gap-1" aria-label="Paginação">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => goToPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    aria-label="Página anterior"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+
+                  {pageNumbers.map((page, idx) =>
+                    page === "..." ? (
+                      <span key={`dots-${idx}`} className="px-2 font-body text-sm text-muted-foreground">
+                        ...
+                      </span>
+                    ) : (
+                      <Button
+                        key={page}
+                        variant={currentPage === page ? "default" : "outline"}
+                        size="icon"
+                        onClick={() => goToPage(page)}
+                        aria-current={currentPage === page ? "page" : undefined}
+                        className="h-9 w-9"
+                      >
+                        {page}
+                      </Button>
+                    )
+                  )}
+
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => goToPage(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    aria-label="Próxima página"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </nav>
+              )}
+            </>
           ) : (
             <div className="flex flex-col items-center justify-center py-20 text-center">
               <p className="font-display text-2xl text-foreground">
