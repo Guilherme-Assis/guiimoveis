@@ -15,6 +15,7 @@ export interface AppNotification {
   date: Date;
   icon: any;
   color: string;
+  link?: string;
 }
 
 const STORAGE_KEY = "elite-read-notifications";
