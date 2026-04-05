@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Bed, Bath, Car, Maximize, MapPin, Check, Phone, Mail, PawPrint, Sofa, CalendarDays, FileText, User, MessageCircle, ExternalLink, Lock } from "lucide-react";
+import { ArrowLeft, Bed, Bath, Car, Maximize, MapPin, Check, Phone, Mail, PawPrint, Sofa, CalendarDays, FileText, User, MessageCircle, ExternalLink, Lock, Handshake } from "lucide-react";
 import { formatPrice } from "@/data/properties";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -18,14 +18,52 @@ import NeighborhoodRating from "@/components/NeighborhoodRating";
 import FloorPlanGallery from "@/components/FloorPlanGallery";
 import SEOHead from "@/components/SEOHead";
 import { useTrackPropertyView } from "@/hooks/useTrackPropertyView";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Slider } from "@/components/ui/slider";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 const PropertyDetail = () => {
   const { slug } = useParams();
-  const { user } = useAuth();
+  const { user, role, brokerId } = useAuth();
+  const { toast } = useToast();
   const [property, setProperty] = useState<any>(null);
   const [broker, setBroker] = useState<any>(null);
   const [brokerProfile, setBrokerProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [partnershipOpen, setPartnershipOpen] = useState(false);
+  const [partnerSplit, setPartnerSplit] = useState([50]);
+  const [partnerMessage, setPartnerMessage] = useState("");
+  const [submittingPartnership, setSubmittingPartnership] = useState(false);
+
+  const isOwnProperty = role === "broker" && brokerId && broker?.id === brokerId;
+  const canPropose = role === "broker" && brokerId && broker && !isOwnProperty;
+
+  const handleProposePartnership = async () => {
+    if (!brokerId || !property?.id || !broker?.id) return;
+    setSubmittingPartnership(true);
+    try {
+      const { error } = await supabase.from("partnerships").insert({
+        property_id: property.id,
+        owner_broker_id: broker.id,
+        partner_broker_id: brokerId,
+        commission_split_owner: 100 - partnerSplit[0],
+        commission_split_partner: partnerSplit[0],
+        message: partnerMessage || null,
+        status: "pendente",
+      });
+      if (error) throw error;
+      toast({ title: "Parceria proposta! 🤝", description: "O corretor responsável será notificado." });
+      setPartnershipOpen(false);
+      setPartnerMessage("");
+      setPartnerSplit([50]);
+    } catch (err: any) {
+      toast({ title: "Erro ao propor parceria", description: err.message || "Tente novamente.", variant: "destructive" });
+    } finally {
+      setSubmittingPartnership(false);
+    }
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -366,6 +404,14 @@ const PropertyDetail = () => {
                               <Phone className="h-4 w-4" /> Ligar
                             </a>
                           )}
+                          {canPropose && property.open_for_partnership && (
+                            <button
+                              onClick={() => setPartnershipOpen(true)}
+                              className="flex items-center justify-center gap-2 border-2 border-dashed border-primary/50 py-3 font-body text-sm font-semibold uppercase tracking-wider text-primary transition-all hover:border-primary hover:bg-primary/5"
+                            >
+                              <Handshake className="h-4 w-4" /> Propor Parceria
+                            </button>
+                          )}
                         </div>
                         <div className="luxury-divider my-6" />
                         <p className="font-body text-xs text-center text-muted-foreground">Corretor autônomo da comunidade ÉLITE</p>
@@ -420,6 +466,47 @@ const PropertyDetail = () => {
       </section>
 
       <Footer />
+
+      {/* Partnership Proposal Dialog */}
+      <Dialog open={partnershipOpen} onOpenChange={setPartnershipOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 font-display">
+              <Handshake className="h-5 w-5 text-primary" /> Propor Parceria
+            </DialogTitle>
+            <DialogDescription>
+              Proponha uma parceria com {brokerProfile?.display_name || "o corretor"} para o imóvel <strong>{property?.title}</strong>.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-6 pt-2">
+            <div>
+              <label className="mb-2 block font-body text-sm font-medium text-foreground">Divisão de Comissão</label>
+              <Slider value={partnerSplit} onValueChange={setPartnerSplit} min={10} max={90} step={5} className="mb-2" />
+              <div className="flex justify-between font-body text-xs text-muted-foreground">
+                <span>Dono: {100 - partnerSplit[0]}%</span>
+                <span>Você: {partnerSplit[0]}%</span>
+              </div>
+            </div>
+            <div>
+              <label className="mb-2 block font-body text-sm font-medium text-foreground">Mensagem (opcional)</label>
+              <Textarea
+                value={partnerMessage}
+                onChange={(e) => setPartnerMessage(e.target.value)}
+                placeholder="Ex: Tenho um cliente interessado neste perfil de imóvel..."
+                rows={3}
+                maxLength={500}
+              />
+            </div>
+            <Button
+              onClick={handleProposePartnership}
+              disabled={submittingPartnership}
+              className="w-full bg-gradient-gold font-body text-sm font-semibold uppercase tracking-wider text-primary-foreground"
+            >
+              {submittingPartnership ? "Enviando..." : "Enviar Proposta de Parceria"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
