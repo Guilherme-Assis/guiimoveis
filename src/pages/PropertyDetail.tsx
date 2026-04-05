@@ -36,6 +36,7 @@ const PropertyDetail = () => {
   const [partnerSplit, setPartnerSplit] = useState([50]);
   const [partnerMessage, setPartnerMessage] = useState("");
   const [submittingPartnership, setSubmittingPartnership] = useState(false);
+  const [existingPartnership, setExistingPartnership] = useState<any>(null);
 
   const isOwnProperty = brokerId && broker?.id === brokerId;
   const canPropose = brokerId && broker && !isOwnProperty;
