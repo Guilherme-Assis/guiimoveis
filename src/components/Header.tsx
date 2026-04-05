@@ -1,17 +1,73 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Phone, Mail, Menu, X, Heart, MapPin as MapPinIcon, BookOpen, Building2 } from "lucide-react";
+import { Phone, Menu, X, Heart, MapPin as MapPinIcon, BookOpen, Building2, User, LogOut, LayoutDashboard } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, role, signOut, loading } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const displayName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Usuário";
+  const initials = displayName.slice(0, 2).toUpperCase();
+  const avatarUrl = user?.user_metadata?.avatar_url;
+
+  const UserMenu = () => (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className="flex items-center gap-2 rounded-full border border-border bg-card/80 py-1.5 pl-1.5 pr-3 transition-colors hover:border-primary/50">
+          <Avatar className="h-7 w-7">
+            <AvatarImage src={avatarUrl} alt={displayName} />
+            <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">{initials}</AvatarFallback>
+          </Avatar>
+          <span className="max-w-[120px] truncate font-body text-sm text-foreground">{displayName}</span>
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <div className="px-3 py-2">
+          <p className="font-body text-sm font-medium text-foreground">{displayName}</p>
+          <p className="font-body text-xs text-muted-foreground">{user?.email}</p>
+          {role && (
+            <span className="mt-1 inline-block rounded bg-primary/10 px-2 py-0.5 font-body text-[10px] font-semibold uppercase tracking-wider text-primary">
+              {role}
+            </span>
+          )}
+        </div>
+        <DropdownMenuSeparator />
+        {role && (
+          <DropdownMenuItem asChild>
+            <Link to="/admin" className="flex items-center gap-2 cursor-pointer">
+              <LayoutDashboard className="h-4 w-4" /> Painel Admin
+            </Link>
+          </DropdownMenuItem>
+        )}
+        <DropdownMenuItem asChild>
+          <Link to="/admin/profile" className="flex items-center gap-2 cursor-pointer">
+            <User className="h-4 w-4" /> Meu Perfil
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={() => signOut()} className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive">
+          <LogOut className="h-4 w-4" /> Sair
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 
   return (
     <motion.header
@@ -44,7 +100,13 @@ const Header = () => {
             <Heart className="h-3.5 w-3.5" /> Favoritos
           </Link>
           <a href="#contact" className="font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">Contato</a>
-          <Link to="/login" className="font-body text-sm uppercase tracking-wider text-primary transition-colors hover:text-primary/80">Área Restrita</Link>
+          {!loading && (
+            user ? (
+              <UserMenu />
+            ) : (
+              <Link to="/login" className="font-body text-sm uppercase tracking-wider text-primary transition-colors hover:text-primary/80">Área Restrita</Link>
+            )
+          )}
         </nav>
 
         <div className="hidden items-center gap-4 lg:flex">
@@ -76,7 +138,37 @@ const Header = () => {
               <Heart className="h-3.5 w-3.5 text-primary" /> Favoritos
             </Link>
             <a href="#contact" onClick={() => setMobileOpen(false)} className="font-body text-sm uppercase tracking-wider text-foreground">Contato</a>
-            <Link to="/login" onClick={() => setMobileOpen(false)} className="font-body text-sm uppercase tracking-wider text-primary">Área Restrita</Link>
+            
+            {!loading && (
+              user ? (
+                <>
+                  <div className="luxury-divider my-2" />
+                  <div className="flex items-center gap-3 py-1">
+                    <Avatar className="h-9 w-9">
+                      <AvatarImage src={avatarUrl} alt={displayName} />
+                      <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">{initials}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-body text-sm font-medium text-foreground">{displayName}</p>
+                      <p className="font-body text-xs text-muted-foreground">{user.email}</p>
+                    </div>
+                  </div>
+                  {role && (
+                    <Link to="/admin" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground">
+                      <LayoutDashboard className="h-3.5 w-3.5 text-primary" /> Painel Admin
+                    </Link>
+                  )}
+                  <Link to="/admin/profile" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground">
+                    <User className="h-3.5 w-3.5 text-primary" /> Meu Perfil
+                  </Link>
+                  <button onClick={() => { signOut(); setMobileOpen(false); }} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-destructive">
+                    <LogOut className="h-3.5 w-3.5" /> Sair
+                  </button>
+                </>
+              ) : (
+                <Link to="/login" onClick={() => setMobileOpen(false)} className="font-body text-sm uppercase tracking-wider text-primary">Área Restrita</Link>
+              )
+            )}
             <div className="luxury-divider my-2" />
             <a href="tel:+5511999999999" className="flex items-center gap-2 font-body text-sm text-muted-foreground">
               <Phone className="h-3.5 w-3.5 text-primary" /> (11) 99999-9999
