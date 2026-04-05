@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Bed, Bath, Car, Maximize, MapPin, Check, Phone, Mail, PawPrint, Sofa, CalendarDays, FileText } from "lucide-react";
+import { ArrowLeft, Bed, Bath, Car, Maximize, MapPin, Check, Phone, Mail, PawPrint, Sofa, CalendarDays, FileText, User, MessageCircle } from "lucide-react";
 import { formatPrice } from "@/data/properties";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
