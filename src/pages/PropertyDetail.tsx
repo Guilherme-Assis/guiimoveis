@@ -21,13 +21,26 @@ import { useTrackPropertyView } from "@/hooks/useTrackPropertyView";
 const PropertyDetail = () => {
   const { slug } = useParams();
   const [property, setProperty] = useState<any>(null);
+  const [broker, setBroker] = useState<any>(null);
+  const [brokerProfile, setBrokerProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
       if (!slug) return;
       const { data } = await supabase.rpc("get_property_by_slug", { _slug: slug });
-      setProperty(data?.[0] || null);
+      const prop = data?.[0] || null;
+      setProperty(prop);
+
+      if (prop?.broker_id) {
+        const { data: bData } = await supabase.rpc("get_active_broker", { _broker_id: prop.broker_id });
+        const b = bData?.[0] || null;
+        setBroker(b);
+        if (b?.user_id) {
+          const { data: pData } = await supabase.rpc("get_public_profile", { _user_id: b.user_id });
+          setBrokerProfile(pData?.[0] || null);
+        }
+      }
       setLoading(false);
     };
     load();
