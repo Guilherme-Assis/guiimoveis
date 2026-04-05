@@ -317,21 +317,41 @@ const PropertyDetail = () => {
                     </h3>
                     <div className="flex items-center gap-4 mb-4">
                       {brokerProfile?.avatar_url ? (
-                        <img src={brokerProfile.avatar_url} alt={brokerProfile?.display_name || "Corretor"} className="h-14 w-14 rounded-full object-cover border-2 border-primary/30" />
+                        <img src={brokerProfile.avatar_url} alt={brokerProfile?.display_name || "Corretor"} className="h-16 w-16 rounded-full object-cover border-2 border-primary/30" />
                       ) : (
-                        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 border-2 border-primary/30">
-                          <User className="h-6 w-6 text-primary" />
+                        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 border-2 border-primary/30">
+                          <User className="h-7 w-7 text-primary" />
                         </div>
                       )}
                       <div>
                         <p className="font-display text-lg font-semibold text-foreground">{brokerProfile?.display_name || "Corretor"}</p>
-                        <p className="font-body text-xs text-muted-foreground">CRECI {broker.creci}</p>
+                        <p className="font-body text-xs text-primary font-medium">CRECI {broker.creci}</p>
                         {broker.company_name && <p className="font-body text-xs text-muted-foreground">{broker.company_name}</p>}
                       </div>
                     </div>
+
                     {brokerProfile?.bio && (
                       <p className="mb-4 font-body text-sm text-muted-foreground leading-relaxed">{brokerProfile.bio}</p>
                     )}
+
+                    {/* Contact details */}
+                    <div className="mb-4 space-y-2 rounded-lg border border-border bg-secondary/50 p-4">
+                      {brokerProfile?.phone && (
+                        <div className="flex items-center gap-2">
+                          <Phone className="h-4 w-4 text-primary shrink-0" />
+                          <span className="font-body text-sm text-foreground">{brokerProfile.phone}</span>
+                        </div>
+                      )}
+                      {broker.slug && (
+                        <div className="flex items-center gap-2">
+                          <ExternalLink className="h-4 w-4 text-primary shrink-0" />
+                          <Link to={`/corretor/${broker.slug || broker.id}`} className="font-body text-sm text-primary hover:underline truncate">
+                            Ver perfil completo
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+
                     <div className="flex flex-col gap-3">
                       {brokerProfile?.phone && (
                         <a href={`https://wa.me/55${brokerProfile.phone.replace(/\D/g, "")}?text=${encodeURIComponent(`Olá ${brokerProfile?.display_name || ""}! Vi o imóvel "${property.title}" na comunidade ÉLITE e gostaria de mais informações. ${window.location.href}`)}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 bg-gradient-gold py-3 font-body text-sm font-semibold uppercase tracking-wider text-primary-foreground transition-all hover:shadow-[var(--shadow-gold)]">
@@ -342,11 +362,6 @@ const PropertyDetail = () => {
                         <a href={`tel:+55${brokerProfile.phone.replace(/\D/g, "")}`} className="flex items-center justify-center gap-2 border border-primary py-3 font-body text-sm font-semibold uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-primary-foreground">
                           <Phone className="h-4 w-4" /> Ligar
                         </a>
-                      )}
-                      {broker.slug && (
-                        <Link to={`/corretor/${broker.slug || broker.id}`} className="flex items-center justify-center gap-2 border border-border py-3 font-body text-sm font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:border-primary hover:text-primary">
-                          <User className="h-4 w-4" /> Ver Perfil Completo
-                        </Link>
                       )}
                     </div>
                     <div className="luxury-divider my-6" />
