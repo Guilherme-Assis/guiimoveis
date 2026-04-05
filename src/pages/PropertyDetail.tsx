@@ -493,6 +493,13 @@ const PropertyDetail = () => {
         </div>
       </section>
 
+      <SimilarProperties
+        propertyId={property.id}
+        type={property.type}
+        city={property.city}
+        price={Number(property.price)}
+      />
+
       <Footer />
 
       {/* Partnership Proposal Dialog */}
