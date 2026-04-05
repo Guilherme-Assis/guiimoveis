@@ -21,6 +21,7 @@ import { useTrackPropertyView } from "@/hooks/useTrackPropertyView";
 
 const PropertyDetail = () => {
   const { slug } = useParams();
+  const { user } = useAuth();
   const [property, setProperty] = useState<any>(null);
   const [broker, setBroker] = useState<any>(null);
   const [brokerProfile, setBrokerProfile] = useState<any>(null);
