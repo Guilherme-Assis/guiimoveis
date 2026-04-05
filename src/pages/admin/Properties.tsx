@@ -101,6 +101,7 @@ const Properties = () => {
       accepts_pets: (p as any).accepts_pets || false,
       furnished: (p as any).furnished || false,
       available_from: (p as any).available_from || "",
+      open_for_partnership: (p as any).open_for_partnership || false,
     });
     setFeaturesInput((p.features || []).join(", "));
     setDialogOpen(true);
