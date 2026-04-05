@@ -70,6 +70,11 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
                 Mobiliado
               </span>
             )}
+            {property.openForPartnership && (
+              <span className="flex items-center gap-1 bg-emerald-600/90 px-2 py-1 font-body text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-sm">
+                <Handshake className="h-3 w-3" /> Parceria
+              </span>
+            )}
           </div>
           <div className="absolute right-4 top-4 flex items-center gap-1.5">
             <button
