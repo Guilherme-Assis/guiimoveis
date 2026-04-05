@@ -8,7 +8,6 @@ import { useToast } from "@/hooks/use-toast";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
-import { Switch } from "@/components/ui/switch";
 import { Plus, Pencil, Trash2, UserCheck, UserX, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -23,12 +22,15 @@ type Broker = {
   slug: string | null;
 };
 
+const emptyForm = { email: "", password: "", fullName: "", creci: "", companyName: "", commissionRate: 5, slug: "" };
+
 const Brokers = () => {
   const { toast } = useToast();
   const [brokers, setBrokers] = useState<Broker[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [form, setForm] = useState({ email: "", password: "", fullName: "", creci: "", companyName: "", commissionRate: 5, slug: "" });
+  const [editingBroker, setEditingBroker] = useState<Broker | null>(null);
+  const [form, setForm] = useState(emptyForm);
 
   const load = async () => {
     setLoading(true);
@@ -39,13 +41,32 @@ const Brokers = () => {
 
   useEffect(() => { load(); }, []);
 
+  const openCreate = () => {
+    setEditingBroker(null);
+    setForm(emptyForm);
+    setDialogOpen(true);
+  };
+
+  const openEdit = (broker: Broker) => {
+    setEditingBroker(broker);
+    setForm({
+      email: "",
+      password: "",
+      fullName: "",
+      creci: broker.creci,
+      companyName: broker.company_name || "",
+      commissionRate: broker.commission_rate ?? 5,
+      slug: broker.slug || "",
+    });
+    setDialogOpen(true);
+  };
+
   const handleCreate = async () => {
     if (!form.email.trim() || !form.password.trim() || !form.creci.trim()) {
       toast({ title: "Campos obrigatórios", description: "Preencha e-mail, senha e CRECI.", variant: "destructive" });
       return;
     }
 
-    // Sign up the broker user
     const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email: form.email.trim(),
       password: form.password,
@@ -63,14 +84,12 @@ const Brokers = () => {
       return;
     }
 
-    // Add broker role
     const { error: roleError } = await supabase.from("user_roles").insert({ user_id: userId, role: "broker" });
     if (roleError) {
       toast({ title: "Erro ao atribuir role", description: roleError.message, variant: "destructive" });
       return;
     }
 
-    // Create broker record
     const brokerSlug = form.slug.trim() || slugify(form.fullName || form.email);
     const { error: brokerError } = await supabase.from("brokers").insert({
       user_id: userId,
@@ -87,7 +106,32 @@ const Brokers = () => {
 
     toast({ title: "Corretor cadastrado com sucesso!" });
     setDialogOpen(false);
-    setForm({ email: "", password: "", fullName: "", creci: "", companyName: "", commissionRate: 5, slug: "" });
+    setForm(emptyForm);
+    load();
+  };
+
+  const handleUpdate = async () => {
+    if (!editingBroker) return;
+    if (!form.creci.trim()) {
+      toast({ title: "CRECI obrigatório", variant: "destructive" });
+      return;
+    }
+
+    const { error } = await supabase.from("brokers").update({
+      creci: form.creci.trim(),
+      company_name: form.companyName.trim() || null,
+      commission_rate: form.commissionRate,
+      slug: form.slug.trim() || editingBroker.slug,
+    }).eq("id", editingBroker.id);
+
+    if (error) {
+      toast({ title: "Erro ao atualizar", description: error.message, variant: "destructive" });
+      return;
+    }
+
+    toast({ title: "Corretor atualizado com sucesso!" });
+    setDialogOpen(false);
+    setEditingBroker(null);
     load();
   };
 
@@ -110,7 +154,7 @@ const Brokers = () => {
           <h1 className="font-display text-3xl font-bold text-foreground">Corretores</h1>
           <p className="font-body text-sm text-muted-foreground">Gerencie a equipe de corretores</p>
         </div>
-        <Button onClick={() => setDialogOpen(true)} className="bg-gradient-gold font-body text-sm font-semibold uppercase tracking-wider text-primary-foreground">
+        <Button onClick={openCreate} className="bg-gradient-gold font-body text-sm font-semibold uppercase tracking-wider text-primary-foreground">
           <Plus className="mr-1 h-4 w-4" /> Novo Corretor
         </Button>
       </div>
@@ -129,7 +173,7 @@ const Brokers = () => {
               <div>
                 <h3 className="font-display text-lg font-semibold text-foreground">CRECI: {b.creci}</h3>
                 <p className="font-body text-xs text-muted-foreground">
-                  {b.company_name || "Autônomo"} • Comissão: {b.commission_rate}%
+                  {b.company_name || "Autônomo"} • Comissão: {b.commission_rate}% {b.slug && `• /${b.slug}`}
                 </p>
               </div>
               <div className="flex items-center gap-2">
@@ -137,6 +181,9 @@ const Brokers = () => {
                   <Link to={`/corretor/${b.slug || b.id}`} target="_blank">
                     <ExternalLink className="h-4 w-4 text-primary" />
                   </Link>
+                </Button>
+                <Button variant="ghost" size="icon" onClick={() => openEdit(b)} title="Editar">
+                  <Pencil className="h-4 w-4 text-primary" />
                 </Button>
                 <Button variant="ghost" size="icon" onClick={() => toggleActive(b)} title={b.is_active ? "Desativar" : "Ativar"}>
                   {b.is_active ? <UserCheck className="h-4 w-4 text-green-500" /> : <UserX className="h-4 w-4 text-destructive" />}
@@ -150,24 +197,30 @@ const Brokers = () => {
         </div>
       )}
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) setEditingBroker(null); }}>
         <DialogContent className="max-w-lg border-border bg-card text-foreground">
           <DialogHeader>
-            <DialogTitle className="font-display text-xl">Novo Corretor</DialogTitle>
+            <DialogTitle className="font-display text-xl">
+              {editingBroker ? "Editar Corretor" : "Novo Corretor"}
+            </DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <div className="space-y-2">
-              <Label className="font-body text-sm">Nome Completo</Label>
-              <Input value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} className="border-border bg-secondary" />
-            </div>
-            <div className="space-y-2">
-              <Label className="font-body text-sm">E-mail *</Label>
-              <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="border-border bg-secondary" />
-            </div>
-            <div className="space-y-2">
-              <Label className="font-body text-sm">Senha *</Label>
-              <Input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="border-border bg-secondary" />
-            </div>
+            {!editingBroker && (
+              <>
+                <div className="space-y-2">
+                  <Label className="font-body text-sm">Nome Completo</Label>
+                  <Input value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} className="border-border bg-secondary" />
+                </div>
+                <div className="space-y-2">
+                  <Label className="font-body text-sm">E-mail *</Label>
+                  <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="border-border bg-secondary" />
+                </div>
+                <div className="space-y-2">
+                  <Label className="font-body text-sm">Senha *</Label>
+                  <Input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="border-border bg-secondary" />
+                </div>
+              </>
+            )}
             <div className="space-y-2">
               <Label className="font-body text-sm">CRECI *</Label>
               <Input value={form.creci} onChange={(e) => setForm({ ...form, creci: e.target.value })} className="border-border bg-secondary" />
@@ -186,8 +239,11 @@ const Brokers = () => {
                 <Input type="number" value={form.commissionRate} onChange={(e) => setForm({ ...form, commissionRate: Number(e.target.value) })} className="border-border bg-secondary" />
               </div>
             </div>
-            <Button onClick={handleCreate} className="mt-2 w-full bg-gradient-gold font-body text-sm font-semibold uppercase tracking-wider text-primary-foreground">
-              Cadastrar Corretor
+            <Button
+              onClick={editingBroker ? handleUpdate : handleCreate}
+              className="mt-2 w-full bg-gradient-gold font-body text-sm font-semibold uppercase tracking-wider text-primary-foreground"
+            >
+              {editingBroker ? "Salvar Alterações" : "Cadastrar Corretor"}
             </Button>
           </div>
         </DialogContent>
