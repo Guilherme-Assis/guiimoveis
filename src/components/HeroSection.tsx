@@ -33,17 +33,17 @@ const HeroSection = ({ onScrollToListings }: HeroSectionProps) => {
           className="max-w-4xl"
         >
           <p className="mb-4 text-sm font-body uppercase tracking-[0.3em] text-primary">
-            Imóveis de Alto Padrão
+            Comunidade de Corretores Autônomos
           </p>
           <h1 className="mb-4 sm:mb-6 font-display text-3xl sm:text-5xl font-semibold leading-tight text-foreground md:text-7xl lg:text-8xl">
-            Onde o Luxo{" "}
-            <span className="text-gradient-gold italic">Encontra</span>
+            Conecte-se.{" "}
+            <span className="text-gradient-gold italic">Parceria.</span>
             <br />
-            seu Endereço
+            Resultados.
           </h1>
           <p className="mx-auto mb-6 sm:mb-10 max-w-2xl font-body text-base sm:text-lg font-light text-muted-foreground md:text-xl">
-            Descubra propriedades exclusivas que redefinem o conceito de
-            sofisticação e elegância no mercado imobiliário brasileiro.
+            A maior comunidade de corretores autônomos do Brasil. Divulgue seus imóveis,
+            encontre parceiros e feche mais negócios juntos.
           </p>
         </motion.div>
 
