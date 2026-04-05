@@ -9,8 +9,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Property } from "@/data/properties";
 import { Link } from "react-router-dom";
 import { slugifyCity } from "@/data/properties";
-import { MapPin, ChevronLeft, ChevronRight } from "lucide-react";
+import { MapPin, ChevronLeft, ChevronRight, Clock, X, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useRecentSearches } from "@/hooks/useRecentSearches";
 
 const PAGE_SIZE = 18;
 
