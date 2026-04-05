@@ -47,6 +47,7 @@ const Index = () => {
               rentalPrice: Number(p.rental_price) || 0,
               acceptsPets: p.accepts_pets || false,
               furnished: p.furnished || false,
+              openForPartnership: (p as any).open_for_partnership || false,
             }))
           );
         }
