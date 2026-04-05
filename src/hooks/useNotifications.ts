@@ -15,6 +15,7 @@ export interface AppNotification {
   date: Date;
   icon: any;
   color: string;
+  link?: string;
 }
 
 const STORAGE_KEY = "elite-read-notifications";
@@ -120,6 +121,7 @@ export const useNotifications = () => {
         description: `${l.name} foi adicionado.`,
         date: new Date(l.created_at), icon: UserPlus,
         color: "text-sky-400 bg-sky-500/10 border-sky-500/30",
+        link: "/admin/crm?tab=leads",
       });
     });
 
@@ -131,6 +133,7 @@ export const useNotifications = () => {
         date: new Date(l.updated_at),
         icon: l.status === "fechado" ? TrendingUp : AlertTriangle,
         color: l.status === "fechado" ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/30" : "text-destructive bg-destructive/10 border-destructive/30",
+        link: "/admin/crm?tab=leads",
       });
     });
 
@@ -142,6 +145,7 @@ export const useNotifications = () => {
         description: `${(p as any).broker_leads?.name || "lead"} — ${(p as any).db_properties?.title || "imóvel"}.`,
         date: new Date(p.updated_at), icon: FileText,
         color: "text-violet-400 bg-violet-500/10 border-violet-500/30",
+        link: "/admin/crm?tab=proposals",
       });
     });
 
@@ -155,6 +159,7 @@ export const useNotifications = () => {
           description: `"${t.title}" ${isOverdue ? "atrasada" : dueDate.toLocaleDateString("pt-BR")}.`,
           date: dueDate, icon: isOverdue ? AlertTriangle : CheckSquare,
           color: isOverdue ? "text-destructive bg-destructive/10 border-destructive/30" : "text-amber-400 bg-amber-500/10 border-amber-500/30",
+          link: "/admin/crm?tab=tasks",
         });
       }
     });
@@ -167,6 +172,7 @@ export const useNotifications = () => {
           description: `${(v as any).broker_leads?.name || "lead"} — ${visitDate.toLocaleDateString("pt-BR")} ${visitDate.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}.`,
           date: visitDate, icon: CalendarDays,
           color: "text-violet-400 bg-violet-500/10 border-violet-500/30",
+          link: "/admin/crm?tab=visits",
         });
       }
     });
@@ -186,6 +192,7 @@ export const useNotifications = () => {
           description: `${partnerName} propôs parceria em "${propTitle}" (${p.commission_split_owner}%/${p.commission_split_partner}%).`,
           date: new Date(p.created_at), icon: Handshake,
           color: "text-amber-400 bg-amber-500/10 border-amber-500/30",
+          link: "/admin/crm?tab=partnerships",
         });
       }
       if (p.status === "aceita" && isPartner) {
@@ -195,6 +202,7 @@ export const useNotifications = () => {
           description: `${ownerName} aceitou sua parceria em "${propTitle}".`,
           date: new Date(p.updated_at), icon: Handshake,
           color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/30",
+          link: "/admin/crm?tab=partnerships",
         });
       }
       if (p.status === "recusada" && isPartner) {
@@ -204,6 +212,7 @@ export const useNotifications = () => {
           description: `${ownerName} recusou a parceria em "${propTitle}".`,
           date: new Date(p.updated_at), icon: Handshake,
           color: "text-destructive bg-destructive/10 border-destructive/30",
+          link: "/admin/crm?tab=partnerships",
         });
       }
       if (p.status === "ativa" && (isOwner || isPartner)) {
@@ -213,6 +222,7 @@ export const useNotifications = () => {
           description: `Parceria em "${propTitle}" está ativa.`,
           date: new Date(p.updated_at), icon: Handshake,
           color: "text-sky-400 bg-sky-500/10 border-sky-500/30",
+          link: "/admin/crm?tab=partnerships",
         });
       }
       if (p.status === "concluida" && (isOwner || isPartner)) {
@@ -222,6 +232,7 @@ export const useNotifications = () => {
           description: `Parceria em "${propTitle}" foi finalizada com sucesso.`,
           date: new Date(p.updated_at), icon: Handshake,
           color: "text-primary bg-primary/10 border-primary/30",
+          link: "/admin/crm?tab=partnerships",
         });
       }
     });
