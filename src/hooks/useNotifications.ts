@@ -159,6 +159,7 @@ export const useNotifications = () => {
           description: `"${t.title}" ${isOverdue ? "atrasada" : dueDate.toLocaleDateString("pt-BR")}.`,
           date: dueDate, icon: isOverdue ? AlertTriangle : CheckSquare,
           color: isOverdue ? "text-destructive bg-destructive/10 border-destructive/30" : "text-amber-400 bg-amber-500/10 border-amber-500/30",
+          link: "/admin/crm?tab=tasks",
         });
       }
     });
@@ -171,6 +172,7 @@ export const useNotifications = () => {
           description: `${(v as any).broker_leads?.name || "lead"} — ${visitDate.toLocaleDateString("pt-BR")} ${visitDate.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}.`,
           date: visitDate, icon: CalendarDays,
           color: "text-violet-400 bg-violet-500/10 border-violet-500/30",
+          link: "/admin/crm?tab=visits",
         });
       }
     });
