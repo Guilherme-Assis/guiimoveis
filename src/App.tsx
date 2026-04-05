@@ -97,6 +97,7 @@ const App = () => (
         </TooltipProvider>
       </CompareProvider>
     </AuthProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 
