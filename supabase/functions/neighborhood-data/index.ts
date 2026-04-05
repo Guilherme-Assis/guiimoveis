@@ -38,7 +38,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { property_id, latitude, longitude, radius = 1500 } = await req.json();
+    const { property_id, latitude, longitude, radius = 1000 } = await req.json();
 
     if (!latitude || !longitude) {
       return new Response(
