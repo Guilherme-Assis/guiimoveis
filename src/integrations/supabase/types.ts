@@ -769,6 +769,7 @@ export type Database = {
           avatar_url: string
           bio: string
           display_name: string
+          phone: string
         }[]
       }
       has_role: {
