@@ -88,6 +88,22 @@ const PropertyDetail = () => {
     load();
   }, [slug]);
 
+  // Check for existing partnership
+  useEffect(() => {
+    const checkExisting = async () => {
+      if (!brokerId || !property?.id) return;
+      const { data } = await supabase
+        .from("partnerships")
+        .select("id, status")
+        .eq("property_id", property.id)
+        .eq("partner_broker_id", brokerId)
+        .in("status", ["pendente", "aceita", "ativa"])
+        .limit(1);
+      setExistingPartnership(data?.[0] || null);
+    };
+    checkExisting();
+  }, [brokerId, property?.id]);
+
   // Track property view
   useTrackPropertyView(property?.id);
 
