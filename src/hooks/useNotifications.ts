@@ -4,12 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import {
   UserPlus, FileText, CalendarDays, CheckSquare,
-  AlertTriangle, TrendingUp,
+  AlertTriangle, TrendingUp, Handshake,
 } from "lucide-react";
 
 export interface AppNotification {
   id: string;
-  type: "lead_new" | "lead_status" | "proposal" | "task_due" | "visit_upcoming";
+  type: "lead_new" | "lead_status" | "proposal" | "task_due" | "visit_upcoming" | "partnership";
   title: string;
   description: string;
   date: Date;
