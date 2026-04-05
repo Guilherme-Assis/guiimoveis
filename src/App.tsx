@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { CompareProvider } from "@/contexts/CompareContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { lazy, Suspense, ReactNode } from "react";
 
 // Eager load: home page
