@@ -48,7 +48,7 @@ const SimilarProperties = ({ propertyId, type, city, price }: Props) => {
         .select(COLUMNS)
         .eq("availability", "available")
         .neq("id", propertyId)
-        .eq("type", type)
+        .eq("type", type as any)
         .eq("city", city)
         .gte("price", price * 0.5)
         .lte("price", price * 1.5)
