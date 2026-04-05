@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Phone, Menu, X, Heart, MapPin as MapPinIcon, BookOpen, Building2, User, LogOut, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import ThemeToggle from "@/components/ThemeToggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
