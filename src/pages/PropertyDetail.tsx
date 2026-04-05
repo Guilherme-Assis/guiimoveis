@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Bed, Bath, Car, Maximize, MapPin, Check, Phone, Mail, PawPrint, Sofa, CalendarDays, FileText, User, MessageCircle, ExternalLink, Lock, Handshake } from "lucide-react";
+import { ArrowLeft, Bed, Bath, Car, Maximize, MapPin, Check, Phone, Mail, PawPrint, Sofa, CalendarDays, FileText, User, MessageCircle, ExternalLink, Lock, Handshake, AlertTriangle } from "lucide-react";
 import { formatPrice } from "@/data/properties";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -36,6 +36,7 @@ const PropertyDetail = () => {
   const [partnerSplit, setPartnerSplit] = useState([50]);
   const [partnerMessage, setPartnerMessage] = useState("");
   const [submittingPartnership, setSubmittingPartnership] = useState(false);
+  const [existingPartnership, setExistingPartnership] = useState<any>(null);
 
   const isOwnProperty = brokerId && broker?.id === brokerId;
   const canPropose = brokerId && broker && !isOwnProperty;
@@ -58,6 +59,7 @@ const PropertyDetail = () => {
       setPartnershipOpen(false);
       setPartnerMessage("");
       setPartnerSplit([50]);
+      setExistingPartnership({ status: 'pendente' });
     } catch (err: any) {
       toast({ title: "Erro ao propor parceria", description: err.message || "Tente novamente.", variant: "destructive" });
     } finally {
@@ -85,6 +87,22 @@ const PropertyDetail = () => {
     };
     load();
   }, [slug]);
+
+  // Check for existing partnership
+  useEffect(() => {
+    const checkExisting = async () => {
+      if (!brokerId || !property?.id) return;
+      const { data } = await supabase
+        .from("partnerships")
+        .select("id, status")
+        .eq("property_id", property.id)
+        .eq("partner_broker_id", brokerId)
+        .in("status", ["pendente", "aceita", "ativa"])
+        .limit(1);
+      setExistingPartnership(data?.[0] || null);
+    };
+    checkExisting();
+  }, [brokerId, property?.id]);
 
   // Track property view
   useTrackPropertyView(property?.id);
@@ -405,12 +423,21 @@ const PropertyDetail = () => {
                             </a>
                           )}
                           {canPropose && property.open_for_partnership && (
-                            <button
-                              onClick={() => setPartnershipOpen(true)}
-                              className="flex items-center justify-center gap-2 border-2 border-dashed border-primary/50 py-3 font-body text-sm font-semibold uppercase tracking-wider text-primary transition-all hover:border-primary hover:bg-primary/5"
-                            >
-                              <Handshake className="h-4 w-4" /> Propor Parceria
-                            </button>
+                            existingPartnership ? (
+                              <div className="flex items-center gap-2 rounded-md border border-amber-500/50 bg-amber-50 px-4 py-3 dark:bg-amber-950/30">
+                                <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600" />
+                                <span className="font-body text-sm text-amber-800 dark:text-amber-300">
+                                  Você já possui uma proposta de parceria <strong>{existingPartnership.status === 'pendente' ? 'pendente' : existingPartnership.status === 'aceita' ? 'aceita' : 'ativa'}</strong> para este imóvel.
+                                </span>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => setPartnershipOpen(true)}
+                                className="flex items-center justify-center gap-2 border-2 border-dashed border-primary/50 py-3 font-body text-sm font-semibold uppercase tracking-wider text-primary transition-all hover:border-primary hover:bg-primary/5"
+                              >
+                                <Handshake className="h-4 w-4" /> Propor Parceria
+                              </button>
+                            )
                           )}
                         </div>
                         <div className="luxury-divider my-6" />
