@@ -49,7 +49,7 @@ const emptyProperty = {
   latitude: "" as string | number, longitude: "" as string | number, virtual_tour_url: "",
   rental_price: 0, condominium_fee: 0, iptu: 0,
   min_contract_months: 12, accepts_pets: false, furnished: false,
-  available_from: "",
+  available_from: "", open_for_partnership: false,
 };
 
 const Properties = () => {
@@ -101,6 +101,7 @@ const Properties = () => {
       accepts_pets: (p as any).accepts_pets || false,
       furnished: (p as any).furnished || false,
       available_from: (p as any).available_from || "",
+      open_for_partnership: (p as any).open_for_partnership || false,
     });
     setFeaturesInput((p.features || []).join(", "));
     setDialogOpen(true);
@@ -523,9 +524,15 @@ const Properties = () => {
               <Input value={form.virtual_tour_url} onChange={(e) => setForm({ ...form, virtual_tour_url: e.target.value })} placeholder="https://..." className="border-border bg-secondary" />
             </div>
 
-            <div className="flex items-center gap-3">
-              <Switch checked={form.is_highlight} onCheckedChange={(v) => setForm({ ...form, is_highlight: v })} />
-              <Label className="font-body text-sm">Destaque na página inicial</Label>
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-3">
+                <Switch checked={form.is_highlight} onCheckedChange={(v) => setForm({ ...form, is_highlight: v })} />
+                <Label className="font-body text-sm">Destaque na página inicial</Label>
+              </div>
+              <div className="flex items-center gap-3">
+                <Switch checked={(form as any).open_for_partnership || false} onCheckedChange={(v) => setForm({ ...form, open_for_partnership: v } as any)} />
+                <Label className="font-body text-sm">Aberto para Parceria 🤝</Label>
+              </div>
             </div>
 
             <Button onClick={handleSave} className="mt-2 w-full bg-gradient-gold font-body text-sm font-semibold uppercase tracking-wider text-primary-foreground">

@@ -387,6 +387,7 @@ export type Database = {
           longitude: number | null
           min_contract_months: number | null
           neighborhood_data: Json | null
+          open_for_partnership: boolean
           parking_spaces: number
           price: number
           rental_price: number | null
@@ -423,6 +424,7 @@ export type Database = {
           longitude?: number | null
           min_contract_months?: number | null
           neighborhood_data?: Json | null
+          open_for_partnership?: boolean
           parking_spaces?: number
           price: number
           rental_price?: number | null
@@ -459,6 +461,7 @@ export type Database = {
           longitude?: number | null
           min_contract_months?: number | null
           neighborhood_data?: Json | null
+          open_for_partnership?: boolean
           parking_spaces?: number
           price?: number
           rental_price?: number | null
@@ -610,6 +613,118 @@ export type Database = {
             columns: ["broker_id"]
             isOneToOne: false
             referencedRelation: "brokers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      partnership_transactions: {
+        Row: {
+          closed_at: string
+          created_at: string
+          id: string
+          lead_id: string | null
+          owner_amount: number
+          partner_amount: number
+          partnership_id: string
+          total_commission_value: number
+        }
+        Insert: {
+          closed_at?: string
+          created_at?: string
+          id?: string
+          lead_id?: string | null
+          owner_amount: number
+          partner_amount: number
+          partnership_id: string
+          total_commission_value: number
+        }
+        Update: {
+          closed_at?: string
+          created_at?: string
+          id?: string
+          lead_id?: string | null
+          owner_amount?: number
+          partner_amount?: number
+          partnership_id?: string
+          total_commission_value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partnership_transactions_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "broker_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partnership_transactions_partnership_id_fkey"
+            columns: ["partnership_id"]
+            isOneToOne: false
+            referencedRelation: "partnerships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      partnerships: {
+        Row: {
+          commission_split_owner: number
+          commission_split_partner: number
+          created_at: string
+          id: string
+          message: string | null
+          owner_broker_id: string
+          partner_broker_id: string
+          property_id: string
+          status: Database["public"]["Enums"]["partnership_status"]
+          terms: string | null
+          updated_at: string
+        }
+        Insert: {
+          commission_split_owner?: number
+          commission_split_partner?: number
+          created_at?: string
+          id?: string
+          message?: string | null
+          owner_broker_id: string
+          partner_broker_id: string
+          property_id: string
+          status?: Database["public"]["Enums"]["partnership_status"]
+          terms?: string | null
+          updated_at?: string
+        }
+        Update: {
+          commission_split_owner?: number
+          commission_split_partner?: number
+          created_at?: string
+          id?: string
+          message?: string | null
+          owner_broker_id?: string
+          partner_broker_id?: string
+          property_id?: string
+          status?: Database["public"]["Enums"]["partnership_status"]
+          terms?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partnerships_owner_broker_id_fkey"
+            columns: ["owner_broker_id"]
+            isOneToOne: false
+            referencedRelation: "brokers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partnerships_partner_broker_id_fkey"
+            columns: ["partner_broker_id"]
+            isOneToOne: false
+            referencedRelation: "brokers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partnerships_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "db_properties"
             referencedColumns: ["id"]
           },
         ]
@@ -811,6 +926,13 @@ export type Database = {
         | "proposta"
         | "fechado"
         | "perdido"
+      partnership_status:
+        | "pendente"
+        | "aceita"
+        | "ativa"
+        | "concluida"
+        | "recusada"
+        | "cancelada"
       property_availability: "available" | "unavailable"
       property_status: "venda" | "aluguel" | "lancamento"
       property_type:
@@ -994,6 +1116,14 @@ export const Constants = {
         "proposta",
         "fechado",
         "perdido",
+      ],
+      partnership_status: [
+        "pendente",
+        "aceita",
+        "ativa",
+        "concluida",
+        "recusada",
+        "cancelada",
       ],
       property_availability: ["available", "unavailable"],
       property_status: ["venda", "aluguel", "lancamento"],

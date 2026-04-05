@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Bed, Bath, Car, Maximize, MapPin, PawPrint, GitCompareArrows, Check } from "lucide-react";
+import { Bed, Bath, Car, Maximize, MapPin, PawPrint, GitCompareArrows, Check, Handshake } from "lucide-react";
 import { Property, formatPrice } from "@/data/properties";
 import { Link } from "react-router-dom";
 import FavoriteButton from "@/components/FavoriteButton";
@@ -7,7 +7,7 @@ import { useS3Image } from "@/hooks/useS3Image";
 import { useCompare } from "@/contexts/CompareContext";
 
 interface PropertyCardProps {
-  property: Property & { slug?: string; rentalPrice?: number; acceptsPets?: boolean; furnished?: boolean };
+  property: Property & { slug?: string; rentalPrice?: number; acceptsPets?: boolean; furnished?: boolean; openForPartnership?: boolean };
   index: number;
 }
 
@@ -68,6 +68,11 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
             {isRental && property.furnished && (
               <span className="bg-primary/80 px-2 py-1 font-body text-[10px] font-semibold uppercase tracking-wider text-primary-foreground backdrop-blur-sm">
                 Mobiliado
+              </span>
+            )}
+            {property.openForPartnership && (
+              <span className="flex items-center gap-1 bg-emerald-600/90 px-2 py-1 font-body text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-sm">
+                <Handshake className="h-3 w-3" /> Parceria
               </span>
             )}
           </div>
