@@ -59,6 +59,7 @@ const PropertyDetail = () => {
       setPartnershipOpen(false);
       setPartnerMessage("");
       setPartnerSplit([50]);
+      setExistingPartnership({ status: 'pendente' });
     } catch (err: any) {
       toast({ title: "Erro ao propor parceria", description: err.message || "Tente novamente.", variant: "destructive" });
     } finally {
