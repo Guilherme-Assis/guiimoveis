@@ -14,34 +14,15 @@ const MapSearch = () => {
 
   useEffect(() => {
     const loadProperties = async () => {
+      // Only load properties that already have coordinates — no client-side geocoding
       const { data } = await supabase
         .from("db_properties")
         .select("id, title, price, latitude, longitude, slug, image_url, city, state, location, type")
-        .eq("availability", "available");
+        .eq("availability", "available")
+        .not("latitude", "is", null)
+        .not("longitude", "is", null);
 
-      const props = data || [];
-
-      // Geocode properties that don't have coordinates
-      const geocoded = await Promise.all(
-        props.map(async (p) => {
-          if (p.latitude && p.longitude) return p;
-          try {
-            const query = `${p.location}, ${p.city}, ${p.state || "SP"}, Brasil`;
-            const res = await fetch(
-              `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`
-            );
-            const geo = await res.json();
-            if (geo && geo.length > 0) {
-              return { ...p, latitude: parseFloat(geo[0].lat), longitude: parseFloat(geo[0].lon) };
-            }
-          } catch {
-            // ignore geocoding errors
-          }
-          return p;
-        })
-      );
-
-      setProperties(geocoded);
+      setProperties(data || []);
       setLoading(false);
     };
     loadProperties();
