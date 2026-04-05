@@ -110,7 +110,8 @@ const Header = () => {
           )}
         </nav>
 
-        <div className="hidden items-center gap-4 lg:flex">
+        <div className="hidden items-center gap-3 lg:flex">
+          <ThemeToggle />
           <a href="tel:+5511999999999" className="flex items-center gap-2 font-body text-sm text-muted-foreground transition-colors hover:text-primary">
             <Phone className="h-3.5 w-3.5" /> (11) 99999-9999
           </a>
