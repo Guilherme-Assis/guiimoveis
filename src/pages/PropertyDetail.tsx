@@ -404,6 +404,14 @@ const PropertyDetail = () => {
                               <Phone className="h-4 w-4" /> Ligar
                             </a>
                           )}
+                          {canPropose && property.open_for_partnership && (
+                            <button
+                              onClick={() => setPartnershipOpen(true)}
+                              className="flex items-center justify-center gap-2 border-2 border-dashed border-primary/50 py-3 font-body text-sm font-semibold uppercase tracking-wider text-primary transition-all hover:border-primary hover:bg-primary/5"
+                            >
+                              <Handshake className="h-4 w-4" /> Propor Parceria
+                            </button>
+                          )}
                         </div>
                         <div className="luxury-divider my-6" />
                         <p className="font-body text-xs text-center text-muted-foreground">Corretor autônomo da comunidade ÉLITE</p>
