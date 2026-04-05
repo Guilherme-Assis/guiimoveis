@@ -286,7 +286,7 @@ const PropertyDetail = () => {
               <FloorPlanGallery floorPlans={floorPlans} title={property.title} />
 
               {/* Neighborhood Rating */}
-              <NeighborhoodRating neighborhood={property.location} city={property.city} />
+              <NeighborhoodRating neighborhood={property.location} city={property.city} neighborhoodData={property.neighborhood_data} />
 
               {/* Virtual Tour */}
               {property.virtual_tour_url && (

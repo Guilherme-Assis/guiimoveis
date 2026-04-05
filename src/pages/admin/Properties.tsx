@@ -211,15 +211,28 @@ const Properties = () => {
       broker_id: role === "broker" ? brokerId : (editing?.broker_id || null),
     };
 
+    let savedId = editing?.id;
+
     if (editing) {
       const { error } = await supabase.from("db_properties").update(payload).eq("id", editing.id);
       if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
       toast({ title: "Imóvel atualizado!" });
     } else {
-      const { error } = await supabase.from("db_properties").insert(payload);
+      const { data: inserted, error } = await supabase.from("db_properties").insert(payload).select("id").single();
       if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
+      savedId = inserted?.id;
       toast({ title: "Imóvel cadastrado!" });
     }
+
+    // Fetch neighborhood data from Overpass API if coordinates exist
+    if (savedId && payload.latitude && payload.longitude) {
+      supabase.functions.invoke("neighborhood-data", {
+        body: { property_id: savedId, latitude: payload.latitude, longitude: payload.longitude },
+      }).then(({ error: nErr }) => {
+        if (nErr) console.error("Neighborhood data fetch failed:", nErr);
+      });
+    }
+
     setDialogOpen(false);
     load();
   };

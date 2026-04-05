@@ -386,6 +386,7 @@ export type Database = {
           location: string
           longitude: number | null
           min_contract_months: number | null
+          neighborhood_data: Json | null
           parking_spaces: number
           price: number
           rental_price: number | null
@@ -421,6 +422,7 @@ export type Database = {
           location: string
           longitude?: number | null
           min_contract_months?: number | null
+          neighborhood_data?: Json | null
           parking_spaces?: number
           price: number
           rental_price?: number | null
@@ -456,6 +458,7 @@ export type Database = {
           location?: string
           longitude?: number | null
           min_contract_months?: number | null
+          neighborhood_data?: Json | null
           parking_spaces?: number
           price?: number
           rental_price?: number | null
@@ -745,6 +748,7 @@ export type Database = {
           location: string
           longitude: number
           min_contract_months: number
+          neighborhood_data: Json
           parking_spaces: number
           price: number
           rental_price: number
