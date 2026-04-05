@@ -87,11 +87,11 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
+            <Suspense fallback={null}>
+              <CompareBar />
+              <PropertyChatWidget />
+            </Suspense>
           </BrowserRouter>
-          <Suspense fallback={null}>
-            <CompareBar />
-            <PropertyChatWidget />
-          </Suspense>
         </TooltipProvider>
       </CompareProvider>
     </AuthProvider>
