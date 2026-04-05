@@ -9,8 +9,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Property } from "@/data/properties";
 import { Link } from "react-router-dom";
 import { slugifyCity } from "@/data/properties";
-import { MapPin, ChevronLeft, ChevronRight } from "lucide-react";
+import { MapPin, ChevronLeft, ChevronRight, Clock, X, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useRecentSearches } from "@/hooks/useRecentSearches";
 
 const PAGE_SIZE = 18;
 
@@ -100,6 +101,7 @@ const Index = () => {
   const listingsRef = useRef<HTMLDivElement>(null);
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [currentPage, setCurrentPage] = useState(1);
+  const { searches, addSearch, removeSearch, clearAll } = useRecentSearches();
 
   // Cache filter options — rarely changes
   const { data: filterOptions = [] } = useQuery({
@@ -122,6 +124,8 @@ const Index = () => {
   // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
+    // Save non-default filters as recent search
+    addSearch(filters);
   }, [filters]);
 
   const availableCities = useMemo(() => [...new Set(filterOptions.map((p) => p.city))].sort(), [filterOptions]);
@@ -195,6 +199,37 @@ const Index = () => {
           availableStates={availableStates}
           availableNeighborhoods={availableNeighborhoods}
         />
+
+        {/* Recent Searches */}
+        {searches.length > 0 && (
+          <div className="container mx-auto px-6 pb-4">
+            <div className="flex items-center gap-3 mb-3">
+              <Clock className="h-4 w-4 text-muted-foreground" />
+              <span className="font-body text-sm text-muted-foreground">Buscas recentes</span>
+              <button onClick={clearAll} className="ml-auto flex items-center gap-1 font-body text-xs text-muted-foreground hover:text-destructive transition-colors">
+                <Trash2 className="h-3 w-3" /> Limpar
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {searches.map((s) => (
+                <button
+                  key={s.id}
+                  onClick={() => setFilters(s.filters)}
+                  className="group flex items-center gap-2 border border-border bg-card px-3 py-1.5 font-body text-xs text-foreground transition-all hover:border-primary"
+                >
+                  <span className="truncate max-w-[200px]">{s.label}</span>
+                  <span
+                    role="button"
+                    onClick={(e) => { e.stopPropagation(); removeSearch(s.id); }}
+                    className="text-muted-foreground hover:text-destructive"
+                  >
+                    <X className="h-3 w-3" />
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         <section className="container mx-auto px-6 py-16">
           {loading ? (

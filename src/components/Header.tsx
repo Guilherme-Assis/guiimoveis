@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Phone, Menu, X, Heart, MapPin as MapPinIcon, BookOpen, Building2, User, LogOut, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import ThemeToggle from "@/components/ThemeToggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -109,7 +110,8 @@ const Header = () => {
           )}
         </nav>
 
-        <div className="hidden items-center gap-4 lg:flex">
+        <div className="hidden items-center gap-3 lg:flex">
+          <ThemeToggle />
           <a href="tel:+5511999999999" className="flex items-center gap-2 font-body text-sm text-muted-foreground transition-colors hover:text-primary">
             <Phone className="h-3.5 w-3.5" /> (11) 99999-9999
           </a>
@@ -170,9 +172,12 @@ const Header = () => {
               )
             )}
             <div className="luxury-divider my-2" />
-            <a href="tel:+5511999999999" className="flex items-center gap-2 font-body text-sm text-muted-foreground">
-              <Phone className="h-3.5 w-3.5 text-primary" /> (11) 99999-9999
-            </a>
+            <div className="flex items-center justify-between">
+              <a href="tel:+5511999999999" className="flex items-center gap-2 font-body text-sm text-muted-foreground">
+                <Phone className="h-3.5 w-3.5 text-primary" /> (11) 99999-9999
+              </a>
+              <ThemeToggle />
+            </div>
           </nav>
         </motion.div>
       )}

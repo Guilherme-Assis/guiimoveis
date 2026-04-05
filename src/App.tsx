@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { CompareProvider } from "@/contexts/CompareContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { lazy, Suspense, ReactNode } from "react";
 
 // Eager load: home page
@@ -57,6 +58,7 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: ReactNode; allow
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <ThemeProvider>
     <AuthProvider>
       <CompareProvider>
         <TooltipProvider>
@@ -95,6 +97,7 @@ const App = () => (
         </TooltipProvider>
       </CompareProvider>
     </AuthProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

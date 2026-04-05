@@ -58,6 +58,58 @@
     --sidebar-border: 220 15% 18%;
     --sidebar-ring: 40 60% 55%;
   }
+
+  .light {
+    --background: 40 20% 96%;
+    --foreground: 220 20% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 10%;
+
+    --primary: 40 55% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 10% 92%;
+    --secondary-foreground: 220 15% 25%;
+
+    --muted: 220 10% 92%;
+    --muted-foreground: 220 10% 45%;
+
+    --accent: 40 55% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 10% 85%;
+    --input: 220 10% 85%;
+    --ring: 40 55% 45%;
+
+    --gold: 40 55% 45%;
+    --gold-light: 40 60% 60%;
+    --gold-dark: 40 45% 35%;
+    --champagne: 40 25% 75%;
+    --charcoal: 0 0% 100%;
+    --charcoal-deep: 40 20% 96%;
+    --charcoal-light: 220 10% 92%;
+
+    --gradient-gold: linear-gradient(135deg, hsl(40 55% 45%), hsl(40 60% 60%));
+    --gradient-dark: linear-gradient(180deg, hsl(40 20% 96%), hsl(0 0% 100%));
+    --shadow-luxury: 0 20px 60px -15px hsla(220, 20%, 10%, 0.1);
+    --shadow-gold: 0 10px 40px -10px hsla(40, 55%, 45%, 0.15);
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 220 20% 10%;
+    --sidebar-primary: 40 55% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 10% 92%;
+    --sidebar-accent-foreground: 220 20% 10%;
+    --sidebar-border: 220 10% 85%;
+    --sidebar-ring: 40 55% 45%;
+  }
 }
 
 @layer base {
@@ -99,6 +151,11 @@
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid hsla(40, 60%, 55%, 0.1);
+  }
+
+  .light .luxury-glass {
+    background: hsla(0, 0%, 100%, 0.85);
+    border: 1px solid hsla(220, 10%, 85%, 0.6);
   }
 
   .luxury-divider {
