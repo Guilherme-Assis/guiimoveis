@@ -245,6 +245,7 @@ const CRM = () => {
       {activeTab === "templates" && <MessageTemplatesTab />}
       {activeTab === "contracts" && <ContractsTab />}
       {activeTab === "performance" && <BrokerPerformanceTab />}
+      {activeTab === "partnerships" && <PartnershipsTab />}
     </div>
   );
 };
