@@ -153,6 +153,11 @@
     border: 1px solid hsla(40, 60%, 55%, 0.1);
   }
 
+  .light .luxury-glass {
+    background: hsla(0, 0%, 100%, 0.85);
+    border: 1px solid hsla(220, 10%, 85%, 0.6);
+  }
+
   .luxury-divider {
     height: 1px;
     background: linear-gradient(90deg, transparent, hsl(40 60% 55% / 0.4), transparent);
