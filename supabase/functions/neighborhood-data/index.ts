@@ -21,15 +21,32 @@ function countToRating(count: number, thresholds: number[]): number {
   return 5;
 }
 
-function classifyTag(tags: Record<string, string> | undefined): string | null {
-  if (!tags) return null;
-  if (tags.amenity === "school") return "schools";
-  if (tags.shop || tags.amenity === "pharmacy" || tags.amenity === "marketplace") return "shopping";
-  if (tags.highway === "bus_stop" || tags.station === "subway" || tags.railway === "station" || tags.amenity === "bus_station") return "transport";
-  if (tags.amenity === "police") return "safety";
-  if (tags.leisure === "park" || tags.leisure === "garden") return "nature";
-  if (tags.amenity === "restaurant" || tags.amenity === "cafe") return "restaurants";
-  return null;
+// Query each category separately with count output for speed
+async function queryCategory(key: string, lat: number, lng: number, radius: number): Promise<number> {
+  const queries: Record<string, string> = {
+    schools: `node["amenity"="school"](around:${radius},${lat},${lng});`,
+    shopping: `node["shop"](around:${radius},${lat},${lng});node["amenity"="pharmacy"](around:${radius},${lat},${lng});`,
+    transport: `node["highway"="bus_stop"](around:${radius},${lat},${lng});`,
+    safety: `node["amenity"="police"](around:${radius},${lat},${lng});`,
+    nature: `node["leisure"="park"](around:${radius},${lat},${lng});`,
+    restaurants: `node["amenity"="restaurant"](around:${radius},${lat},${lng});node["amenity"="cafe"](around:${radius},${lat},${lng});`,
+  };
+
+  const q = `[out:json][timeout:5];(${queries[key]});out count;`;
+  const res = await fetch(OVERPASS_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `data=${encodeURIComponent(q)}`,
+  });
+
+  if (!res.ok) {
+    await res.text();
+    return 0;
+  }
+
+  const data = await res.json();
+  const total = data.elements?.[0]?.tags?.total;
+  return total ? parseInt(total) : 0;
 }
 
 Deno.serve(async (req) => {
@@ -47,44 +64,20 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Single combined Overpass query - nodes only for speed
-    const query = `[out:json][timeout:10];(
-node["amenity"~"school|pharmacy|police|restaurant|cafe"](around:${radius},${latitude},${longitude});
-node["shop"](around:${radius},${latitude},${longitude});
-node["highway"="bus_stop"](around:${radius},${latitude},${longitude});
-node["leisure"~"park|garden"](around:${radius},${latitude},${longitude});
-);out tags;`;
+    // Run all category queries in parallel
+    const keys = Object.keys(categoryConfig);
+    const counts = await Promise.all(keys.map(k => queryCategory(k, latitude, longitude, radius)));
 
-    const res = await fetch(OVERPASS_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `data=${encodeURIComponent(query)}`,
-    });
-
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(`Overpass API error ${res.status}: ${text.substring(0, 200)}`);
-    }
-
-    const data = await res.json();
-
-    // Count per category
-    const counts: Record<string, number> = { schools: 0, shopping: 0, transport: 0, safety: 0, nature: 0, restaurants: 0 };
-    for (const el of (data.elements || [])) {
-      const cat = classifyTag(el.tags);
-      if (cat) counts[cat]++;
-    }
-
-    // Build results
     const results: Record<string, { rating: number; count: number; label: string; description: string }> = {};
-    for (const [key, cfg] of Object.entries(categoryConfig)) {
+    keys.forEach((key, i) => {
+      const cfg = categoryConfig[key];
       results[key] = {
-        rating: countToRating(counts[key], cfg.thresholds),
-        count: counts[key],
+        rating: countToRating(counts[i], cfg.thresholds),
+        count: counts[i],
         label: cfg.label,
         description: cfg.description,
       };
-    }
+    });
 
     // Save to database if property_id provided
     if (property_id) {
