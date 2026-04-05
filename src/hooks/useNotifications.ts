@@ -121,6 +121,7 @@ export const useNotifications = () => {
         description: `${l.name} foi adicionado.`,
         date: new Date(l.created_at), icon: UserPlus,
         color: "text-sky-400 bg-sky-500/10 border-sky-500/30",
+        link: "/admin/crm?tab=leads",
       });
     });
 
@@ -132,6 +133,7 @@ export const useNotifications = () => {
         date: new Date(l.updated_at),
         icon: l.status === "fechado" ? TrendingUp : AlertTriangle,
         color: l.status === "fechado" ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/30" : "text-destructive bg-destructive/10 border-destructive/30",
+        link: "/admin/crm?tab=leads",
       });
     });
 
@@ -143,6 +145,7 @@ export const useNotifications = () => {
         description: `${(p as any).broker_leads?.name || "lead"} — ${(p as any).db_properties?.title || "imóvel"}.`,
         date: new Date(p.updated_at), icon: FileText,
         color: "text-violet-400 bg-violet-500/10 border-violet-500/30",
+        link: "/admin/crm?tab=proposals",
       });
     });
 
