@@ -47,24 +47,13 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Single combined Overpass query
-    const query = `[out:json][timeout:25];
-(
-  node["amenity"="school"](around:${radius},${latitude},${longitude});
-  way["amenity"="school"](around:${radius},${latitude},${longitude});
-  node["shop"](around:${radius},${latitude},${longitude});
-  node["amenity"="pharmacy"](around:${radius},${latitude},${longitude});
-  node["highway"="bus_stop"](around:${radius},${latitude},${longitude});
-  node["station"="subway"](around:${radius},${latitude},${longitude});
-  node["railway"="station"](around:${radius},${latitude},${longitude});
-  node["amenity"="police"](around:${radius},${latitude},${longitude});
-  way["amenity"="police"](around:${radius},${latitude},${longitude});
-  node["leisure"="park"](around:${radius},${latitude},${longitude});
-  way["leisure"="park"](around:${radius},${latitude},${longitude});
-  node["leisure"="garden"](around:${radius},${latitude},${longitude});
-  node["amenity"="restaurant"](around:${radius},${latitude},${longitude});
-  node["amenity"="cafe"](around:${radius},${latitude},${longitude});
-);out tags;`;
+    // Single combined Overpass query - nodes only for speed
+    const query = `[out:json][timeout:10];(
+node["amenity"~"school|pharmacy|police|restaurant|cafe"](around:${radius},${latitude},${longitude});
+node["shop"](around:${radius},${latitude},${longitude});
+node["highway"="bus_stop"](around:${radius},${latitude},${longitude});
+node["leisure"~"park|garden"](around:${radius},${latitude},${longitude});
+);out tags;
 
     const res = await fetch(OVERPASS_URL, {
       method: "POST",
