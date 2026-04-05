@@ -867,6 +867,7 @@ export type Database = {
           longitude: number
           min_contract_months: number
           neighborhood_data: Json
+          open_for_partnership: boolean
           parking_spaces: number
           price: number
           rental_price: number
