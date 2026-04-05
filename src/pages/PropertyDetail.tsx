@@ -466,6 +466,47 @@ const PropertyDetail = () => {
       </section>
 
       <Footer />
+
+      {/* Partnership Proposal Dialog */}
+      <Dialog open={partnershipOpen} onOpenChange={setPartnershipOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 font-display">
+              <Handshake className="h-5 w-5 text-primary" /> Propor Parceria
+            </DialogTitle>
+            <DialogDescription>
+              Proponha uma parceria com {brokerProfile?.display_name || "o corretor"} para o imóvel <strong>{property?.title}</strong>.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-6 pt-2">
+            <div>
+              <label className="mb-2 block font-body text-sm font-medium text-foreground">Divisão de Comissão</label>
+              <Slider value={partnerSplit} onValueChange={setPartnerSplit} min={10} max={90} step={5} className="mb-2" />
+              <div className="flex justify-between font-body text-xs text-muted-foreground">
+                <span>Dono: {100 - partnerSplit[0]}%</span>
+                <span>Você: {partnerSplit[0]}%</span>
+              </div>
+            </div>
+            <div>
+              <label className="mb-2 block font-body text-sm font-medium text-foreground">Mensagem (opcional)</label>
+              <Textarea
+                value={partnerMessage}
+                onChange={(e) => setPartnerMessage(e.target.value)}
+                placeholder="Ex: Tenho um cliente interessado neste perfil de imóvel..."
+                rows={3}
+                maxLength={500}
+              />
+            </div>
+            <Button
+              onClick={handleProposePartnership}
+              disabled={submittingPartnership}
+              className="w-full bg-gradient-gold font-body text-sm font-semibold uppercase tracking-wider text-primary-foreground"
+            >
+              {submittingPartnership ? "Enviando..." : "Enviar Proposta de Parceria"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
