@@ -101,6 +101,7 @@ const Index = () => {
   const listingsRef = useRef<HTMLDivElement>(null);
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [currentPage, setCurrentPage] = useState(1);
+  const { searches, addSearch, removeSearch, clearAll } = useRecentSearches();
 
   // Cache filter options — rarely changes
   const { data: filterOptions = [] } = useQuery({
