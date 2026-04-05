@@ -1,0 +1,10 @@
+CREATE INDEX IF NOT EXISTS idx_db_properties_availability ON public.db_properties (availability);
+CREATE INDEX IF NOT EXISTS idx_db_properties_city ON public.db_properties (city);
+CREATE INDEX IF NOT EXISTS idx_db_properties_state ON public.db_properties (state);
+CREATE INDEX IF NOT EXISTS idx_db_properties_type ON public.db_properties (type);
+CREATE INDEX IF NOT EXISTS idx_db_properties_status ON public.db_properties (status);
+CREATE INDEX IF NOT EXISTS idx_db_properties_price ON public.db_properties (price);
+CREATE INDEX IF NOT EXISTS idx_db_properties_is_highlight ON public.db_properties (is_highlight);
+CREATE INDEX IF NOT EXISTS idx_db_properties_avail_city ON public.db_properties (availability, city);
+CREATE INDEX IF NOT EXISTS idx_db_properties_avail_status ON public.db_properties (availability, status);
+CREATE INDEX IF NOT EXISTS idx_db_properties_slug ON public.db_properties (slug);

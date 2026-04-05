@@ -12,6 +12,7 @@ export type PropertyStatus = "venda" | "aluguel" | "lançamento";
 
 export interface Property {
   id: string;
+  slug?: string;
   title: string;
   type: PropertyType;
   status: PropertyStatus;
