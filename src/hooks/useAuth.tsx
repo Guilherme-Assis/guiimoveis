@@ -28,16 +28,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       .select("role")
       .eq("user_id", userId);
     if (data && data.length > 0) {
-      const r = data[0].role as "admin" | "broker";
+      // Prefer admin role if user has multiple roles
+      const roles = data.map((d) => d.role as "admin" | "broker");
+      const r = roles.includes("admin") ? "admin" : roles[0];
       setRole(r);
-      if (r === "broker") {
-        const { data: brokerData } = await supabase
-          .from("brokers")
-          .select("id")
-          .eq("user_id", userId)
-          .maybeSingle();
-        setBrokerId(brokerData?.id || null);
-      }
+      // Always check for broker record regardless of role (admin can also be a broker)
+      const { data: brokerData } = await supabase
+        .from("brokers")
+        .select("id")
+        .eq("user_id", userId)
+        .maybeSingle();
+      setBrokerId(brokerData?.id || null);
     } else {
       setRole(null);
       setBrokerId(null);
