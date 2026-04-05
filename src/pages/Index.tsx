@@ -1,4 +1,5 @@
 import { useRef, useState, useMemo, useEffect, useCallback } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import PropertyFilters, { FilterState, defaultFilters } from "@/components/PropertyFilters";
@@ -41,105 +42,82 @@ const mapRow = (p: any): Property & { rentalPrice: number; acceptsPets: boolean;
 
 const LISTING_COLUMNS = "id,slug,title,type,status,price,location,city,state,bedrooms,bathrooms,parking_spaces,area,land_area,image_url,is_highlight,rental_price,accepts_pets,furnished,features,open_for_partnership";
 
+// Fetch filter options (cities/states/neighborhoods)
+const fetchFilterOptions = async () => {
+  const { data } = await supabase
+    .from("db_properties")
+    .select("city,state,location")
+    .eq("availability", "available");
+  return (data || []) as { city: string; state: string; location: string }[];
+};
+
+// Fetch properties with filters & pagination
+const fetchProperties = async (filters: FilterState, page: number) => {
+  let query = supabase
+    .from("db_properties")
+    .select(LISTING_COLUMNS, { count: "exact" })
+    .eq("availability", "available");
+
+  if (filters.type) query = query.eq("type", filters.type === "mansão" ? "mansao" : filters.type);
+  if (filters.status) query = query.eq("status", filters.status === "lançamento" ? "lancamento" : filters.status);
+  if (filters.city) query = query.eq("city", filters.city);
+  if (filters.state) query = query.eq("state", filters.state);
+  if (filters.neighborhood) query = query.eq("location", filters.neighborhood);
+  if (filters.minBedrooms) query = query.gte("bedrooms", Number(filters.minBedrooms));
+  if (filters.acceptsPets === "true") query = query.eq("accepts_pets", true);
+  if (filters.acceptsPets === "false") query = query.eq("accepts_pets", false);
+  if (filters.furnished === "true") query = query.eq("furnished", true);
+  if (filters.furnished === "false") query = query.eq("furnished", false);
+
+  if (filters.minPrice) {
+    const isRental = filters.status === "aluguel";
+    query = isRental ? query.gte("rental_price", Number(filters.minPrice)) : query.gte("price", Number(filters.minPrice));
+  }
+  if (filters.maxPrice) {
+    const isRental = filters.status === "aluguel";
+    query = isRental ? query.lte("rental_price", Number(filters.maxPrice)) : query.lte("price", Number(filters.maxPrice));
+  }
+
+  if (filters.minArea) query = query.gte("area", Number(filters.minArea));
+  if (filters.maxArea) query = query.lte("area", Number(filters.maxArea));
+
+  switch (filters.sortBy) {
+    case "price-asc": query = query.order("price", { ascending: true }); break;
+    case "price-desc": query = query.order("price", { ascending: false }); break;
+    case "area-desc": query = query.order("area", { ascending: false }); break;
+    case "bedrooms-desc": query = query.order("bedrooms", { ascending: false }); break;
+    default: query = query.order("is_highlight", { ascending: false }).order("created_at", { ascending: false });
+  }
+
+  const from = (page - 1) * PAGE_SIZE;
+  query = query.range(from, from + PAGE_SIZE - 1);
+
+  const { data, count } = await query;
+  return { properties: (data || []).map(mapRow), totalCount: count ?? 0 };
+};
+
 const Index = () => {
   const listingsRef = useRef<HTMLDivElement>(null);
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
-  const [dbProperties, setDbProperties] = useState<(Property & { rentalPrice: number; acceptsPets: boolean; furnished: boolean })[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Separate query for filter options (cities/states/neighborhoods) — lightweight
-  const [filterOptions, setFilterOptions] = useState<{ city: string; state: string; location: string }[]>([]);
+  // Cache filter options — rarely changes
+  const { data: filterOptions = [] } = useQuery({
+    queryKey: ["filterOptions"],
+    queryFn: fetchFilterOptions,
+    staleTime: 5 * 60 * 1000, // 5 min
+  });
 
-  useEffect(() => {
-    supabase
-      .from("db_properties")
-      .select("city,state,location")
-      .eq("availability", "available")
-      .then(({ data }) => {
-        if (data) setFilterOptions(data as any);
-      });
-  }, []);
+  // Cache property listings with filter+page as key
+  const { data: listingData, isLoading: loading } = useQuery({
+    queryKey: ["properties", filters, currentPage],
+    queryFn: () => fetchProperties(filters, currentPage),
+    staleTime: 2 * 60 * 1000, // 2 min
+    placeholderData: (prev) => prev, // keep previous data while loading
+  });
 
-  // Main data fetch with server-side filtering & pagination
-  const fetchProperties = useCallback(async () => {
-    setLoading(true);
-
-    let query = supabase
-      .from("db_properties")
-      .select(LISTING_COLUMNS, { count: "exact" })
-      .eq("availability", "available");
-
-    // Apply server-side filters
-    if (filters.type) query = query.eq("type", filters.type === "mansão" ? "mansao" : filters.type);
-    if (filters.status) query = query.eq("status", filters.status === "lançamento" ? "lancamento" : filters.status);
-    if (filters.city) query = query.eq("city", filters.city);
-    if (filters.state) query = query.eq("state", filters.state);
-    if (filters.neighborhood) query = query.eq("location", filters.neighborhood);
-    if (filters.minBedrooms) query = query.gte("bedrooms", Number(filters.minBedrooms));
-    if (filters.acceptsPets === "true") query = query.eq("accepts_pets", true);
-    if (filters.acceptsPets === "false") query = query.eq("accepts_pets", false);
-    if (filters.furnished === "true") query = query.eq("furnished", true);
-    if (filters.furnished === "false") query = query.eq("furnished", false);
-
-    // Price filters
-    if (filters.minPrice) {
-      const isRental = filters.status === "aluguel";
-      if (isRental) {
-        query = query.gte("rental_price", Number(filters.minPrice));
-      } else {
-        query = query.gte("price", Number(filters.minPrice));
-      }
-    }
-    if (filters.maxPrice) {
-      const isRental = filters.status === "aluguel";
-      if (isRental) {
-        query = query.lte("rental_price", Number(filters.maxPrice));
-      } else {
-        query = query.lte("price", Number(filters.maxPrice));
-      }
-    }
-
-    // Area filters
-    if (filters.minArea) query = query.gte("area", Number(filters.minArea));
-    if (filters.maxArea) query = query.lte("area", Number(filters.maxArea));
-
-    // Sorting
-    switch (filters.sortBy) {
-      case "price-asc":
-        query = query.order("price", { ascending: true });
-        break;
-      case "price-desc":
-        query = query.order("price", { ascending: false });
-        break;
-      case "area-desc":
-        query = query.order("area", { ascending: false });
-        break;
-      case "bedrooms-desc":
-        query = query.order("bedrooms", { ascending: false });
-        break;
-      default:
-        query = query.order("is_highlight", { ascending: false }).order("created_at", { ascending: false });
-    }
-
-    // Pagination
-    const from = (currentPage - 1) * PAGE_SIZE;
-    const to = from + PAGE_SIZE - 1;
-    query = query.range(from, to);
-
-    const { data, count } = await query;
-
-    if (data) {
-      setDbProperties(data.map(mapRow));
-      setTotalCount(count ?? 0);
-    }
-    setLoading(false);
-  }, [filters, currentPage]);
-
-  useEffect(() => {
-    fetchProperties();
-  }, [fetchProperties]);
+  const dbProperties = listingData?.properties ?? [];
+  const totalCount = listingData?.totalCount ?? 0;
 
   // Reset page when filters change
   useEffect(() => {
@@ -154,17 +132,14 @@ const Index = () => {
     return [...new Set(filtered.map((p) => p.location))].sort();
   }, [filterOptions, filters.city]);
 
-  // Client-side amenity filtering (features are arrays, hard to filter server-side)
+  // Client-side amenity filtering
   const displayProperties = useMemo(() => {
-    let result = dbProperties;
-    if (filters.amenities && filters.amenities.length > 0) {
-      result = result.filter((p) =>
-        filters.amenities.every((amenity) =>
-          p.features.some((f) => f.toLowerCase().includes(amenity.toLowerCase()))
-        )
-      );
-    }
-    return result;
+    if (!filters.amenities || filters.amenities.length === 0) return dbProperties;
+    return dbProperties.filter((p) =>
+      filters.amenities.every((amenity) =>
+        p.features.some((f) => f.toLowerCase().includes(amenity.toLowerCase()))
+      )
+    );
   }, [dbProperties, filters.amenities]);
 
   // City groups for SEO
@@ -190,7 +165,6 @@ const Index = () => {
     listingsRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Generate page numbers to display
   const pageNumbers = useMemo(() => {
     const pages: (number | "...")[] = [];
     if (totalPages <= 7) {
@@ -235,7 +209,6 @@ const Index = () => {
                 ))}
               </div>
 
-              {/* Pagination */}
               {totalPages > 1 && (
                 <nav className="mt-12 flex items-center justify-center gap-1" aria-label="Paginação">
                   <Button
