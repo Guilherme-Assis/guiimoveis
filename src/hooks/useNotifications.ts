@@ -192,6 +192,7 @@ export const useNotifications = () => {
           description: `${partnerName} propôs parceria em "${propTitle}" (${p.commission_split_owner}%/${p.commission_split_partner}%).`,
           date: new Date(p.created_at), icon: Handshake,
           color: "text-amber-400 bg-amber-500/10 border-amber-500/30",
+          link: "/admin/crm?tab=partnerships",
         });
       }
       if (p.status === "aceita" && isPartner) {
@@ -201,6 +202,7 @@ export const useNotifications = () => {
           description: `${ownerName} aceitou sua parceria em "${propTitle}".`,
           date: new Date(p.updated_at), icon: Handshake,
           color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/30",
+          link: "/admin/crm?tab=partnerships",
         });
       }
       if (p.status === "recusada" && isPartner) {
@@ -210,6 +212,7 @@ export const useNotifications = () => {
           description: `${ownerName} recusou a parceria em "${propTitle}".`,
           date: new Date(p.updated_at), icon: Handshake,
           color: "text-destructive bg-destructive/10 border-destructive/30",
+          link: "/admin/crm?tab=partnerships",
         });
       }
       if (p.status === "ativa" && (isOwner || isPartner)) {
@@ -219,6 +222,7 @@ export const useNotifications = () => {
           description: `Parceria em "${propTitle}" está ativa.`,
           date: new Date(p.updated_at), icon: Handshake,
           color: "text-sky-400 bg-sky-500/10 border-sky-500/30",
+          link: "/admin/crm?tab=partnerships",
         });
       }
       if (p.status === "concluida" && (isOwner || isPartner)) {
@@ -228,6 +232,7 @@ export const useNotifications = () => {
           description: `Parceria em "${propTitle}" foi finalizada com sucesso.`,
           date: new Date(p.updated_at), icon: Handshake,
           color: "text-primary bg-primary/10 border-primary/30",
+          link: "/admin/crm?tab=partnerships",
         });
       }
     });
