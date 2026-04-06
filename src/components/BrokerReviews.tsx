@@ -45,7 +45,7 @@ const BrokerReviews = ({ brokerId }: BrokerReviewsProps) => {
   const loadReviews = async () => {
     const { data } = await supabase
       .from("broker_reviews")
-      .select("*")
+      .select("id, broker_id, user_id, rating, comment, created_at")
       .eq("broker_id", brokerId)
       .order("created_at", { ascending: false });
     
