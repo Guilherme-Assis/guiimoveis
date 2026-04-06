@@ -37,7 +37,7 @@ const DashboardTab = () => {
   const { data: leads = [] } = useQuery({
     queryKey: ["dash-leads", brokerId],
     queryFn: async () => {
-      const q = supabase.from("broker_leads").select("*");
+      const q = supabase.from("broker_leads").select("id, status, created_at");
       if (role === "broker" && brokerId) q.eq("broker_id", brokerId);
       const { data, error } = await q;
       if (error) throw error;
