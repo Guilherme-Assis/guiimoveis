@@ -310,20 +310,30 @@ const Index = () => {
             <p className="mb-8 font-body text-sm text-muted-foreground">
               Encontre imóveis exclusivos nas principais cidades do Brasil
             </p>
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
               {cityGroups.map(({ city, state, count }) => (
                 <Link
                   key={`${city}-${state}`}
                   to={`/imoveis/${slugifyCity(city, state)}`}
-                  className="flex items-center gap-2 border border-border bg-card p-3 font-body text-sm text-foreground transition-all hover:border-primary hover:shadow-sm"
+                  className="group relative flex h-28 items-end overflow-hidden border border-border bg-card p-4 transition-all duration-300 hover:border-primary hover:shadow-[var(--shadow-gold)] hover:scale-[1.02]"
                 >
-                  <MapPin className="h-4 w-4 shrink-0 text-primary" />
-                  <span className="truncate">
-                    {city} - {state}
-                  </span>
-                  <span className="ml-auto shrink-0 text-xs text-muted-foreground">
-                    {count}
-                  </span>
+                  {/* Gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30 transition-opacity group-hover:from-background/90" />
+                  {/* Decorative city icon */}
+                  <div className="absolute right-3 top-3 opacity-20 group-hover:opacity-40 transition-opacity">
+                    <MapPin className="h-10 w-10 text-primary" />
+                  </div>
+                  <div className="relative z-10 flex w-full items-end justify-between">
+                    <div>
+                      <p className="font-display text-base font-semibold text-foreground group-hover:text-primary transition-colors">
+                        {city}
+                      </p>
+                      <p className="font-body text-xs text-muted-foreground">{state}</p>
+                    </div>
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 font-body text-xs font-semibold text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all">
+                      {count}
+                    </span>
+                  </div>
                 </Link>
               ))}
             </div>
