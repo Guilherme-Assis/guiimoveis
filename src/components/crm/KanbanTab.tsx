@@ -26,7 +26,7 @@ const KanbanTab = () => {
   const { data: leads = [] } = useQuery({
     queryKey: ["kanban-leads", brokerId],
     queryFn: async () => {
-      const q = supabase.from("broker_leads").select("*").order("updated_at", { ascending: false });
+      const q = supabase.from("broker_leads").select("id, name, status, priority, phone, email, interest_value, preferred_neighborhoods, updated_at").order("updated_at", { ascending: false });
       if (role === "broker" && brokerId) q.eq("broker_id", brokerId);
       const { data, error } = await q;
       if (error) throw error;

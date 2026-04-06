@@ -32,7 +32,7 @@ const BrokerProfile = () => {
         setBroker(broker);
         const { data: profileData } = await supabase.rpc("get_public_profile", { _user_id: broker.user_id });
         setProfile(profileData?.[0] || null);
-        const { data: propData } = await supabase.from("db_properties").select("*").eq("broker_id", broker.id).eq("availability", "available");
+        const { data: propData } = await supabase.from("db_properties").select("id,slug,title,type,status,price,location,city,state,bedrooms,bathrooms,parking_spaces,area,land_area,description,features,image_url,images,is_highlight").eq("broker_id", broker.id).eq("availability", "available");
         setProperties(propData || []);
       }
       setLoading(false);

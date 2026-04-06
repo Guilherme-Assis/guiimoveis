@@ -37,7 +37,7 @@ const DashboardTab = () => {
   const { data: leads = [] } = useQuery({
     queryKey: ["dash-leads", brokerId],
     queryFn: async () => {
-      const q = supabase.from("broker_leads").select("*");
+      const q = supabase.from("broker_leads").select("id, status, created_at");
       if (role === "broker" && brokerId) q.eq("broker_id", brokerId);
       const { data, error } = await q;
       if (error) throw error;
@@ -49,7 +49,7 @@ const DashboardTab = () => {
   const { data: proposals = [] } = useQuery({
     queryKey: ["dash-proposals", brokerId],
     queryFn: async () => {
-      const q = supabase.from("broker_proposals").select("*");
+      const q = supabase.from("broker_proposals").select("id, status, proposed_value, created_at");
       if (role === "broker" && brokerId) q.eq("broker_id", brokerId);
       const { data, error } = await q;
       if (error) throw error;
@@ -61,7 +61,7 @@ const DashboardTab = () => {
   const { data: visits = [] } = useQuery({
     queryKey: ["dash-visits", brokerId],
     queryFn: async () => {
-      const q = supabase.from("lead_property_visits").select("*");
+      const q = supabase.from("lead_property_visits").select("id, status");
       if (role === "broker" && brokerId) q.eq("broker_id", brokerId);
       const { data, error } = await q;
       if (error) throw error;
@@ -73,7 +73,7 @@ const DashboardTab = () => {
   const { data: tasks = [] } = useQuery({
     queryKey: ["dash-tasks", brokerId],
     queryFn: async () => {
-      const q = supabase.from("broker_tasks").select("*");
+      const q = supabase.from("broker_tasks").select("id, status");
       if (role === "broker" && brokerId) q.eq("broker_id", brokerId);
       const { data, error } = await q;
       if (error) throw error;

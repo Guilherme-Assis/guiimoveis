@@ -471,7 +471,7 @@ serve(async (req) => {
 
     if (resource === "properties" && action === "search") {
       const body = method === "POST" ? await req.json() : {};
-      let query = supabase.from(table).select("*").eq("availability", "available");
+      let query = supabase.from(table).select("id,slug,title,type,status,availability,price,location,city,state,bedrooms,bathrooms,parking_spaces,area,land_area,description,features,image_url,images,is_highlight,latitude,longitude,rental_price,condominium_fee,iptu,accepts_pets,furnished,open_for_partnership").eq("availability", "available");
       if (body.city) query = query.ilike("city", `%${body.city}%`);
       if (body.type) query = query.eq("type", body.type);
       if (body.status) query = query.eq("status", body.status);

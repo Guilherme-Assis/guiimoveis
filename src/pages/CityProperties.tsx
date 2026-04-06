@@ -21,7 +21,7 @@ const CityProperties = () => {
       setLoading(true);
       const { data } = await supabase
         .from("db_properties")
-        .select("*")
+        .select("id,slug,title,type,status,price,location,city,state,bedrooms,bathrooms,parking_spaces,area,land_area,description,features,image_url,images,is_highlight")
         .eq("availability", "available");
 
       if (data) {

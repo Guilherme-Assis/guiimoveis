@@ -26,7 +26,7 @@ const NotificationsTab = () => {
   const { data: leads = [] } = useQuery({
     queryKey: ["notif-leads", brokerId],
     queryFn: async () => {
-      const q = supabase.from("broker_leads").select("*").order("created_at", { ascending: false }).limit(50);
+      const q = supabase.from("broker_leads").select("id, name, status, created_at, updated_at").order("created_at", { ascending: false }).limit(50);
       if (role === "broker" && brokerId) q.eq("broker_id", brokerId);
       const { data, error } = await q;
       if (error) throw error;

@@ -55,7 +55,7 @@ const MessageTemplatesTab = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("message_templates")
-        .select("*")
+        .select("id, name, category, stage, subject, body, created_at")
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;

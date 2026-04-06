@@ -53,7 +53,7 @@ const LeadTemplates = ({ leadStatus, brokerId }: { leadStatus: string; brokerId:
     queryFn: async () => {
       const { data, error } = await supabase
         .from("message_templates")
-        .select("*")
+        .select("id, name, category, stage, subject, body")
         .eq("stage", leadStatus)
         .order("category");
       if (error) throw error;
@@ -113,7 +113,7 @@ const LeadDetail = ({ leadId, onBack }: { leadId: string; onBack: () => void }) 
   const { data: lead } = useQuery({
     queryKey: ["broker-lead", leadId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("broker_leads").select("*").eq("id", leadId).single();
+      const { data, error } = await supabase.from("broker_leads").select("id, name, email, phone, status, source, priority, interest_value, installment_value, property_type_interest, preferred_neighborhoods, notes, created_at, updated_at").eq("id", leadId).single();
       if (error) throw error;
       return data;
     },
@@ -122,7 +122,7 @@ const LeadDetail = ({ leadId, onBack }: { leadId: string; onBack: () => void }) 
   const { data: interactions = [] } = useQuery({
     queryKey: ["lead-interactions", leadId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("broker_lead_interactions").select("*").eq("lead_id", leadId).order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("broker_lead_interactions").select("id, type, description, next_contact_date, created_at").eq("lead_id", leadId).order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     },
