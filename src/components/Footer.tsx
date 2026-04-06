@@ -133,7 +133,7 @@ const Footer = () => {
 
         <div className="luxury-divider mt-12" />
         <p className="mt-6 text-center font-body text-xs text-muted-foreground">
-          © {new Date().getFullYear()} Élite Imóveis. Todos os direitos reservados.
+          © {new Date().getFullYear()} KORRETORA. Todos os direitos reservados.
         </p>
       </div>
     </footer>
