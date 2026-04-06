@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import logoKorretora from "@/assets/logo-korretora.png";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Phone, Menu, X, Heart, MapPin as MapPinIcon, BookOpen, Building2, User, LogOut, LayoutDashboard } from "lucide-react";
