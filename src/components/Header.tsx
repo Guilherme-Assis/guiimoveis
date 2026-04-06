@@ -102,7 +102,7 @@ const Header = () => {
       <div className="container mx-auto flex items-center justify-between px-4 sm:px-6">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 shrink-0">
-          <img src={logoKorretora} alt="KORRETORA" className="h-10 lg:h-12 w-auto" />
+          <img src={logoKorretora} alt="KORRETORA" className="h-14 lg:h-16 w-auto" />
         </Link>
 
         {/* Desktop Navigation */}
