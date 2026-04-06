@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Bed, Bath, Car, Maximize, MapPin, PawPrint, GitCompareArrows, Check, Handshake } from "lucide-react";
+import { Bed, Bath, Car, Maximize, MapPin, PawPrint, GitCompareArrows, Check, Handshake, Sparkles } from "lucide-react";
 import { Property, formatPrice } from "@/data/properties";
 import { Link } from "react-router-dom";
 import FavoriteButton from "@/components/FavoriteButton";
@@ -39,6 +39,8 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
     }
   };
 
+  const isNew = property.isHighlight;
+
   return (
     <motion.div
       className="h-full"
@@ -49,7 +51,7 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
     >
       <Link
         to={linkTo}
-        className="group flex h-full flex-col overflow-hidden border border-border bg-card transition-all duration-500 hover:border-primary/30 hover:shadow-[var(--shadow-gold)]"
+        className="group flex h-full flex-col overflow-hidden border border-border bg-card transition-all duration-500 hover:border-primary/30 hover:shadow-[var(--shadow-gold)] hover:scale-[1.02]"
       >
         <div className="relative aspect-[4/3] overflow-hidden">
           <img
@@ -62,9 +64,24 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
           <div className="absolute left-4 top-4 flex items-center gap-2">
-            <span className="bg-gradient-gold px-3 py-1 font-body text-xs font-semibold uppercase tracking-wider text-primary-foreground">
+            <motion.span
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-gradient-gold px-3 py-1 font-body text-xs font-semibold uppercase tracking-wider text-primary-foreground"
+            >
               {statusLabels[property.status]}
-            </span>
+            </motion.span>
+            {isNew && (
+              <motion.span
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.4, type: "spring" }}
+                className="flex items-center gap-1 bg-primary/90 px-2 py-1 font-body text-[10px] font-semibold uppercase tracking-wider text-primary-foreground backdrop-blur-sm"
+              >
+                <Sparkles className="h-3 w-3" /> Destaque
+              </motion.span>
+            )}
             {isRental && property.furnished && (
               <span className="bg-primary/80 px-2 py-1 font-body text-[10px] font-semibold uppercase tracking-wider text-primary-foreground backdrop-blur-sm">
                 Mobiliado
@@ -79,10 +96,10 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
           <div className="absolute right-4 top-4 flex items-center gap-1.5">
             <button
               onClick={handleCompareClick}
-              className={`flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-sm transition-colors ${
+              className={`flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-sm transition-all duration-300 ${
                 inCompare
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-background/60 text-muted-foreground hover:bg-primary/20 hover:text-primary"
+                  ? "bg-primary text-primary-foreground scale-110"
+                  : "bg-background/60 text-muted-foreground hover:bg-primary/20 hover:text-primary hover:scale-110"
               }`}
               title={inCompare ? "Remover da comparação" : "Comparar"}
             >
@@ -90,11 +107,11 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
             </button>
             <FavoriteButton
               propertyId={property.id}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-background/60 backdrop-blur-sm"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-background/60 backdrop-blur-sm transition-all duration-300 hover:scale-110"
             />
           </div>
           <div className="absolute bottom-4 left-4">
-            <p className="font-display text-2xl font-semibold text-foreground">
+            <p className="font-display text-2xl font-semibold text-foreground [text-shadow:_0_1px_8px_rgba(0,0,0,0.5)]">
               {formatPrice(displayPrice)}
               {isRental && <span className="text-sm text-muted-foreground/80">/mês</span>}
             </p>
@@ -116,25 +133,25 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
           {property.type !== "terreno" && property.type !== "sitio_chacara" && (
             <div className="flex items-center gap-4 border-t border-border pt-4">
               {property.bedrooms > 0 && (
-                <div className="flex items-center gap-1.5 text-muted-foreground">
+                <div className="flex items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-foreground">
                   <Bed className="h-4 w-4 text-primary" />
                   <span className="font-body text-sm">{property.bedrooms}</span>
                 </div>
               )}
               {property.bathrooms > 0 && (
-                <div className="flex items-center gap-1.5 text-muted-foreground">
+                <div className="flex items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-foreground">
                   <Bath className="h-4 w-4 text-primary" />
                   <span className="font-body text-sm">{property.bathrooms}</span>
                 </div>
               )}
               {property.parkingSpaces > 0 && (
-                <div className="flex items-center gap-1.5 text-muted-foreground">
+                <div className="flex items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-foreground">
                   <Car className="h-4 w-4 text-primary" />
                   <span className="font-body text-sm">{property.parkingSpaces}</span>
                 </div>
               )}
               {property.area > 0 && (
-                <div className="flex items-center gap-1.5 text-muted-foreground">
+                <div className="flex items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-foreground">
                   <Maximize className="h-4 w-4 text-primary" />
                   <span className="font-body text-sm">{property.area}m²</span>
                 </div>
