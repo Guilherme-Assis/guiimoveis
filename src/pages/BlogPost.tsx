@@ -15,7 +15,7 @@ const BlogPost = () => {
     if (!slug) return;
     supabase
       .from("blog_posts")
-      .select("*")
+      .select("id, title, slug, content, cover_image_url, published_at, created_at, is_published")
       .eq("slug", slug)
       .eq("is_published", true)
       .maybeSingle()

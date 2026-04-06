@@ -20,7 +20,7 @@ const Profile = () => {
   useEffect(() => {
     if (!user) return;
     const load = async () => {
-      const { data } = await supabase.from("profiles").select("*").eq("user_id", user.id).single();
+      const { data } = await supabase.from("profiles").select("display_name, phone, bio, avatar_url, user_id").eq("user_id", user.id).single();
       if (data) {
         setForm({
           display_name: data.display_name || "",

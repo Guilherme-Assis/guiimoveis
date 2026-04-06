@@ -122,7 +122,7 @@ const LeadDetail = ({ leadId, onBack }: { leadId: string; onBack: () => void }) 
   const { data: interactions = [] } = useQuery({
     queryKey: ["lead-interactions", leadId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("broker_lead_interactions").select("*").eq("lead_id", leadId).order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("broker_lead_interactions").select("id, type, description, next_contact_date, created_at").eq("lead_id", leadId).order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     },

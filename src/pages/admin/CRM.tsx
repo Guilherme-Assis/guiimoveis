@@ -72,7 +72,7 @@ const CRM = () => {
   const { data: leads = [], isLoading } = useQuery({
     queryKey: ["broker-leads", brokerId],
     queryFn: async () => {
-      const q = supabase.from("broker_leads").select("*").order("created_at", { ascending: false });
+      const q = supabase.from("broker_leads").select("id, name, email, phone, status, source, priority, interest_value, installment_value, preferred_neighborhoods, property_type_interest, notes, broker_id, created_at, updated_at").order("created_at", { ascending: false });
       if (role === "broker" && brokerId) q.eq("broker_id", brokerId);
       const { data, error } = await q;
       if (error) throw error;

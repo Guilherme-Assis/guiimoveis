@@ -53,7 +53,7 @@ const ReportsTab = () => {
   const { data: tasks = [] } = useQuery({
     queryKey: ["report-tasks", brokerId],
     queryFn: async () => {
-      const q = supabase.from("broker_tasks").select("*");
+      const q = supabase.from("broker_tasks").select("id, status");
       if (role === "broker" && brokerId) q.eq("broker_id", brokerId);
       const { data, error } = await q;
       if (error) throw error;
