@@ -10,7 +10,7 @@ const Footer = () => {
           <div>
             <Link to="/" className="mb-4 inline-block">
               <span className="font-display text-3xl font-bold text-gradient-gold">
-                ÉLITE
+                KORRETORA
               </span>
             </Link>
             <p className="font-body text-sm leading-relaxed text-muted-foreground">
