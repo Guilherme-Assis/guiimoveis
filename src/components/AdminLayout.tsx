@@ -1,4 +1,5 @@
 import { ReactNode, useState } from "react";
+import logoKorretora from "@/assets/logo-korretora.png";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useNotifications, formatRelativeDate } from "@/hooks/useNotifications";
@@ -129,7 +130,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
     <>
       <div className="flex h-16 items-center justify-between border-b border-border px-6">
         <Link to="/" className="flex items-center gap-2">
-          <span className="font-display text-xl font-bold text-gradient-gold">KORRETORA</span>
+          <img src={logoKorretora} alt="KORRETORA" className="h-8 w-auto" />
           <span className="font-body text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Admin</span>
         </Link>
         <button onClick={() => setSidebarOpen(false)} className="text-muted-foreground lg:hidden">
@@ -238,7 +239,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
         <button onClick={() => setSidebarOpen(true)} className="text-foreground">
           <Menu className="h-5 w-5" />
         </button>
-        <Link to="/" className="font-display text-lg font-bold text-gradient-gold">KORRETORA</Link>
+        <Link to="/"><img src={logoKorretora} alt="KORRETORA" className="h-8 w-auto" /></Link>
         <NotificationBell />
       </div>
 

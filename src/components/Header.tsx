@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import logoKorretora from "@/assets/logo-korretora.png";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Phone, Menu, X, Heart, MapPin as MapPinIcon, BookOpen, Building2, User, LogOut, LayoutDashboard } from "lucide-react";
@@ -101,7 +102,7 @@ const Header = () => {
       <div className="container mx-auto flex items-center justify-between px-4 sm:px-6">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 shrink-0">
-          <span className="font-display text-xl lg:text-2xl font-bold text-gradient-gold">KORRETORA</span>
+          <img src={logoKorretora} alt="KORRETORA" className="h-10 lg:h-12 w-auto" />
         </Link>
 
         {/* Desktop Navigation */}
