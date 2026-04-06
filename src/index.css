@@ -158,6 +158,22 @@
     border: 1px solid hsla(220, 10%, 85%, 0.6);
   }
 
+  .header-glass {
+    background: hsla(220, 18%, 10%, 0.85);
+    backdrop-filter: blur(24px) saturate(1.2);
+    -webkit-backdrop-filter: blur(24px) saturate(1.2);
+    border-bottom: 1px solid hsla(40, 60%, 55%, 0.1);
+    box-shadow: 0 4px 30px hsla(0, 0%, 0%, 0.3);
+  }
+
+  .light .header-glass {
+    background: hsla(0, 0%, 100%, 0.92);
+    backdrop-filter: blur(24px) saturate(1.4);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    border-bottom: 1px solid hsla(220, 10%, 85%, 0.8);
+    box-shadow: 0 4px 20px hsla(220, 20%, 10%, 0.08);
+  }
+
   .luxury-divider {
     height: 1px;
     background: linear-gradient(90deg, transparent, hsl(40 60% 55% / 0.4), transparent);
