@@ -130,7 +130,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
     <>
       <div className="flex h-16 items-center justify-between border-b border-border px-6">
         <Link to="/" className="flex items-center gap-2">
-          <img src={logoKorretora} alt="KORRETORA" className="h-8 w-auto" />
+          <img src={logoKorretora} alt="KORRETORA" className="h-12 w-auto" />
           <span className="font-body text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Admin</span>
         </Link>
         <button onClick={() => setSidebarOpen(false)} className="text-muted-foreground lg:hidden">
