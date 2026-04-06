@@ -414,7 +414,7 @@ const PropertyDetail = () => {
 
                         <div className="flex flex-col gap-3">
                           {brokerProfile?.phone && (
-                            <a href={`https://wa.me/55${brokerProfile.phone.replace(/\D/g, "")}?text=${encodeURIComponent(`Olá ${brokerProfile?.display_name || ""}! Vi o imóvel "${property.title}" na comunidade ÉLITE e gostaria de mais informações. ${window.location.href}`)}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 bg-gradient-gold py-3 font-body text-sm font-semibold uppercase tracking-wider text-primary-foreground transition-all hover:shadow-[var(--shadow-gold)]">
+                            <a href={`https://wa.me/55${brokerProfile.phone.replace(/\D/g, "")}?text=${encodeURIComponent(`Olá ${brokerProfile?.display_name || ""}! Vi o imóvel "${property.title}" na KORRETORA e gostaria de mais informações. ${window.location.href}`)}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 bg-gradient-gold py-3 font-body text-sm font-semibold uppercase tracking-wider text-primary-foreground transition-all hover:shadow-[var(--shadow-gold)]">
                               <MessageCircle className="h-4 w-4" /> WhatsApp
                             </a>
                           )}
