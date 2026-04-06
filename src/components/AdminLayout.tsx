@@ -238,7 +238,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
         <button onClick={() => setSidebarOpen(true)} className="text-foreground">
           <Menu className="h-5 w-5" />
         </button>
-        <Link to="/" className="font-display text-lg font-bold text-gradient-gold">ÉLITE</Link>
+        <Link to="/" className="font-display text-lg font-bold text-gradient-gold">KORRETORA</Link>
         <NotificationBell />
       </div>
 

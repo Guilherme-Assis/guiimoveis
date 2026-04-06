@@ -43,7 +43,7 @@ const Blog = () => {
           transition={{ duration: 0.6 }}
         >
           <h1 className="mb-2 font-display text-4xl font-bold text-foreground md:text-5xl">
-            Blog <span className="text-gradient-gold">Élite</span>
+            Blog <span className="text-gradient-gold">KORRETORA</span>
           </h1>
           <p className="mb-12 font-body text-lg text-muted-foreground">
             Insights e tendências do mercado imobiliário de alto padrão.

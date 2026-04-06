@@ -442,7 +442,7 @@ const PropertyDetail = () => {
                           )}
                         </div>
                         <div className="luxury-divider my-6" />
-                        <p className="font-body text-xs text-center text-muted-foreground">Corretor autônomo da comunidade ÉLITE</p>
+                        <p className="font-body text-xs text-center text-muted-foreground">Corretor autônomo da comunidade KORRETORA</p>
                       </>
                     ) : (
                       <div className="text-center space-y-4">
