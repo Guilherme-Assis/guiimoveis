@@ -34,7 +34,7 @@ const Brokers = () => {
 
   const load = async () => {
     setLoading(true);
-    const { data } = await supabase.from("brokers").select("*").order("created_at", { ascending: false });
+    const { data } = await supabase.from("brokers").select("id, user_id, creci, company_name, commission_rate, is_active, created_at, slug").order("created_at", { ascending: false });
     setBrokers((data as Broker[]) || []);
     setLoading(false);
   };
