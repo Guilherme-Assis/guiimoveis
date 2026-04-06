@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Phone, Menu, X, Heart, MapPin as MapPinIcon, BookOpen, Building2, User, LogOut, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -17,6 +17,7 @@ const Header = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, role, signOut, loading } = useAuth();
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -24,7 +25,6 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu on resize to desktop
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) setMobileOpen(false);
@@ -36,6 +36,14 @@ const Header = () => {
   const displayName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Usuário";
   const initials = displayName.slice(0, 2).toUpperCase();
   const avatarUrl = user?.user_metadata?.avatar_url;
+
+  const isActive = (path: string) => location.pathname === path;
+  const navLinkClass = (path: string) =>
+    `relative font-body text-xs xl:text-sm uppercase tracking-wider transition-colors hover:text-primary ${
+      isActive(path)
+        ? "text-primary after:absolute after:bottom-[-4px] after:left-0 after:h-[2px] after:w-full after:bg-primary"
+        : "text-foreground"
+    }`;
 
   const UserMenu = () => (
     <DropdownMenu>
@@ -97,20 +105,20 @@ const Header = () => {
           <span className="hidden font-body text-xs uppercase tracking-[0.2em] text-muted-foreground sm:block">Imóveis</span>
         </Link>
 
-        {/* Desktop Navigation - only show at lg to avoid cramping */}
+        {/* Desktop Navigation */}
         <nav className="hidden items-center gap-3 xl:gap-5 lg:flex">
-          <Link to="/" className="font-body text-xs xl:text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">Início</Link>
+          <Link to="/" className={navLinkClass("/")}>Início</Link>
           <a href="/#listings" className="font-body text-xs xl:text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">Imóveis</a>
-          <Link to="/mapa" className="flex items-center gap-1 font-body text-xs xl:text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
+          <Link to="/mapa" className={`flex items-center gap-1 ${navLinkClass("/mapa")}`}>
             <MapPinIcon className="h-3.5 w-3.5" /> Mapa
           </Link>
-          <Link to="/blog" className="flex items-center gap-1 font-body text-xs xl:text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
+          <Link to="/blog" className={`flex items-center gap-1 ${navLinkClass("/blog")}`}>
             <BookOpen className="h-3.5 w-3.5" /> Blog
           </Link>
-          <Link to="/lancamentos" className="flex items-center gap-1 font-body text-xs xl:text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
+          <Link to="/lancamentos" className={`flex items-center gap-1 ${navLinkClass("/lancamentos")}`}>
             <Building2 className="h-3.5 w-3.5" /> Lançamentos
           </Link>
-          <Link to="/favoritos" className="flex items-center gap-1 font-body text-xs xl:text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
+          <Link to="/favoritos" className={`flex items-center gap-1 ${navLinkClass("/favoritos")}`}>
             <Heart className="h-3.5 w-3.5" /> Favoritos
           </Link>
           <a href="#contact" className="font-body text-xs xl:text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">Contato</a>
@@ -151,18 +159,18 @@ const Header = () => {
             className="header-glass mt-2 overflow-hidden border-t border-border lg:hidden"
           >
             <nav className="flex flex-col gap-3 p-5 sm:p-6">
-              <Link to="/" onClick={() => setMobileOpen(false)} className="font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">Início</Link>
+              <Link to="/" onClick={() => setMobileOpen(false)} className={`font-body text-sm uppercase tracking-wider transition-colors hover:text-primary ${isActive("/") ? "text-primary" : "text-foreground"}`}>Início</Link>
               <a href="/#listings" onClick={() => setMobileOpen(false)} className="font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">Imóveis</a>
-              <Link to="/mapa" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
+              <Link to="/mapa" onClick={() => setMobileOpen(false)} className={`flex items-center gap-2 font-body text-sm uppercase tracking-wider transition-colors hover:text-primary ${isActive("/mapa") ? "text-primary" : "text-foreground"}`}>
                 <MapPinIcon className="h-3.5 w-3.5 text-primary" /> Mapa
               </Link>
-              <Link to="/blog" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
+              <Link to="/blog" onClick={() => setMobileOpen(false)} className={`flex items-center gap-2 font-body text-sm uppercase tracking-wider transition-colors hover:text-primary ${isActive("/blog") ? "text-primary" : "text-foreground"}`}>
                 <BookOpen className="h-3.5 w-3.5 text-primary" /> Blog
               </Link>
-              <Link to="/lancamentos" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
+              <Link to="/lancamentos" onClick={() => setMobileOpen(false)} className={`flex items-center gap-2 font-body text-sm uppercase tracking-wider transition-colors hover:text-primary ${isActive("/lancamentos") ? "text-primary" : "text-foreground"}`}>
                 <Building2 className="h-3.5 w-3.5 text-primary" /> Lançamentos
               </Link>
-              <Link to="/favoritos" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
+              <Link to="/favoritos" onClick={() => setMobileOpen(false)} className={`flex items-center gap-2 font-body text-sm uppercase tracking-wider transition-colors hover:text-primary ${isActive("/favoritos") ? "text-primary" : "text-foreground"}`}>
                 <Heart className="h-3.5 w-3.5 text-primary" /> Favoritos
               </Link>
               <a href="#contact" onClick={() => setMobileOpen(false)} className="font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">Contato</a>
