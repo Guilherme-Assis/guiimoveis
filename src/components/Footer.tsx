@@ -10,9 +10,7 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <Link to="/" className="mb-4 inline-block">
-              <span className="font-display text-3xl font-bold text-gradient-gold">
-                KORRETORA
-              </span>
+              <img src={logoKorretora} alt="KORRETORA" className="h-12 w-auto" />
             </Link>
             <p className="font-body text-sm leading-relaxed text-muted-foreground">
               Comunidade de corretores autônomos. Divulgue imóveis, encontre
