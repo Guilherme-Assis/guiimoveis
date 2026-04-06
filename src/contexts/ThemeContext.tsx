@@ -11,7 +11,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [theme, setTheme] = useState<Theme>(() => {
-    const stored = localStorage.getItem("elite-theme");
+    const stored = localStorage.getItem("korretora-theme");
     return (stored === "light" ? "light" : "dark") as Theme;
   });
 
