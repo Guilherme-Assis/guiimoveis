@@ -113,7 +113,7 @@ const LeadDetail = ({ leadId, onBack }: { leadId: string; onBack: () => void }) 
   const { data: lead } = useQuery({
     queryKey: ["broker-lead", leadId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("broker_leads").select("*").eq("id", leadId).single();
+      const { data, error } = await supabase.from("broker_leads").select("id, name, email, phone, status, source, priority, interest_value, installment_value, property_type_interest, preferred_neighborhoods, notes, created_at, updated_at").eq("id", leadId).single();
       if (error) throw error;
       return data;
     },
