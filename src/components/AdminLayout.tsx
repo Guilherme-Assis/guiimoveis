@@ -1,4 +1,5 @@
 import { ReactNode, useState } from "react";
+import logoKorretora from "@/assets/logo-korretora.png";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useNotifications, formatRelativeDate } from "@/hooks/useNotifications";
