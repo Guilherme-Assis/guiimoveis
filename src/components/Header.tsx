@@ -101,8 +101,7 @@ const Header = () => {
       <div className="container mx-auto flex items-center justify-between px-4 sm:px-6">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 shrink-0">
-          <span className="font-display text-xl lg:text-2xl font-bold text-gradient-gold">ÉLITE</span>
-          <span className="hidden font-body text-xs uppercase tracking-[0.2em] text-muted-foreground sm:block">Imóveis</span>
+          <span className="font-display text-xl lg:text-2xl font-bold text-gradient-gold">KORRETORA</span>
         </Link>
 
         {/* Desktop Navigation */}

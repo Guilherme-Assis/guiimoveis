@@ -71,7 +71,7 @@ const Footer = () => {
                 className="flex items-center gap-2 font-body text-sm text-muted-foreground transition-colors hover:text-primary"
               >
                 <Mail className="h-4 w-4 text-primary" />
-                contato@eliteimoveis.com
+                contato@korretora.com
               </a>
               <div className="flex items-center gap-2 font-body text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4 text-primary" />
