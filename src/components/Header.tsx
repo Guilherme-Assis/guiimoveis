@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Phone, Menu, X, Heart, MapPin as MapPinIcon, BookOpen, Building2, User, LogOut, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -24,6 +24,15 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Close mobile menu on resize to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) setMobileOpen(false);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const displayName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Usuário";
   const initials = displayName.slice(0, 2).toUpperCase();
   const avatarUrl = user?.user_metadata?.avatar_url;
@@ -36,7 +45,7 @@ const Header = () => {
             <AvatarImage src={avatarUrl} alt={displayName} />
             <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">{initials}</AvatarFallback>
           </Avatar>
-          <span className="max-w-[120px] truncate font-body text-sm text-foreground">{displayName}</span>
+          <span className="max-w-[100px] truncate font-body text-sm text-foreground">{displayName}</span>
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
@@ -76,111 +85,126 @@ const Header = () => {
       animate={{ y: 0 }}
       transition={{ duration: 0.6 }}
       className={`fixed left-0 right-0 top-0 z-50 transition-all duration-500 ${
-        scrolled ? "luxury-glass py-3" : "bg-transparent py-5"
+        scrolled
+          ? "header-glass py-2 lg:py-3"
+          : "bg-transparent py-4 lg:py-5"
       }`}
     >
-      <div className="container mx-auto flex items-center justify-between px-6">
-        <Link to="/" className="flex items-center gap-2">
-          <span className="font-display text-2xl font-bold text-gradient-gold">ÉLITE</span>
+      <div className="container mx-auto flex items-center justify-between px-4 sm:px-6">
+        {/* Logo */}
+        <Link to="/" className="flex items-center gap-2 shrink-0">
+          <span className="font-display text-xl lg:text-2xl font-bold text-gradient-gold">ÉLITE</span>
           <span className="hidden font-body text-xs uppercase tracking-[0.2em] text-muted-foreground sm:block">Imóveis</span>
         </Link>
 
-        <nav className="hidden items-center gap-6 md:flex">
-          <Link to="/" className="font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">Início</Link>
-          <a href="/#listings" className="font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">Imóveis</a>
-          <Link to="/mapa" className="flex items-center gap-1 font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
+        {/* Desktop Navigation - only show at lg to avoid cramping */}
+        <nav className="hidden items-center gap-3 xl:gap-5 lg:flex">
+          <Link to="/" className="font-body text-xs xl:text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">Início</Link>
+          <a href="/#listings" className="font-body text-xs xl:text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">Imóveis</a>
+          <Link to="/mapa" className="flex items-center gap-1 font-body text-xs xl:text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
             <MapPinIcon className="h-3.5 w-3.5" /> Mapa
           </Link>
-          <Link to="/blog" className="flex items-center gap-1 font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
+          <Link to="/blog" className="flex items-center gap-1 font-body text-xs xl:text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
             <BookOpen className="h-3.5 w-3.5" /> Blog
           </Link>
-          <Link to="/lancamentos" className="flex items-center gap-1 font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
+          <Link to="/lancamentos" className="flex items-center gap-1 font-body text-xs xl:text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
             <Building2 className="h-3.5 w-3.5" /> Lançamentos
           </Link>
-          <Link to="/favoritos" className="flex items-center gap-1 font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
+          <Link to="/favoritos" className="flex items-center gap-1 font-body text-xs xl:text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
             <Heart className="h-3.5 w-3.5" /> Favoritos
           </Link>
-          <a href="#contact" className="font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">Contato</a>
+          <a href="#contact" className="font-body text-xs xl:text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">Contato</a>
+        </nav>
+
+        {/* Desktop right section */}
+        <div className="hidden items-center gap-2 xl:gap-3 lg:flex">
           {!loading && (
             user ? (
               <UserMenu />
             ) : (
-              <Link to="/login" className="font-body text-sm uppercase tracking-wider text-primary transition-colors hover:text-primary/80">Área Restrita</Link>
+              <Link to="/login" className="font-body text-xs xl:text-sm uppercase tracking-wider text-primary transition-colors hover:text-primary/80">Entrar</Link>
             )
           )}
-        </nav>
-
-        <div className="hidden items-center gap-3 lg:flex">
           <ThemeToggle />
-          <a href="tel:+5511999999999" className="flex items-center gap-2 font-body text-sm text-muted-foreground transition-colors hover:text-primary">
+          <a href="tel:+5511999999999" className="hidden xl:flex items-center gap-2 font-body text-sm text-muted-foreground transition-colors hover:text-primary">
             <Phone className="h-3.5 w-3.5" /> (11) 99999-9999
           </a>
         </div>
 
-        <button onClick={() => setMobileOpen(!mobileOpen)} className="text-foreground md:hidden">
-          {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
+        {/* Mobile / Tablet toggle */}
+        <div className="flex items-center gap-2 lg:hidden">
+          <ThemeToggle />
+          <button onClick={() => setMobileOpen(!mobileOpen)} className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card/80 text-foreground transition-colors hover:border-primary/50">
+            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
 
-      {mobileOpen && (
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="luxury-glass mt-2 border-t border-border p-6 md:hidden">
-          <nav className="flex flex-col gap-4">
-            <Link to="/" onClick={() => setMobileOpen(false)} className="font-body text-sm uppercase tracking-wider text-foreground">Início</Link>
-            <a href="/#listings" onClick={() => setMobileOpen(false)} className="font-body text-sm uppercase tracking-wider text-foreground">Imóveis</a>
-            <Link to="/mapa" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground">
-              <MapPinIcon className="h-3.5 w-3.5 text-primary" /> Mapa
-            </Link>
-            <Link to="/blog" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground">
-              <BookOpen className="h-3.5 w-3.5 text-primary" /> Blog
-            </Link>
-            <Link to="/lancamentos" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground">
-              <Building2 className="h-3.5 w-3.5 text-primary" /> Lançamentos
-            </Link>
-            <Link to="/favoritos" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground">
-              <Heart className="h-3.5 w-3.5 text-primary" /> Favoritos
-            </Link>
-            <a href="#contact" onClick={() => setMobileOpen(false)} className="font-body text-sm uppercase tracking-wider text-foreground">Contato</a>
-            
-            {!loading && (
-              user ? (
-                <>
-                  <div className="luxury-divider my-2" />
-                  <div className="flex items-center gap-3 py-1">
-                    <Avatar className="h-9 w-9">
-                      <AvatarImage src={avatarUrl} alt={displayName} />
-                      <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">{initials}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-body text-sm font-medium text-foreground">{displayName}</p>
-                      <p className="font-body text-xs text-muted-foreground">{user.email}</p>
+      {/* Mobile / Tablet menu */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="header-glass mt-2 overflow-hidden border-t border-border lg:hidden"
+          >
+            <nav className="flex flex-col gap-3 p-5 sm:p-6">
+              <Link to="/" onClick={() => setMobileOpen(false)} className="font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">Início</Link>
+              <a href="/#listings" onClick={() => setMobileOpen(false)} className="font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">Imóveis</a>
+              <Link to="/mapa" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
+                <MapPinIcon className="h-3.5 w-3.5 text-primary" /> Mapa
+              </Link>
+              <Link to="/blog" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
+                <BookOpen className="h-3.5 w-3.5 text-primary" /> Blog
+              </Link>
+              <Link to="/lancamentos" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
+                <Building2 className="h-3.5 w-3.5 text-primary" /> Lançamentos
+              </Link>
+              <Link to="/favoritos" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
+                <Heart className="h-3.5 w-3.5 text-primary" /> Favoritos
+              </Link>
+              <a href="#contact" onClick={() => setMobileOpen(false)} className="font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">Contato</a>
+
+              {!loading && (
+                user ? (
+                  <>
+                    <div className="luxury-divider my-1" />
+                    <div className="flex items-center gap-3 py-1">
+                      <Avatar className="h-9 w-9">
+                        <AvatarImage src={avatarUrl} alt={displayName} />
+                        <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">{initials}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-body text-sm font-medium text-foreground">{displayName}</p>
+                        <p className="font-body text-xs text-muted-foreground">{user.email}</p>
+                      </div>
                     </div>
-                  </div>
-                  {role && (
-                    <Link to="/admin" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground">
-                      <LayoutDashboard className="h-3.5 w-3.5 text-primary" /> Painel Admin
+                    {role && (
+                      <Link to="/admin" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
+                        <LayoutDashboard className="h-3.5 w-3.5 text-primary" /> Painel Admin
+                      </Link>
+                    )}
+                    <Link to="/admin/profile" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
+                      <User className="h-3.5 w-3.5 text-primary" /> Meu Perfil
                     </Link>
-                  )}
-                  <Link to="/admin/profile" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground">
-                    <User className="h-3.5 w-3.5 text-primary" /> Meu Perfil
-                  </Link>
-                  <button onClick={() => { signOut(); setMobileOpen(false); }} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-destructive">
-                    <LogOut className="h-3.5 w-3.5" /> Sair
-                  </button>
-                </>
-              ) : (
-                <Link to="/login" onClick={() => setMobileOpen(false)} className="font-body text-sm uppercase tracking-wider text-primary">Área Restrita</Link>
-              )
-            )}
-            <div className="luxury-divider my-2" />
-            <div className="flex items-center justify-between">
+                    <button onClick={() => { signOut(); setMobileOpen(false); }} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-destructive">
+                      <LogOut className="h-3.5 w-3.5" /> Sair
+                    </button>
+                  </>
+                ) : (
+                  <Link to="/login" onClick={() => setMobileOpen(false)} className="font-body text-sm uppercase tracking-wider text-primary">Área Restrita</Link>
+                )
+              )}
+              <div className="luxury-divider my-1" />
               <a href="tel:+5511999999999" className="flex items-center gap-2 font-body text-sm text-muted-foreground">
                 <Phone className="h-3.5 w-3.5 text-primary" /> (11) 99999-9999
               </a>
-              <ThemeToggle />
-            </div>
-          </nav>
-        </motion.div>
-      )}
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.header>
   );
 };
