@@ -12,7 +12,7 @@ interface SEOHeadProps {
 const SEOHead = ({ title, description, image, url, type = "website", jsonLd }: SEOHeadProps) => {
   useEffect(() => {
     // Update document title
-    document.title = `${title} | GUI Imóveis`;
+    document.title = `${title} | KORRETORA`;
 
     // Helper to set/create meta tags
     const setMeta = (property: string, content: string, isName = false) => {

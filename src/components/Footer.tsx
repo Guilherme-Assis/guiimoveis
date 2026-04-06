@@ -10,7 +10,7 @@ const Footer = () => {
           <div>
             <Link to="/" className="mb-4 inline-block">
               <span className="font-display text-3xl font-bold text-gradient-gold">
-                ÉLITE
+                KORRETORA
               </span>
             </Link>
             <p className="font-body text-sm leading-relaxed text-muted-foreground">
@@ -67,11 +67,11 @@ const Footer = () => {
                 WhatsApp
               </a>
               <a
-                href="mailto:contato@eliteimoveis.com"
+                href="mailto:contato@korretora.com"
                 className="flex items-center gap-2 font-body text-sm text-muted-foreground transition-colors hover:text-primary"
               >
                 <Mail className="h-4 w-4 text-primary" />
-                contato@eliteimoveis.com
+                contato@korretora.com
               </a>
               <div className="flex items-center gap-2 font-body text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4 text-primary" />
@@ -133,7 +133,7 @@ const Footer = () => {
 
         <div className="luxury-divider mt-12" />
         <p className="mt-6 text-center font-body text-xs text-muted-foreground">
-          © {new Date().getFullYear()} Élite Imóveis. Todos os direitos reservados.
+          © {new Date().getFullYear()} KORRETORA. Todos os direitos reservados.
         </p>
       </div>
     </footer>

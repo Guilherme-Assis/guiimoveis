@@ -18,7 +18,7 @@ export interface AppNotification {
   link?: string;
 }
 
-const STORAGE_KEY = "elite-read-notifications";
+const STORAGE_KEY = "korretora-read-notifications";
 
 const loadReadIds = (): Set<string> => {
   try {
