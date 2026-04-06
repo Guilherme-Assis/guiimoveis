@@ -53,7 +53,7 @@ const LeadTemplates = ({ leadStatus, brokerId }: { leadStatus: string; brokerId:
     queryFn: async () => {
       const { data, error } = await supabase
         .from("message_templates")
-        .select("*")
+        .select("id, name, category, stage, subject, body")
         .eq("stage", leadStatus)
         .order("category");
       if (error) throw error;
