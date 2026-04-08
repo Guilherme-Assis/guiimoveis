@@ -448,6 +448,8 @@ const TAG_COLORS: Record<string, string> = {
   "Imóveis": "bg-primary/10 text-primary",
   "Corretores": "bg-violet-500/10 text-violet-400",
   "CRM": "bg-sky-500/10 text-sky-400",
+  "Parcerias": "bg-indigo-500/10 text-indigo-400",
+  "Assinaturas": "bg-teal-500/10 text-teal-400",
   "Usuário": "bg-emerald-500/10 text-emerald-400",
   "Avaliações": "bg-amber-500/10 text-amber-400",
   "Blog": "bg-pink-500/10 text-pink-400",
