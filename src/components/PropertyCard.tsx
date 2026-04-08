@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import FavoriteButton from "@/components/FavoriteButton";
 import { useS3Image } from "@/hooks/useS3Image";
 import { useCompare } from "@/contexts/CompareContext";
+import PartnerAvatars from "@/components/PartnerAvatars";
 
 interface PropertyCardProps {
   property: Property & { slug?: string; rentalPrice?: number; acceptsPets?: boolean; furnished?: boolean; openForPartnership?: boolean };
