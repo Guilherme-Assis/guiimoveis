@@ -33,7 +33,6 @@ const navItems = [
   { label: "Imóveis", icon: Building2, path: "/admin/properties", roles: ["admin", "broker"] },
   { label: "CRM", icon: Contact, path: "/admin/crm", roles: ["admin", "broker"], subItems: crmSubItems },
   { label: "Corretores", icon: Users, path: "/admin/brokers", roles: ["admin"] },
-  { label: "Usuários", icon: ShieldCheck, path: "/admin/users", roles: ["admin"] },
   { label: "Blog", icon: BookOpen, path: "/admin/blog", roles: ["admin"] },
   { label: "Meu Perfil", icon: UserCircle, path: "/admin/profile", roles: ["admin", "broker"] },
 ];
