@@ -831,6 +831,21 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_active_brokers_list: {
+        Args: never
+        Returns: {
+          avatar_url: string
+          bio: string
+          broker_id: string
+          company_name: string
+          creci: string
+          display_name: string
+          partnership_count: number
+          phone: string
+          slug: string
+          user_id: string
+        }[]
+      }
       get_broker_by_slug: {
         Args: { _slug: string }
         Returns: {

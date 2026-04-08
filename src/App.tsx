@@ -16,6 +16,7 @@ const PropertyDetail = lazy(() => import("./pages/PropertyDetail"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Login = lazy(() => import("./pages/Login"));
 const BrokerProfile = lazy(() => import("./pages/BrokerProfile"));
+const Corretores = lazy(() => import("./pages/Corretores"));
 const BrokerCard = lazy(() => import("./pages/BrokerCard"));
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
@@ -69,6 +70,7 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/imovel/:slug" element={<PropertyDetail />} />
+                <Route path="/corretores" element={<Corretores />} />
                 <Route path="/corretor/:slug" element={<BrokerProfile />} />
                 <Route path="/corretor/:slug/cartao" element={<BrokerCard />} />
                 <Route path="/login" element={<Login />} />
