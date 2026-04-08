@@ -6,7 +6,7 @@ import { useNotifications, formatRelativeDate } from "@/hooks/useNotifications";
 import {
   Building2, Users, Home, LogOut, LayoutDashboard, UserCircle, ChevronRight, BookOpen, Contact, Menu, X, Bell, Clock, Check, CheckCheck,
   BarChart3, Columns3, CheckSquare, CalendarDays, FileText, Calendar, Download, Award, MessageSquare, ChevronDown,
-  FileSignature, Trophy, Handshake, ShieldCheck,
+  FileSignature, Trophy, Handshake,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -33,7 +33,6 @@ const navItems = [
   { label: "Imóveis", icon: Building2, path: "/admin/properties", roles: ["admin", "broker"] },
   { label: "CRM", icon: Contact, path: "/admin/crm", roles: ["admin", "broker"], subItems: crmSubItems },
   { label: "Corretores", icon: Users, path: "/admin/brokers", roles: ["admin"] },
-  { label: "Usuários", icon: ShieldCheck, path: "/admin/users", roles: ["admin"] },
   { label: "Blog", icon: BookOpen, path: "/admin/blog", roles: ["admin"] },
   { label: "Meu Perfil", icon: UserCircle, path: "/admin/profile", roles: ["admin", "broker"] },
 ];

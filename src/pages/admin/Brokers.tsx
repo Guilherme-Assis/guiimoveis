@@ -1,14 +1,23 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { slugify } from "@/lib/slugify";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2, UserCheck, UserX, ExternalLink } from "lucide-react";
+import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+} from "@/components/ui/table";
+import {
+  Plus, Pencil, Trash2, UserCheck, UserX, ExternalLink,
+  ShieldCheck, ShieldOff, Calendar, Search, RefreshCw,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
 type Broker = {
@@ -20,22 +29,60 @@ type Broker = {
   is_active: boolean;
   created_at: string;
   slug: string | null;
+  // Joined data
+  display_name: string | null;
+  phone: string | null;
+  subscription_status: string | null;
+  expires_at: string | null;
+  subscription_id: string | null;
 };
 
 const emptyForm = { email: "", password: "", fullName: "", creci: "", companyName: "", commissionRate: 5, slug: "" };
 
 const Brokers = () => {
   const { toast } = useToast();
+  const { user: currentUser } = useAuth();
   const [brokers, setBrokers] = useState<Broker[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingBroker, setEditingBroker] = useState<Broker | null>(null);
   const [form, setForm] = useState(emptyForm);
+  const [licenseDialogOpen, setLicenseDialogOpen] = useState(false);
+  const [selectedBroker, setSelectedBroker] = useState<Broker | null>(null);
+  const [notes, setNotes] = useState("");
 
   const load = async () => {
     setLoading(true);
-    const { data } = await supabase.from("brokers").select("id, user_id, creci, company_name, commission_rate, is_active, created_at, slug").order("created_at", { ascending: false });
-    setBrokers((data as Broker[]) || []);
+
+    const { data: brokersData } = await supabase
+      .from("brokers")
+      .select("id, user_id, creci, company_name, commission_rate, is_active, created_at, slug")
+      .order("created_at", { ascending: false });
+
+    const { data: profiles } = await supabase
+      .from("profiles")
+      .select("user_id, display_name, phone");
+
+    const { data: subs } = await supabase
+      .from("subscriptions")
+      .select("id, user_id, status, expires_at")
+      .order("expires_at", { ascending: false });
+
+    const enriched: Broker[] = (brokersData || []).map((b: any) => {
+      const profile = (profiles || []).find((p: any) => p.user_id === b.user_id);
+      const sub = (subs || []).find((s: any) => s.user_id === b.user_id);
+      return {
+        ...b,
+        display_name: profile?.display_name || null,
+        phone: profile?.phone || null,
+        subscription_status: sub?.status || null,
+        expires_at: sub?.expires_at || null,
+        subscription_id: sub?.id || null,
+      };
+    });
+
+    setBrokers(enriched);
     setLoading(false);
   };
 
@@ -147,56 +194,194 @@ const Brokers = () => {
     load();
   };
 
+  // License management
+  const openLicenseDialog = (broker: Broker) => {
+    setSelectedBroker(broker);
+    setNotes("");
+    setLicenseDialogOpen(true);
+  };
+
+  const handleConfirmPayment = async () => {
+    if (!selectedBroker || !currentUser) return;
+
+    const now = new Date();
+    const expiresAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+    const { error } = await supabase.from("subscriptions").insert({
+      user_id: selectedBroker.user_id,
+      status: "ativa" as any,
+      starts_at: now.toISOString(),
+      expires_at: expiresAt.toISOString(),
+      confirmed_by: currentUser.id,
+      notes: notes || null,
+    });
+
+    if (error) {
+      toast({ title: "Erro", description: error.message, variant: "destructive" });
+      return;
+    }
+
+    toast({ title: "Sucesso", description: "Licença de 30 dias ativada com sucesso!" });
+    setLicenseDialogOpen(false);
+    load();
+  };
+
+  const cancelSubscription = async (broker: Broker) => {
+    if (!broker.subscription_id) return;
+
+    const { error } = await supabase
+      .from("subscriptions")
+      .update({ status: "cancelada" as any })
+      .eq("id", broker.subscription_id);
+
+    if (error) {
+      toast({ title: "Erro", description: error.message, variant: "destructive" });
+      return;
+    }
+
+    toast({ title: "Licença cancelada" });
+    load();
+  };
+
+  const getStatusBadge = (broker: Broker) => {
+    if (!broker.subscription_status) {
+      return <Badge variant="outline" className="text-muted-foreground">Sem licença</Badge>;
+    }
+    if (broker.subscription_status === "ativa") {
+      const expires = new Date(broker.expires_at!);
+      const now = new Date();
+      if (expires < now) {
+        return <Badge variant="destructive">Expirada</Badge>;
+      }
+      const daysLeft = Math.ceil((expires.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      return (
+        <Badge className="bg-green-600 hover:bg-green-700 text-white">
+          Ativa · {daysLeft}d
+        </Badge>
+      );
+    }
+    if (broker.subscription_status === "cancelada") {
+      return <Badge variant="destructive">Cancelada</Badge>;
+    }
+    return <Badge variant="secondary">{broker.subscription_status}</Badge>;
+  };
+
+  const filtered = brokers.filter((b) => {
+    const q = search.toLowerCase();
+    return (
+      (b.display_name || "").toLowerCase().includes(q) ||
+      b.creci.toLowerCase().includes(q) ||
+      (b.company_name || "").toLowerCase().includes(q) ||
+      (b.phone || "").includes(q)
+    );
+  });
+
   return (
-    <div>
-      <div className="mb-6 flex items-center justify-between">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-3xl font-bold text-foreground">Corretores</h1>
-          <p className="font-body text-sm text-muted-foreground">Gerencie a equipe de corretores</p>
+          <h1 className="font-display text-2xl font-bold text-foreground">Corretores</h1>
+          <p className="font-body text-sm text-muted-foreground">Gerencie equipe e licenças de acesso</p>
         </div>
-        <Button onClick={openCreate} className="bg-gradient-gold font-body text-sm font-semibold uppercase tracking-wider text-primary-foreground">
-          <Plus className="mr-1 h-4 w-4" /> Novo Corretor
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={load} disabled={loading}>
+            <RefreshCw className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+            Atualizar
+          </Button>
+          <Button onClick={openCreate} className="bg-gradient-gold font-body text-sm font-semibold uppercase tracking-wider text-primary-foreground">
+            <Plus className="mr-1 h-4 w-4" /> Novo Corretor
+          </Button>
+        </div>
+      </div>
+
+      <div className="relative max-w-sm">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          placeholder="Buscar por nome, CRECI, empresa..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="pl-10"
+        />
       </div>
 
       {loading ? (
-        <p className="font-body text-muted-foreground">Carregando...</p>
-      ) : brokers.length === 0 ? (
+        <div className="flex items-center justify-center py-12">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        </div>
+      ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <p className="font-display text-xl text-foreground">Nenhum corretor cadastrado</p>
+          <p className="font-display text-xl text-foreground">Nenhum corretor encontrado</p>
           <p className="mt-2 font-body text-sm text-muted-foreground">Adicione o primeiro corretor da equipe.</p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {brokers.map((b) => (
-            <div key={b.id} className="flex items-center justify-between border border-border bg-card p-4">
-              <div>
-                <h3 className="font-display text-lg font-semibold text-foreground">CRECI: {b.creci}</h3>
-                <p className="font-body text-xs text-muted-foreground">
-                  {b.company_name || "Autônomo"} • Comissão: {b.commission_rate}% {b.slug && `• /${b.slug}`}
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" asChild title="Ver perfil público">
-                  <Link to={`/corretor/${b.slug || b.id}`} target="_blank">
-                    <ExternalLink className="h-4 w-4 text-primary" />
-                  </Link>
-                </Button>
-                <Button variant="ghost" size="icon" onClick={() => openEdit(b)} title="Editar">
-                  <Pencil className="h-4 w-4 text-primary" />
-                </Button>
-                <Button variant="ghost" size="icon" onClick={() => toggleActive(b)} title={b.is_active ? "Desativar" : "Ativar"}>
-                  {b.is_active ? <UserCheck className="h-4 w-4 text-green-500" /> : <UserX className="h-4 w-4 text-destructive" />}
-                </Button>
-                <Button variant="ghost" size="icon" onClick={() => handleDelete(b.id)}>
-                  <Trash2 className="h-4 w-4 text-destructive" />
-                </Button>
-              </div>
-            </div>
-          ))}
+        <div className="rounded-lg border border-border bg-card">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Corretor</TableHead>
+                <TableHead>CRECI</TableHead>
+                <TableHead>Licença</TableHead>
+                <TableHead>Expira em</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered.map((b) => (
+                <TableRow key={b.id}>
+                  <TableCell>
+                    <div>
+                      <p className="font-medium text-foreground">{b.display_name || b.company_name || "Sem nome"}</p>
+                      <p className="text-xs text-muted-foreground">{b.phone || "—"} {b.company_name ? `• ${b.company_name}` : ""}</p>
+                    </div>
+                  </TableCell>
+                  <TableCell className="font-mono text-sm">{b.creci}</TableCell>
+                  <TableCell>{getStatusBadge(b)}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {b.expires_at ? new Date(b.expires_at).toLocaleDateString("pt-BR") : "—"}
+                  </TableCell>
+                  <TableCell>
+                    {b.is_active ? (
+                      <Badge className="bg-green-600/10 text-green-600 border-green-600/20">Ativo</Badge>
+                    ) : (
+                      <Badge variant="destructive">Inativo</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      <Button size="sm" variant="outline" onClick={() => openLicenseDialog(b)} className="gap-1" title="Liberar 30 dias">
+                        <ShieldCheck className="h-4 w-4" />
+                        30d
+                      </Button>
+                      {b.subscription_status === "ativa" && (
+                        <Button size="sm" variant="ghost" onClick={() => cancelSubscription(b)} title="Cancelar licença">
+                          <ShieldOff className="h-4 w-4 text-destructive" />
+                        </Button>
+                      )}
+                      <Button variant="ghost" size="icon" asChild title="Ver perfil público">
+                        <Link to={`/corretor/${b.slug || b.id}`} target="_blank">
+                          <ExternalLink className="h-4 w-4 text-primary" />
+                        </Link>
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => openEdit(b)} title="Editar">
+                        <Pencil className="h-4 w-4 text-primary" />
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => toggleActive(b)} title={b.is_active ? "Desativar" : "Ativar"}>
+                        {b.is_active ? <UserCheck className="h-4 w-4 text-green-500" /> : <UserX className="h-4 w-4 text-destructive" />}
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => handleDelete(b.id)}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       )}
 
+      {/* Create/Edit Broker Dialog */}
       <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) setEditingBroker(null); }}>
         <DialogContent className="max-w-lg border-border bg-card text-foreground">
           <DialogHeader>
@@ -245,6 +430,52 @@ const Brokers = () => {
             >
               {editingBroker ? "Salvar Alterações" : "Cadastrar Corretor"}
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Confirm License Dialog */}
+      <Dialog open={licenseDialogOpen} onOpenChange={setLicenseDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-primary" />
+              Confirmar Pagamento
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="rounded-lg bg-muted/50 p-4">
+              <p className="text-sm font-medium text-foreground">
+                {selectedBroker?.display_name || selectedBroker?.company_name || "Corretor"}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                CRECI: {selectedBroker?.creci}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Será liberado acesso por <strong>30 dias</strong> a partir de hoje.
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Expira em: <strong>{new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString("pt-BR")}</strong>
+              </p>
+            </div>
+            <div>
+              <Label>Observações (opcional)</Label>
+              <Textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Ex: Pago via PIX, comprovante recebido..."
+                rows={3}
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setLicenseDialogOpen(false)}>
+                Cancelar
+              </Button>
+              <Button onClick={handleConfirmPayment}>
+                <ShieldCheck className="mr-2 h-4 w-4" />
+                Confirmar e Liberar Acesso
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
