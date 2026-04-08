@@ -409,6 +409,7 @@ serve(async (req) => {
           description: "Authentication endpoints - no Bearer token needed for login/refresh",
           endpoints: [
             { method: "POST", path: "/auth/login", body: '{ "email": "...", "password": "..." }', returns: "access_token, refresh_token, user" },
+            { method: "POST", path: "/auth/signup", body: '{ "email": "...", "password": "...", "full_name": "..." }', returns: "user info, confirmation message" },
             { method: "POST", path: "/auth/refresh", body: '{ "refresh_token": "..." }', returns: "new access_token, refresh_token" },
             { method: "GET", path: "/auth/me", headers: "Authorization: Bearer <token>", returns: "user info, roles, profile" },
           ],
@@ -433,6 +434,7 @@ serve(async (req) => {
             `/${r}/{id}`,
             ...(r === "properties" ? [`/${r}/by-slug?slug={slug}`, `/${r}/search`] : []),
             ...(r === "property-views" ? [`/${r}/counts?days=30`] : []),
+            ...(r === "brokers" ? [`/${r}/active`] : []),
           ],
         })),
         notes: [
