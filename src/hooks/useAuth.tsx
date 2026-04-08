@@ -8,6 +8,7 @@ interface AuthContextType {
   loading: boolean;
   role: "admin" | "broker" | null;
   brokerId: string | null;
+  hasActiveSubscription: boolean | null;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, fullName: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -21,6 +22,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<"admin" | "broker" | null>(null);
   const [brokerId, setBrokerId] = useState<string | null>(null);
+  const [hasActiveSubscription, setHasActiveSubscription] = useState<boolean | null>(null);
 
   const fetchRole = async (userId: string) => {
     const { data } = await supabase
@@ -28,11 +30,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       .select("role")
       .eq("user_id", userId);
     if (data && data.length > 0) {
-      // Prefer admin role if user has multiple roles
       const roles = data.map((d) => d.role as "admin" | "broker");
       const r = roles.includes("admin") ? "admin" : roles[0];
       setRole(r);
-      // Always check for broker record regardless of role (admin can also be a broker)
+
+      // Admins always have access
+      if (r === "admin") {
+        setHasActiveSubscription(true);
+      } else {
+        // Check subscription for non-admins
+        const { data: subs } = await supabase
+          .from("subscriptions")
+          .select("id, status, expires_at")
+          .eq("user_id", userId)
+          .eq("status", "ativa" as any)
+          .gte("expires_at", new Date().toISOString())
+          .lte("starts_at", new Date().toISOString())
+          .limit(1);
+        setHasActiveSubscription(subs && subs.length > 0);
+      }
+
       const { data: brokerData } = await supabase
         .from("brokers")
         .select("id")
@@ -42,6 +59,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } else {
       setRole(null);
       setBrokerId(null);
+      setHasActiveSubscription(false);
     }
   };
 
@@ -55,6 +73,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         } else {
           setRole(null);
           setBrokerId(null);
+          setHasActiveSubscription(null);
         }
         setLoading(false);
       }
@@ -90,10 +109,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await supabase.auth.signOut();
     setRole(null);
     setBrokerId(null);
+    setHasActiveSubscription(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, role, brokerId, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, role, brokerId, hasActiveSubscription, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   );
