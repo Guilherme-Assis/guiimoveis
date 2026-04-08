@@ -40,11 +40,19 @@ interface Endpoint {
 }
 
 const ENDPOINTS: Endpoint[] = [
+  // === Auth ===
   {
     method: "POST", path: "/auth/login", summary: "Login — obter token JWT", auth: false,
     description: "Autentica com email e senha. Retorna access_token e refresh_token para usar nos endpoints protegidos.",
     requestBody: { email: "seu@email.com", password: "sua_senha" },
     responseExample: { access_token: "eyJ...", refresh_token: "abc...", expires_in: 3600, token_type: "bearer", user: { id: "uuid", email: "seu@email.com" } },
+    tags: ["Autenticação"],
+  },
+  {
+    method: "POST", path: "/auth/signup", summary: "Cadastro de novo usuário", auth: false,
+    description: "Cria uma nova conta. O usuário receberá um email de confirmação antes de poder fazer login.",
+    requestBody: { email: "novo@email.com", password: "senha123", full_name: "João Silva" },
+    responseExample: { message: "Signup successful. Please check your email to confirm your account.", user: { id: "uuid", email: "novo@email.com" } },
     tags: ["Autenticação"],
   },
   {
@@ -60,6 +68,7 @@ const ENDPOINTS: Endpoint[] = [
     responseExample: { user: { id: "uuid", email: "user@email.com", roles: ["admin"], profile: { display_name: "João", avatar_url: null, phone: "11999999999" } } },
     tags: ["Autenticação"],
   },
+  // === Imóveis ===
   {
     method: "GET", path: "/properties", summary: "Listar imóveis disponíveis", auth: false,
     description: "Retorna lista de imóveis com filtros, paginação e ordenação. Acesso público.",
@@ -114,9 +123,16 @@ const ENDPOINTS: Endpoint[] = [
     description: "Remove um imóvel. Requer permissão de admin ou do corretor proprietário.",
     tags: ["Imóveis"],
   },
+  // === Corretores ===
   {
-    method: "GET", path: "/brokers", summary: "Listar corretores ativos", auth: true,
+    method: "GET", path: "/brokers", summary: "Listar corretores", auth: true,
     description: "Retorna lista de corretores. Requer autenticação.",
+    tags: ["Corretores"],
+  },
+  {
+    method: "GET", path: "/brokers/active", summary: "Listar corretores ativos com perfil", auth: true,
+    description: "Retorna corretores ativos com display_name, avatar, bio, phone e contagem de parcerias. Usa função otimizada do banco.",
+    responseExample: { data: [{ broker_id: "uuid", user_id: "uuid", creci: "12345-SP", company_name: "Imob", slug: "joao", display_name: "João", avatar_url: null, bio: null, phone: "11999", partnership_count: 3 }] },
     tags: ["Corretores"],
   },
   {
@@ -136,6 +152,7 @@ const ENDPOINTS: Endpoint[] = [
     requestBody: { company_name: "Nova Imobiliária", commission_rate: 6.0 },
     tags: ["Corretores"],
   },
+  // === CRM ===
   {
     method: "GET", path: "/leads", summary: "Listar leads", auth: true,
     description: "Retorna leads do corretor autenticado ou todos (admin).",
@@ -235,6 +252,81 @@ const ENDPOINTS: Endpoint[] = [
     requestBody: { broker_id: "uuid", name: "Boas-vindas", category: "whatsapp", stage: "novo", body: "Olá {nome}, tudo bem?" },
     tags: ["CRM"],
   },
+  // === Parcerias ===
+  {
+    method: "GET", path: "/partnerships", summary: "Listar parcerias", auth: true,
+    description: "Retorna parcerias do corretor autenticado ou todas (admin). Inclui status, divisão de comissão e termos.",
+    queryParams: [
+      { name: "eq.status", type: "string", description: "Status: pendente, aceita, ativa, concluida, recusada, cancelada" },
+      { name: "eq.property_id", type: "string", description: "Filtrar por imóvel" },
+    ],
+    responseExample: { data: [{ id: "uuid", property_id: "uuid", owner_broker_id: "uuid", partner_broker_id: "uuid", status: "ativa", commission_split_owner: 60, commission_split_partner: 40 }], count: 1 },
+    tags: ["Parcerias"],
+  },
+  {
+    method: "GET", path: "/partnerships/{id}", summary: "Buscar parceria por ID", auth: true,
+    description: "Detalhes de uma parceria específica.",
+    tags: ["Parcerias"],
+  },
+  {
+    method: "POST", path: "/partnerships", summary: "Propor parceria", auth: true,
+    description: "Cria uma proposta de parceria para um imóvel. O corretor autenticado será o partner_broker_id.",
+    requestBody: { owner_broker_id: "uuid", partner_broker_id: "uuid", property_id: "uuid", commission_split_owner: 60, commission_split_partner: 40, message: "Tenho cliente interessado" },
+    tags: ["Parcerias"],
+  },
+  {
+    method: "PATCH", path: "/partnerships/{id}", summary: "Atualizar parceria", auth: true,
+    description: "Aceitar, recusar ou atualizar uma parceria. O owner pode aceitar/recusar; o partner pode cancelar enquanto pendente.",
+    requestBody: { status: "aceita", terms: "Termos acordados..." },
+    tags: ["Parcerias"],
+  },
+  {
+    method: "DELETE", path: "/partnerships/{id}", summary: "Remover parceria", auth: true,
+    description: "Remove uma parceria. Apenas admins.",
+    tags: ["Parcerias"],
+  },
+  // === Transações de Parceria ===
+  {
+    method: "GET", path: "/partnership-transactions", summary: "Listar transações de parceria", auth: true,
+    description: "Retorna transações financeiras de parcerias concluídas. Corretores vêem apenas suas próprias.",
+    responseExample: { data: [{ id: "uuid", partnership_id: "uuid", total_commission_value: 25500, owner_amount: 15300, partner_amount: 10200, closed_at: "2025-06-01T00:00:00Z" }] },
+    tags: ["Parcerias"],
+  },
+  {
+    method: "POST", path: "/partnership-transactions", summary: "Registrar transação", auth: true,
+    description: "Registra uma transação de comissão de parceria. Apenas admins.",
+    requestBody: { partnership_id: "uuid", total_commission_value: 25500, owner_amount: 15300, partner_amount: 10200, lead_id: "uuid" },
+    tags: ["Parcerias"],
+  },
+  // === Assinaturas ===
+  {
+    method: "GET", path: "/subscriptions", summary: "Listar assinaturas", auth: true,
+    description: "Admins vêem todas as assinaturas. Usuários comuns vêem apenas a própria.",
+    queryParams: [
+      { name: "eq.user_id", type: "string", description: "Filtrar por usuário" },
+      { name: "eq.status", type: "string", description: "Status: ativa, expirada, cancelada" },
+    ],
+    responseExample: { data: [{ id: "uuid", user_id: "uuid", status: "ativa", starts_at: "2025-06-01T00:00:00Z", expires_at: "2025-07-01T00:00:00Z" }] },
+    tags: ["Assinaturas"],
+  },
+  {
+    method: "POST", path: "/subscriptions", summary: "Criar assinatura", auth: true,
+    description: "Ativa uma assinatura de 30 dias para um usuário. Apenas admins.",
+    requestBody: { user_id: "uuid", confirmed_by: "admin-uuid", notes: "Pagamento confirmado via PIX" },
+    tags: ["Assinaturas"],
+  },
+  {
+    method: "PATCH", path: "/subscriptions/{id}", summary: "Atualizar assinatura", auth: true,
+    description: "Atualiza status ou notas de uma assinatura. Apenas admins.",
+    requestBody: { status: "cancelada", notes: "Cancelada a pedido do usuário" },
+    tags: ["Assinaturas"],
+  },
+  {
+    method: "DELETE", path: "/subscriptions/{id}", summary: "Remover assinatura", auth: true,
+    description: "Remove registro de assinatura. Apenas admins.",
+    tags: ["Assinaturas"],
+  },
+  // === Favoritos ===
   {
     method: "GET", path: "/favorites", summary: "Listar favoritos", auth: true,
     description: "Retorna imóveis favoritados pelo usuário autenticado.",
@@ -251,6 +343,7 @@ const ENDPOINTS: Endpoint[] = [
     description: "Remove um imóvel dos favoritos.",
     tags: ["Usuário"],
   },
+  // === Avaliações ===
   {
     method: "GET", path: "/reviews", summary: "Listar avaliações", auth: true,
     description: "Retorna avaliações de corretores.",
@@ -262,6 +355,7 @@ const ENDPOINTS: Endpoint[] = [
     requestBody: { broker_id: "uuid", user_id: "uuid", rating: 5, comment: "Excelente atendimento!" },
     tags: ["Avaliações"],
   },
+  // === Blog ===
   {
     method: "GET", path: "/blog-posts", summary: "Listar posts do blog", auth: false,
     description: "Retorna posts publicados. Acesso público.",
@@ -273,6 +367,7 @@ const ENDPOINTS: Endpoint[] = [
     requestBody: { author_id: "uuid", title: "Dicas de compra", slug: "dicas-de-compra", content: "Conteúdo do post...", is_published: true },
     tags: ["Blog"],
   },
+  // === Analytics ===
   {
     method: "POST", path: "/property-views", summary: "Registrar visualização", auth: false,
     description: "Registra uma visualização de imóvel para analytics.",
@@ -285,6 +380,7 @@ const ENDPOINTS: Endpoint[] = [
     queryParams: [{ name: "days", type: "number", description: "Período em dias (default: 30)" }],
     tags: ["Analytics"],
   },
+  // === Perfis ===
   {
     method: "GET", path: "/profiles", summary: "Listar perfis", auth: true,
     description: "Retorna perfis de usuários. Admins vêem todos, usuários vêem o próprio.",
@@ -296,6 +392,13 @@ const ENDPOINTS: Endpoint[] = [
     requestBody: { display_name: "João Silva", phone: "11999999999", bio: "Corretor há 10 anos" },
     tags: ["Usuário"],
   },
+  // === Roles ===
+  {
+    method: "GET", path: "/roles", summary: "Listar roles", auth: true,
+    description: "Retorna roles do usuário autenticado.",
+    tags: ["Usuário"],
+  },
+  // === Storage ===
   {
     method: "POST", path: "/upload/get_upload_url", summary: "Gerar URL de upload S3", auth: true,
     description: "Gera uma URL assinada para upload direto ao S3. Retorna upload_url (PUT), object_key e public_url.",
@@ -317,6 +420,7 @@ const ENDPOINTS: Endpoint[] = [
     responseExample: { data: "<ListBucketResult>...</ListBucketResult>" },
     tags: ["Storage"],
   },
+  // === IA & outros ===
   {
     method: "POST", path: "—", summary: "Chat com IA (property-chat)", auth: false,
     description: "Endpoint separado: /functions/v1/property-chat. Chat com IA para buscar imóveis.",
@@ -344,6 +448,8 @@ const TAG_COLORS: Record<string, string> = {
   "Imóveis": "bg-primary/10 text-primary",
   "Corretores": "bg-violet-500/10 text-violet-400",
   "CRM": "bg-sky-500/10 text-sky-400",
+  "Parcerias": "bg-indigo-500/10 text-indigo-400",
+  "Assinaturas": "bg-teal-500/10 text-teal-400",
   "Usuário": "bg-emerald-500/10 text-emerald-400",
   "Avaliações": "bg-amber-500/10 text-amber-400",
   "Blog": "bg-pink-500/10 text-pink-400",

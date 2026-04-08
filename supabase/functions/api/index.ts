@@ -109,7 +109,7 @@ function parsePath(url: URL): { resource: string; id: string | null; action: str
   const parts = url.pathname.replace(/^\/api\//, "").split("/").filter(Boolean);
   const resource = parts[0] || "";
   const second = parts[1] || null;
-  const actions = ["search", "stats", "by-slug", "counts", "login", "refresh", "me"];
+    const actions = ["search", "stats", "by-slug", "counts", "login", "refresh", "me", "signup", "active"];
   if (second && actions.includes(second)) {
     return { resource, id: null, action: second };
   }
@@ -133,6 +133,9 @@ const RESOURCE_TABLE: Record<string, string> = {
   "blog-posts": "blog_posts",
   "property-views": "property_views",
   roles: "user_roles",
+  partnerships: "partnerships",
+  "partnership-transactions": "partnership_transactions",
+  subscriptions: "subscriptions",
 };
 
 const PUBLIC_READ = new Set(["properties", "blog-posts"]);
@@ -236,7 +239,31 @@ serve(async (req) => {
       });
     }
 
-    return errorResponse("Unknown auth action. Available: POST /auth/login, POST /auth/refresh, GET /auth/me", 404);
+    if (action === "signup" && method === "POST") {
+      try {
+        const body = await req.json();
+        const email = typeof body.email === "string" ? body.email.trim() : "";
+        const password = typeof body.password === "string" ? body.password : "";
+        const fullName = typeof body.full_name === "string" ? body.full_name.trim() : "";
+        if (!email || !password) return errorResponse("email and password are required", 400);
+        if (email.length > 255 || password.length > 128) return errorResponse("Invalid input length", 400);
+        if (password.length < 6) return errorResponse("Password must be at least 6 characters", 400);
+        const { data, error } = await authClient.auth.signUp({
+          email,
+          password,
+          options: fullName ? { data: { full_name: fullName } } : undefined,
+        });
+        if (error) return errorResponse(error.message, 400);
+        return jsonResponse({
+          message: "Signup successful. Please check your email to confirm your account.",
+          user: data.user ? { id: data.user.id, email: data.user.email } : null,
+        }, 201);
+      } catch {
+        return errorResponse("Invalid request body", 400);
+      }
+    }
+
+    return errorResponse("Unknown auth action. Available: POST /auth/login, POST /auth/signup, POST /auth/refresh, GET /auth/me", 404);
   }
 
   // === UPLOAD ENDPOINTS ===
@@ -382,6 +409,7 @@ serve(async (req) => {
           description: "Authentication endpoints - no Bearer token needed for login/refresh",
           endpoints: [
             { method: "POST", path: "/auth/login", body: '{ "email": "...", "password": "..." }', returns: "access_token, refresh_token, user" },
+            { method: "POST", path: "/auth/signup", body: '{ "email": "...", "password": "...", "full_name": "..." }', returns: "user info, confirmation message" },
             { method: "POST", path: "/auth/refresh", body: '{ "refresh_token": "..." }', returns: "new access_token, refresh_token" },
             { method: "GET", path: "/auth/me", headers: "Authorization: Bearer <token>", returns: "user info, roles, profile" },
           ],
@@ -406,6 +434,7 @@ serve(async (req) => {
             `/${r}/{id}`,
             ...(r === "properties" ? [`/${r}/by-slug?slug={slug}`, `/${r}/search`] : []),
             ...(r === "property-views" ? [`/${r}/counts?days=30`] : []),
+            ...(r === "brokers" ? [`/${r}/active`] : []),
           ],
         })),
         notes: [
@@ -484,6 +513,13 @@ serve(async (req) => {
       if (error) return errorResponse(error.message, 400);
       if (data) await resolveS3Images(data);
       return jsonResponse({ data, count: data?.length || 0 });
+    }
+
+    if (resource === "brokers" && action === "active") {
+      const { data, error } = await supabase.rpc("get_active_brokers_list");
+      if (error) return errorResponse(error.message, 400);
+      if (data) await resolveS3Images(data);
+      return jsonResponse({ data });
     }
 
     if (resource === "property-views" && action === "counts") {
