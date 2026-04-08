@@ -133,9 +133,6 @@ const RESOURCE_TABLE: Record<string, string> = {
   "blog-posts": "blog_posts",
   "property-views": "property_views",
   roles: "user_roles",
-  subscriptions: "subscriptions",
-  partnerships: "partnerships",
-  "partnership-transactions": "partnership_transactions",
 };
 
 const PUBLIC_READ = new Set(["properties", "blog-posts"]);

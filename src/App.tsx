@@ -33,7 +33,7 @@ const Brokers = lazy(() => import("./pages/admin/Brokers"));
 const Profile = lazy(() => import("./pages/admin/Profile"));
 const BlogAdmin = lazy(() => import("./pages/admin/BlogAdmin"));
 const CRM = lazy(() => import("./pages/admin/CRM"));
-
+const Users = lazy(() => import("./pages/admin/Users"));
 const PropertyChatWidget = lazy(() => import("./components/PropertyChatWidget"));
 const CompareBar = lazy(() => import("./components/CompareBar"));
 
@@ -102,7 +102,7 @@ const App = () => (
                 <Route path="/admin/profile" element={<ProtectedRoute><AdminLayout><Profile /></AdminLayout></ProtectedRoute>} />
                 <Route path="/admin/blog" element={<ProtectedRoute allowedRoles={["admin"]}><AdminLayout><BlogAdmin /></AdminLayout></ProtectedRoute>} />
                 <Route path="/admin/crm" element={<ProtectedRoute><AdminLayout><CRM /></AdminLayout></ProtectedRoute>} />
-                
+                <Route path="/admin/users" element={<ProtectedRoute allowedRoles={["admin"]}><AdminLayout><Users /></AdminLayout></ProtectedRoute>} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
