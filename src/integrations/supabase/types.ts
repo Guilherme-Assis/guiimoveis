@@ -930,6 +930,13 @@ export type Database = {
           virtual_tour_url: string
         }[]
       }
+      get_property_partner_avatars: {
+        Args: { _property_id: string }
+        Returns: {
+          avatar_url: string
+          display_name: string
+        }[]
+      }
       get_property_view_counts: {
         Args: { days_back?: number }
         Returns: {
