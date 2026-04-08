@@ -797,6 +797,42 @@ export type Database = {
           },
         ]
       }
+      subscriptions: {
+        Row: {
+          confirmed_by: string | null
+          created_at: string
+          expires_at: string
+          id: string
+          notes: string | null
+          starts_at: string
+          status: Database["public"]["Enums"]["subscription_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          confirmed_by?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          notes?: string | null
+          starts_at?: string
+          status?: Database["public"]["Enums"]["subscription_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          confirmed_by?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          notes?: string | null
+          starts_at?: string
+          status?: Database["public"]["Enums"]["subscription_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -917,6 +953,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_subscription_active: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "broker"
@@ -970,6 +1007,7 @@ export type Database = {
         | "aceita"
         | "recusada"
         | "expirada"
+      subscription_status: "ativa" | "expirada" | "cancelada"
       task_status: "pendente" | "em_andamento" | "concluida" | "cancelada"
       task_type:
         | "ligacao"
@@ -1164,6 +1202,7 @@ export const Constants = {
         "recusada",
         "expirada",
       ],
+      subscription_status: ["ativa", "expirada", "cancelada"],
       task_status: ["pendente", "em_andamento", "concluida", "cancelada"],
       task_type: [
         "ligacao",
