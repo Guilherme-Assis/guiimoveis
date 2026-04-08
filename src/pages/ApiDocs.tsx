@@ -329,6 +329,78 @@ const ENDPOINTS: Endpoint[] = [
     requestBody: { keys: ["properties/image1.jpg", "properties/image2.jpg"] },
     tags: ["Storage"],
   },
+  // === Licenças (Subscriptions) ===
+  {
+    method: "GET", path: "/subscriptions", summary: "Listar licenças", auth: true,
+    description: "Retorna licenças/assinaturas. Admins vêem todas, usuários vêem as próprias.",
+    queryParams: [
+      { name: "eq.user_id", type: "string", description: "Filtrar por usuário" },
+      { name: "eq.status", type: "string", description: "Status: ativa, expirada, cancelada" },
+    ],
+    tags: ["Licenças"],
+  },
+  {
+    method: "GET", path: "/subscriptions/{id}", summary: "Buscar licença por ID", auth: true,
+    description: "Retorna detalhes de uma licença específica.",
+    tags: ["Licenças"],
+  },
+  {
+    method: "POST", path: "/subscriptions", summary: "Criar licença (admin)", auth: true,
+    description: "Cria uma nova licença de 30 dias. Apenas admins. Usado ao confirmar pagamento.",
+    requestBody: { user_id: "uuid", status: "ativa", starts_at: "2026-04-08T00:00:00Z", expires_at: "2026-05-08T00:00:00Z", confirmed_by: "admin-uuid", notes: "Pago via PIX" },
+    responseExample: { data: { id: "uuid", user_id: "uuid", status: "ativa", starts_at: "2026-04-08T00:00:00Z", expires_at: "2026-05-08T00:00:00Z" } },
+    tags: ["Licenças"],
+  },
+  {
+    method: "PATCH", path: "/subscriptions/{id}", summary: "Atualizar licença (admin)", auth: true,
+    description: "Atualiza status da licença (ex: cancelar). Apenas admins.",
+    requestBody: { status: "cancelada" },
+    tags: ["Licenças"],
+  },
+  {
+    method: "DELETE", path: "/subscriptions/{id}", summary: "Remover licença (admin)", auth: true,
+    description: "Remove uma licença. Apenas admins.",
+    tags: ["Licenças"],
+  },
+  // === Parcerias ===
+  {
+    method: "GET", path: "/partnerships", summary: "Listar parcerias", auth: true,
+    description: "Retorna parcerias do corretor ou todas (admin).",
+    queryParams: [
+      { name: "eq.status", type: "string", description: "Status: pendente, aceita, ativa, concluida, recusada, cancelada" },
+      { name: "eq.property_id", type: "string", description: "Filtrar por imóvel" },
+    ],
+    tags: ["Parcerias"],
+  },
+  {
+    method: "GET", path: "/partnerships/{id}", summary: "Buscar parceria por ID", auth: true,
+    description: "Detalhes de uma parceria específica.",
+    tags: ["Parcerias"],
+  },
+  {
+    method: "POST", path: "/partnerships", summary: "Propor parceria", auth: true,
+    description: "Cria uma proposta de parceria para um imóvel.",
+    requestBody: { owner_broker_id: "uuid", partner_broker_id: "uuid", property_id: "uuid", commission_split_owner: 50, commission_split_partner: 50, message: "Gostaria de parceria neste imóvel" },
+    tags: ["Parcerias"],
+  },
+  {
+    method: "PATCH", path: "/partnerships/{id}", summary: "Atualizar parceria", auth: true,
+    description: "Atualiza status ou termos da parceria.",
+    requestBody: { status: "aceita", terms: "Comissão 50/50 conforme acordado" },
+    tags: ["Parcerias"],
+  },
+  // === Transações de Parceria ===
+  {
+    method: "GET", path: "/partnership-transactions", summary: "Listar transações de parceria", auth: true,
+    description: "Retorna transações financeiras de parcerias concluídas.",
+    tags: ["Parcerias"],
+  },
+  {
+    method: "POST", path: "/partnership-transactions", summary: "Registrar transação", auth: true,
+    description: "Registra o fechamento financeiro de uma parceria. Apenas admins.",
+    requestBody: { partnership_id: "uuid", total_commission_value: 25000, owner_amount: 12500, partner_amount: 12500, lead_id: "uuid" },
+    tags: ["Parcerias"],
+  },
 ];
 
 const METHOD_COLORS: Record<string, string> = {
@@ -350,6 +422,8 @@ const TAG_COLORS: Record<string, string> = {
   "Analytics": "bg-cyan-500/10 text-cyan-400",
   "IA": "bg-purple-500/10 text-purple-400",
   "Storage": "bg-orange-500/10 text-orange-400",
+  "Licenças": "bg-teal-500/10 text-teal-400",
+  "Parcerias": "bg-indigo-500/10 text-indigo-400",
 };
 
 const STATUS_COLORS: Record<number, string> = {
