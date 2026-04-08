@@ -78,7 +78,12 @@ const PropertyDetail = () => {
       if (prop?.broker_id) {
         const { data: bData } = await supabase.rpc("get_active_broker", { _broker_id: prop.broker_id });
         const b = bData?.[0] || null;
-        setBroker(b);
+        if (b) {
+          const { data: slugData } = await supabase.from("brokers").select("slug").eq("id", prop.broker_id).single();
+          setBroker({ ...b, slug: slugData?.slug || null });
+        } else {
+          setBroker(b);
+        }
         if (b?.user_id) {
           const { data: pData } = await supabase.rpc("get_public_profile", { _user_id: b.user_id });
           setBrokerProfile(pData?.[0] || null);
