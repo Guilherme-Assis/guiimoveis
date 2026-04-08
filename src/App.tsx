@@ -33,7 +33,7 @@ const Brokers = lazy(() => import("./pages/admin/Brokers"));
 const Profile = lazy(() => import("./pages/admin/Profile"));
 const BlogAdmin = lazy(() => import("./pages/admin/BlogAdmin"));
 const CRM = lazy(() => import("./pages/admin/CRM"));
-const Users = lazy(() => import("./pages/admin/Users"));
+
 const PropertyChatWidget = lazy(() => import("./components/PropertyChatWidget"));
 const CompareBar = lazy(() => import("./components/CompareBar"));
 
