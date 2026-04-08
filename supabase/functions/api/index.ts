@@ -109,7 +109,7 @@ function parsePath(url: URL): { resource: string; id: string | null; action: str
   const parts = url.pathname.replace(/^\/api\//, "").split("/").filter(Boolean);
   const resource = parts[0] || "";
   const second = parts[1] || null;
-  const actions = ["search", "stats", "by-slug", "counts", "login", "refresh", "me"];
+    const actions = ["search", "stats", "by-slug", "counts", "login", "refresh", "me", "signup", "active"];
   if (second && actions.includes(second)) {
     return { resource, id: null, action: second };
   }
