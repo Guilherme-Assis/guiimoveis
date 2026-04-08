@@ -78,7 +78,12 @@ const PropertyDetail = () => {
       if (prop?.broker_id) {
         const { data: bData } = await supabase.rpc("get_active_broker", { _broker_id: prop.broker_id });
         const b = bData?.[0] || null;
-        setBroker(b);
+        if (b) {
+          const { data: slugData } = await supabase.from("brokers").select("slug").eq("id", prop.broker_id).single();
+          setBroker({ ...b, slug: slugData?.slug || null });
+        } else {
+          setBroker(b);
+        }
         if (b?.user_id) {
           const { data: pData } = await supabase.rpc("get_public_profile", { _user_id: b.user_id });
           setBrokerProfile(pData?.[0] || null);
@@ -376,20 +381,20 @@ const PropertyDetail = () => {
                     </h3>
                     {user ? (
                       <>
-                        <div className="flex items-center gap-4 mb-4">
+                        <Link to={broker.slug ? `/corretor/${broker.slug}` : "#"} className="flex items-center gap-4 mb-4 group/broker cursor-pointer">
                           {brokerProfile?.avatar_url ? (
-                            <img src={brokerProfile.avatar_url} alt={brokerProfile?.display_name || "Corretor"} className="h-16 w-16 rounded-full object-cover border-2 border-primary/30" />
+                            <img src={brokerProfile.avatar_url} alt={brokerProfile?.display_name || "Corretor"} className="h-16 w-16 rounded-full object-cover border-2 border-primary/30 transition-all group-hover/broker:border-primary group-hover/broker:scale-105" />
                           ) : (
-                            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 border-2 border-primary/30">
+                            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 border-2 border-primary/30 transition-all group-hover/broker:border-primary group-hover/broker:scale-105">
                               <User className="h-7 w-7 text-primary" />
                             </div>
                           )}
                           <div>
-                            <p className="font-display text-lg font-semibold text-foreground">{brokerProfile?.display_name || "Corretor"}</p>
+                            <p className="font-display text-lg font-semibold text-foreground transition-colors group-hover/broker:text-primary">{brokerProfile?.display_name || "Corretor"}</p>
                             <p className="font-body text-xs text-primary font-medium">CRECI {broker.creci}</p>
                             {broker.company_name && <p className="font-body text-xs text-muted-foreground">{broker.company_name}</p>}
                           </div>
-                        </div>
+                        </Link>
 
                         {brokerProfile?.bio && (
                           <p className="mb-4 font-body text-sm text-muted-foreground leading-relaxed">{brokerProfile.bio}</p>
