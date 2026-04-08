@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import FavoriteButton from "@/components/FavoriteButton";
 import { useS3Image } from "@/hooks/useS3Image";
 import { useCompare } from "@/contexts/CompareContext";
+import PartnerAvatars from "@/components/PartnerAvatars";
 
 interface PropertyCardProps {
   property: Property & { slug?: string; rentalPrice?: number; acceptsPets?: boolean; furnished?: boolean; openForPartnership?: boolean };
@@ -122,12 +123,17 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
           <h3 className="mb-2 line-clamp-2 font-display text-lg font-semibold text-foreground transition-colors group-hover:text-primary">
             {property.title}
           </h3>
-          <div className="mb-4 flex items-center gap-1 text-muted-foreground">
+          <div className="mb-2 flex items-center gap-1 text-muted-foreground">
             <MapPin className="h-3.5 w-3.5 text-primary" />
             <span className="font-body text-sm">
               {property.location}, {property.city} - {property.state}
             </span>
           </div>
+          {property.openForPartnership && (
+            <div className="mb-4">
+              <PartnerAvatars propertyId={property.id} openForPartnership={!!property.openForPartnership} />
+            </div>
+          )}
 
           <div className="mt-auto">
           {property.type !== "terreno" && property.type !== "sitio_chacara" && (
