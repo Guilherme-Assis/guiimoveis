@@ -239,7 +239,31 @@ serve(async (req) => {
       });
     }
 
-    return errorResponse("Unknown auth action. Available: POST /auth/login, POST /auth/refresh, GET /auth/me", 404);
+    if (action === "signup" && method === "POST") {
+      try {
+        const body = await req.json();
+        const email = typeof body.email === "string" ? body.email.trim() : "";
+        const password = typeof body.password === "string" ? body.password : "";
+        const fullName = typeof body.full_name === "string" ? body.full_name.trim() : "";
+        if (!email || !password) return errorResponse("email and password are required", 400);
+        if (email.length > 255 || password.length > 128) return errorResponse("Invalid input length", 400);
+        if (password.length < 6) return errorResponse("Password must be at least 6 characters", 400);
+        const { data, error } = await authClient.auth.signUp({
+          email,
+          password,
+          options: fullName ? { data: { full_name: fullName } } : undefined,
+        });
+        if (error) return errorResponse(error.message, 400);
+        return jsonResponse({
+          message: "Signup successful. Please check your email to confirm your account.",
+          user: data.user ? { id: data.user.id, email: data.user.email } : null,
+        }, 201);
+      } catch {
+        return errorResponse("Invalid request body", 400);
+      }
+    }
+
+    return errorResponse("Unknown auth action. Available: POST /auth/login, POST /auth/signup, POST /auth/refresh, GET /auth/me", 404);
   }
 
   // === UPLOAD ENDPOINTS ===
