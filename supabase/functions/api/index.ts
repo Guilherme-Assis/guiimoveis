@@ -513,6 +513,13 @@ serve(async (req) => {
       return jsonResponse({ data, count: data?.length || 0 });
     }
 
+    if (resource === "brokers" && action === "active") {
+      const { data, error } = await supabase.rpc("get_active_brokers_list");
+      if (error) return errorResponse(error.message, 400);
+      if (data) await resolveS3Images(data);
+      return jsonResponse({ data });
+    }
+
     if (resource === "property-views" && action === "counts") {
       const days = parseInt(params.get("days") || "30");
       const { data, error } = await supabase.rpc("get_property_view_counts", { days_back: days });
