@@ -501,13 +501,15 @@ serve(async (req) => {
           const { data: brokerData } = await supabase.rpc("get_active_broker", { _broker_id: row.broker_id });
           const broker = brokerData?.[0] || null;
           if (broker) {
+            // Get slug from brokers table
+            const { data: brokerRow } = await supabase.from("brokers").select("slug").eq("id", broker.id).maybeSingle();
             const { data: profileData } = await supabase.rpc("get_public_profile", { _user_id: broker.user_id });
             const profile = profileData?.[0] || null;
             row.broker = {
               id: broker.id,
               creci: broker.creci,
               company_name: broker.company_name,
-              slug: broker.id,
+              slug: brokerRow?.slug || broker.id,
               display_name: profile?.display_name || null,
               avatar_url: profile?.avatar_url || null,
               bio: profile?.bio || null,
