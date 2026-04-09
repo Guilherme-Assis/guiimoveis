@@ -95,9 +95,10 @@ const ENDPOINTS: Endpoint[] = [
     tags: ["Imóveis"],
   },
   {
-    method: "GET", path: "/properties/by-slug?slug={slug}", summary: "Buscar imóvel por slug", auth: false,
-    description: "Busca um imóvel pelo slug amigável para URL.",
+    method: "GET", path: "/properties/by-slug?slug={slug}", summary: "Buscar imóvel por slug (com corretor)", auth: false,
+    description: "Busca um imóvel pelo slug amigável para URL. Retorna dados completos do imóvel incluindo objeto 'broker' com perfil do corretor responsável (nome, CRECI, avatar, telefone, bio, slug).",
     queryParams: [{ name: "slug", type: "string", description: "Slug do imóvel", required: true }],
+    responseExample: { data: { id: "uuid", title: "Casa em Alphaville", price: 850000, city: "Barueri", broker_id: "uuid", broker: { id: "uuid", creci: "12345-SP", company_name: "Imob", slug: "joao-silva", display_name: "João Silva", avatar_url: "https://...", bio: "Corretor especialista...", phone: "11999999999" } } },
     tags: ["Imóveis"],
   },
   {
