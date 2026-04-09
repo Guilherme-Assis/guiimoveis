@@ -494,7 +494,32 @@ serve(async (req) => {
       const { data, error } = await supabase.rpc("get_property_by_slug", { _slug: slug });
       if (error) return errorResponse(error.message, 400);
       const row = data?.[0] || null;
-      if (row) await resolveS3Images(row);
+      if (row) {
+        await resolveS3Images(row);
+        // Enrich with broker details
+        if (row.broker_id) {
+          const { data: brokerData } = await supabase.rpc("get_active_broker", { _broker_id: row.broker_id });
+          const broker = brokerData?.[0] || null;
+          if (broker) {
+            const { data: profileData } = await supabase.rpc("get_public_profile", { _user_id: broker.user_id });
+            const profile = profileData?.[0] || null;
+            row.broker = {
+              id: broker.id,
+              creci: broker.creci,
+              company_name: broker.company_name,
+              slug: broker.id,
+              display_name: profile?.display_name || null,
+              avatar_url: profile?.avatar_url || null,
+              bio: profile?.bio || null,
+              phone: profile?.phone || null,
+            };
+            // Resolve broker avatar S3 URL
+            if (row.broker.avatar_url) {
+              await resolveS3Images([row.broker]);
+            }
+          }
+        }
+      }
       return jsonResponse({ data: row });
     }
 
