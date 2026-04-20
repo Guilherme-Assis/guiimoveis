@@ -38,7 +38,7 @@ const CrmHero = ({ icon: Icon, title, subtitle, actions, accent = "gold" }: CrmH
 
       <div className="relative flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
         <div className="flex items-center gap-4 min-w-0">
-          <div className={`flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${iconAccentMap[accent]} border border-border/40 shadow-[var(--shadow-gold,0_8px_24px_-8px_hsl(var(--primary)/0.4))]`}>
+          <div className={`flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${iconAccentMap[accent]} border border-border/40 shadow-[var(--shadow-gold)]`}>
             <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
           </div>
           <div className="min-w-0">
