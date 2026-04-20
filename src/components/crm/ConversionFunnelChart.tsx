@@ -34,9 +34,18 @@ const ConversionFunnelChart = ({ leads, visits, proposals }: ConversionFunnelCha
   const maxCount = Math.max(...steps.map((s) => s.count), 1);
 
   return (
-    <Card className="border-border/40">
-      <CardContent className="p-5">
-        <h3 className="mb-6 font-display text-sm font-semibold text-foreground">Funil de Conversão</h3>
+    <Card className="relative overflow-hidden border-border/40 bg-card">
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
+      <CardContent className="relative p-5 sm:p-6">
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-gradient-to-br from-primary/20 to-primary/5 text-primary">
+            <TrendingDown className="h-4 w-4" />
+          </div>
+          <div>
+            <h3 className="font-display text-sm font-semibold tracking-tight text-foreground">Funil de Conversão</h3>
+            <p className="font-body text-[10px] uppercase tracking-[0.15em] text-muted-foreground/70">Jornada do lead ao fechamento</p>
+          </div>
+        </div>
         <div className="space-y-3">
           {steps.map((step, i) => {
             const widthPct = Math.max((step.count / maxCount) * 100, 8);
@@ -48,9 +57,9 @@ const ConversionFunnelChart = ({ leads, visits, proposals }: ConversionFunnelCha
                   <p className="font-body text-xs font-medium text-muted-foreground">{step.label}</p>
                 </div>
                 <div className="flex-1">
-                  <div className="relative h-8 w-full overflow-hidden rounded bg-secondary/30">
+                  <div className="relative h-9 w-full overflow-hidden rounded-lg bg-secondary/30">
                     <div
-                      className={`h-full ${step.color} flex items-center justify-end rounded pr-2 transition-all duration-700`}
+                      className={`h-full ${step.color} flex items-center justify-end rounded-lg pr-3 shadow-sm transition-all duration-700`}
                       style={{ width: `${widthPct}%` }}
                     >
                       <span className="font-display text-xs font-bold text-white drop-shadow">
@@ -71,9 +80,6 @@ const ConversionFunnelChart = ({ leads, visits, proposals }: ConversionFunnelCha
             );
           })}
         </div>
-        <p className="mt-4 font-body text-[10px] text-muted-foreground">
-          Taxa de conversão entre cada etapa do funil de vendas
-        </p>
       </CardContent>
     </Card>
   );
