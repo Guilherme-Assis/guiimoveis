@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { DollarSign, Target, TrendingUp, Award, Percent } from "lucide-react";
+import CrmHero from "./CrmHero";
 
 const formatCurrency = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
@@ -71,19 +72,17 @@ const CommissionsTab = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary via-amber-300 to-primary bg-clip-text text-transparent">
-            Comissões & Metas
-          </h2>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-            Acompanhe suas vendas e comissões
-          </p>
-        </div>
-        <Badge variant="outline" className="border-primary/40 text-primary text-sm w-fit">
-          Taxa: {commissionRate}%
-        </Badge>
-      </div>
+      <CrmHero
+        icon={Award}
+        title="Comissões & Metas"
+        subtitle="Acompanhe suas vendas e comissões"
+        accent="gold"
+        actions={
+          <Badge variant="outline" className="border-primary/40 text-primary text-sm w-fit">
+            Taxa: {commissionRate}%
+          </Badge>
+        }
+      />
 
       {/* KPIs */}
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">

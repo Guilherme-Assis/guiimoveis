@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import { MessageSquare, Mail, Copy, Phone, Plus, Edit, Trash2 } from "lucide-react";
+import CrmHero from "./CrmHero";
 
 const categoryColors: Record<string, string> = {
   whatsapp: "border-emerald-500/40 bg-emerald-500/10 text-emerald-300",
@@ -152,28 +153,25 @@ const MessageTemplatesTab = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary via-amber-300 to-primary bg-clip-text text-transparent">
-            Templates de Mensagens
-          </h2>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-            Crie e gerencie modelos para WhatsApp e e-mail
-          </p>
-        </div>
-        <div className="flex gap-2">
-          {templates.length === 0 && (
-            <Button variant="outline" size="sm" onClick={() => seedDefaults.mutate()} disabled={seedDefaults.isPending} className="gap-1.5 text-xs border-border/40">
-              <MessageSquare className="h-3.5 w-3.5" /> Carregar Padrões
-            </Button>
-          )}
-          <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) closeDialog(); else setDialogOpen(true); }}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="gap-1.5 text-xs bg-gradient-to-r from-primary to-primary/80 shadow-md shadow-primary/20">
-                <Plus className="h-3.5 w-3.5" /> Novo Template
+      <CrmHero
+        icon={MessageSquare}
+        title="Templates de Mensagens"
+        subtitle="Crie e gerencie modelos para WhatsApp e e-mail"
+        accent="emerald"
+        actions={
+          <>
+            {templates.length === 0 && (
+              <Button variant="outline" size="sm" onClick={() => seedDefaults.mutate()} disabled={seedDefaults.isPending} className="gap-1.5 text-xs border-border/40">
+                <MessageSquare className="h-3.5 w-3.5" /> Carregar Padrões
               </Button>
-            </DialogTrigger>
-            <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto border-border/50 bg-card">
+            )}
+            <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) closeDialog(); else setDialogOpen(true); }}>
+              <DialogTrigger asChild>
+                <Button size="sm" className="gap-1.5 text-xs bg-gradient-to-r from-primary to-primary/80 shadow-md shadow-primary/20">
+                  <Plus className="h-3.5 w-3.5" /> Novo Template
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto border-border/50 bg-card">
               <DialogHeader>
                 <DialogTitle className="font-display text-xl">{editingId ? "Editar Template" : "Novo Template"}</DialogTitle>
               </DialogHeader>
@@ -225,10 +223,11 @@ const MessageTemplatesTab = () => {
                   </Button>
                 </div>
               </form>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </div>
+              </DialogContent>
+            </Dialog>
+          </>
+        }
+      />
 
       {/* Filter */}
       <div className="flex gap-2">

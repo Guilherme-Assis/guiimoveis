@@ -8,6 +8,7 @@ import {
   Bell, UserPlus, FileText, CalendarDays, CheckSquare,
   AlertTriangle, TrendingUp, Clock,
 } from "lucide-react";
+import CrmHero from "./CrmHero";
 
 interface Notification {
   id: string;
@@ -182,19 +183,17 @@ const NotificationsTab = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary via-amber-300 to-primary bg-clip-text text-transparent">
-            Notificações
-          </h2>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-            Alertas de leads, tarefas, visitas e propostas
-          </p>
-        </div>
-        <Badge variant="outline" className="border-primary/40 text-primary">
-          {notifications.length} alertas
-        </Badge>
-      </div>
+      <CrmHero
+        icon={Bell}
+        title="Notificações"
+        subtitle="Alertas de leads, tarefas, visitas e propostas"
+        accent="destructive"
+        actions={
+          <Badge variant="outline" className="border-primary/40 text-primary">
+            {notifications.length} alertas
+          </Badge>
+        }
+      />
 
       {notifications.length === 0 ? (
         <Card className="border-dashed border-border/40">
