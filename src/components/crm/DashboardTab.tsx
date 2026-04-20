@@ -236,75 +236,76 @@ const DashboardTab = () => {
       </div>
 
       {/* Charts Row 1 */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="border-border/40 min-w-0">
-          <CardContent className="p-5">
-            <h3 className="mb-4 font-display text-sm font-semibold text-foreground">Leads por Mês</h3>
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={leadsByMonth}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
-                <XAxis dataKey="name" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
-                <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} allowDecimals={false} />
-                <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
-                <Bar dataKey="leads" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="Leads" />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+      <div className="grid gap-4 sm:gap-5 lg:grid-cols-2">
+        <ChartCard icon={BarChart3} title="Leads por Mês" subtitle="Últimos 6 meses" accent="sky">
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={leadsByMonth} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.25} vertical={false} />
+              <XAxis dataKey="name" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} allowDecimals={false} axisLine={false} tickLine={false} />
+              <Tooltip cursor={{ fill: "hsl(var(--primary) / 0.05)" }} contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 12, fontSize: 12 }} />
+              <Bar dataKey="leads" fill="hsl(210, 70%, 55%)" radius={[6, 6, 0, 0]} name="Leads" />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
 
-        {/* Lead Status Pie */}
-        <Card className="border-border/40">
-          <CardContent className="p-5">
-            <h3 className="mb-4 font-display text-sm font-semibold text-foreground">Distribuição por Status</h3>
-            <ResponsiveContainer width="100%" height={220}>
-              <PieChart>
-                <Pie data={statusDistribution} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, value }) => `${name}: ${value}`}>
-                  {statusDistribution.map((_, i) => (
-                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+        <ChartCard icon={PieIcon} title="Distribuição por Status" subtitle="Pipeline de leads" accent="gold">
+          <ResponsiveContainer width="100%" height={220}>
+            <PieChart>
+              <Pie
+                data={statusDistribution}
+                cx="50%"
+                cy="50%"
+                innerRadius={48}
+                outerRadius={80}
+                paddingAngle={3}
+                dataKey="value"
+                stroke="hsl(var(--card))"
+                strokeWidth={2}
+              >
+                {statusDistribution.map((_, i) => (
+                  <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 12, fontSize: 12 }} />
+              <Legend
+                verticalAlign="bottom"
+                iconType="circle"
+                wrapperStyle={{ fontSize: 11, paddingTop: 8 }}
+                formatter={(value) => <span className="text-muted-foreground">{value}</span>}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        </ChartCard>
       </div>
 
       {/* Charts Row 2 */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        {/* Proposals by Month */}
-        <Card className="border-border/40">
-          <CardContent className="p-5">
-            <h3 className="mb-4 font-display text-sm font-semibold text-foreground">Propostas por Mês</h3>
-            <ResponsiveContainer width="100%" height={220}>
-              <LineChart data={proposalsByMonth}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
-                <XAxis dataKey="name" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
-                <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} allowDecimals={false} />
-                <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
-                <Legend />
-                <Line type="monotone" dataKey="total" stroke="hsl(210, 70%, 55%)" strokeWidth={2} name="Total" dot={{ r: 4 }} />
-                <Line type="monotone" dataKey="aceitas" stroke="hsl(var(--primary))" strokeWidth={2} name="Aceitas" dot={{ r: 4 }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+      <div className="grid gap-4 sm:gap-5 lg:grid-cols-2">
+        <ChartCard icon={LineIcon} title="Propostas por Mês" subtitle="Total vs Aceitas" accent="emerald">
+          <ResponsiveContainer width="100%" height={220}>
+            <LineChart data={proposalsByMonth} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.25} vertical={false} />
+              <XAxis dataKey="name" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} allowDecimals={false} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 12, fontSize: 12 }} />
+              <Legend iconType="circle" wrapperStyle={{ fontSize: 11 }} />
+              <Line type="monotone" dataKey="total" stroke="hsl(210, 70%, 55%)" strokeWidth={2.5} name="Total" dot={{ r: 3, strokeWidth: 0 }} activeDot={{ r: 5 }} />
+              <Line type="monotone" dataKey="aceitas" stroke="hsl(var(--primary))" strokeWidth={2.5} name="Aceitas" dot={{ r: 3, strokeWidth: 0 }} activeDot={{ r: 5 }} />
+            </LineChart>
+          </ResponsiveContainer>
+        </ChartCard>
 
-        {/* Visit Distribution */}
-        <Card className="border-border/40">
-          <CardContent className="p-5">
-            <h3 className="mb-4 font-display text-sm font-semibold text-foreground">Status das Visitas</h3>
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={visitDistribution} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
-                <XAxis type="number" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} allowDecimals={false} />
-                <YAxis type="category" dataKey="name" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} width={80} />
-                <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
-                <Bar dataKey="value" fill="hsl(40, 85%, 55%)" radius={[0, 4, 4, 0]} name="Visitas" />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+        <ChartCard icon={Activity} title="Status das Visitas" subtitle="Distribuição atual" accent="amber">
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={visitDistribution} layout="vertical" margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.25} horizontal={false} />
+              <XAxis type="number" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} allowDecimals={false} axisLine={false} tickLine={false} />
+              <YAxis type="category" dataKey="name" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} width={80} axisLine={false} tickLine={false} />
+              <Tooltip cursor={{ fill: "hsl(var(--primary) / 0.05)" }} contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 12, fontSize: 12 }} />
+              <Bar dataKey="value" fill="hsl(40, 85%, 55%)" radius={[0, 6, 6, 0]} name="Visitas" />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
       </div>
 
       {/* Conversion Funnel */}
@@ -313,35 +314,25 @@ const DashboardTab = () => {
       {/* Property Views Analytics */}
       <PropertyViewsChart />
 
-      {/* Quick stats footer */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
-        <Card className="border-border/40">
-          <CardContent className="flex items-center gap-3 p-3 sm:p-4">
-            <CheckCircle2 className="h-5 w-5 shrink-0 text-primary" />
-            <div className="min-w-0">
-              <p className="text-[10px] sm:text-xs text-muted-foreground">Tarefas Concluídas</p>
-              <p className="font-display text-base sm:text-lg font-bold">{tasks.filter((t: any) => t.status === "concluida").length}/{tasks.length}</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-border/40">
-          <CardContent className="flex items-center gap-3 p-3 sm:p-4">
-            <CalendarDays className="h-5 w-5 shrink-0 text-amber-400" />
-            <div className="min-w-0">
-              <p className="text-[10px] sm:text-xs text-muted-foreground">Visitas Agendadas</p>
-              <p className="font-display text-base sm:text-lg font-bold">{visits.filter((v: any) => v.status === "agendada").length}</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-border/40">
-          <CardContent className="flex items-center gap-3 p-3 sm:p-4">
-            <XCircle className="h-5 w-5 shrink-0 text-destructive" />
-            <div className="min-w-0">
-              <p className="text-[10px] sm:text-xs text-muted-foreground">Leads Perdidos</p>
-              <p className="font-display text-base sm:text-lg font-bold">{leads.filter((l: any) => l.status === "perdido").length}</p>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Quick stats footer — refined */}
+      <div className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-3">
+        {[
+          { icon: CheckCircle2, label: "Tarefas Concluídas", value: `${tasks.filter((t: any) => t.status === "concluida").length}/${tasks.length}`, color: "text-primary", bg: "from-primary/15 to-primary/5", border: "border-primary/20" },
+          { icon: CalendarDays, label: "Visitas Agendadas", value: visits.filter((v: any) => v.status === "agendada").length, color: "text-amber-300", bg: "from-amber-500/15 to-amber-500/5", border: "border-amber-500/20" },
+          { icon: XCircle, label: "Leads Perdidos", value: leads.filter((l: any) => l.status === "perdido").length, color: "text-destructive", bg: "from-destructive/15 to-destructive/5", border: "border-destructive/20" },
+        ].map((s) => (
+          <Card key={s.label} className="group border-border/40 transition-all duration-300 hover:border-primary/30">
+            <CardContent className="flex items-center gap-3 p-4 sm:p-5">
+              <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border bg-gradient-to-br ${s.bg} ${s.border} ${s.color} transition-transform duration-300 group-hover:scale-110`}>
+                <s.icon className="h-5 w-5" />
+              </div>
+              <div className="min-w-0">
+                <p className="font-body text-[10px] uppercase tracking-[0.15em] text-muted-foreground/70">{s.label}</p>
+                <p className="mt-0.5 font-display text-lg sm:text-xl font-bold text-foreground">{s.value}</p>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
     </div>
   );
