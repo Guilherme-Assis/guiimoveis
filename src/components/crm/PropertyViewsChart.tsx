@@ -202,10 +202,6 @@ const PropertyViewsChart = () => {
                   activeBar={{
                     fill: "hsl(var(--primary))",
                     fillOpacity: 0.92,
-                    stroke: "hsl(var(--primary))",
-                    strokeOpacity: 0.16,
-                    strokeWidth: 6,
-                    radius: [8, 8, 0, 0],
                   }}
                 />
               </BarChart>
