@@ -10,7 +10,8 @@ import {
 } from "recharts";
 import {
   TrendingUp, DollarSign, Users, Eye, CalendarDays,
-  Target, CheckCircle2, XCircle,
+  Target, CheckCircle2, XCircle, BarChart3, PieChart as PieIcon,
+  LineChart as LineIcon, Activity,
 } from "lucide-react";
 import ConversionFunnelChart from "@/components/crm/ConversionFunnelChart";
 import PropertyViewsChart from "@/components/crm/PropertyViewsChart";
@@ -19,6 +20,46 @@ const COLORS = [
   "hsl(var(--primary))", "hsl(210, 70%, 55%)", "hsl(40, 85%, 55%)",
   "hsl(150, 60%, 45%)", "hsl(0, 65%, 55%)", "hsl(270, 50%, 55%)",
 ];
+
+// Reusable luxury chart card wrapper
+const ChartCard = ({
+  icon: Icon, title, subtitle, children, accent = "gold",
+}: {
+  icon: any; title: string; subtitle?: string; children: React.ReactNode;
+  accent?: "gold" | "sky" | "emerald" | "amber" | "violet";
+}) => {
+  const accentLine: Record<string, string> = {
+    gold: "via-primary/60",
+    sky: "via-sky-400/60",
+    emerald: "via-emerald-400/60",
+    amber: "via-amber-400/60",
+    violet: "via-violet-400/60",
+  };
+  const iconBg: Record<string, string> = {
+    gold: "from-primary/20 to-primary/5 text-primary border-primary/20",
+    sky: "from-sky-500/20 to-sky-500/5 text-sky-300 border-sky-500/20",
+    emerald: "from-emerald-500/20 to-emerald-500/5 text-emerald-300 border-emerald-500/20",
+    amber: "from-amber-500/20 to-amber-500/5 text-amber-300 border-amber-500/20",
+    violet: "from-violet-500/20 to-violet-500/5 text-violet-300 border-violet-500/20",
+  };
+  return (
+    <Card className="group relative overflow-hidden border-border/40 bg-card transition-all duration-500 hover:border-primary/30 min-w-0">
+      <div className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent ${accentLine[accent]} to-transparent`} />
+      <CardContent className="relative p-5 sm:p-6">
+        <div className="mb-5 flex items-center gap-3">
+          <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border bg-gradient-to-br ${iconBg[accent]}`}>
+            <Icon className="h-4 w-4" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <h3 className="font-display text-sm font-semibold tracking-tight text-foreground truncate">{title}</h3>
+            {subtitle && <p className="font-body text-[10px] uppercase tracking-[0.15em] text-muted-foreground/70 truncate">{subtitle}</p>}
+          </div>
+        </div>
+        {children}
+      </CardContent>
+    </Card>
+  );
+};
 
 const statusLabels: Record<string, string> = {
   novo: "Novo", em_contato: "Em Contato", qualificado: "Qualificado",
