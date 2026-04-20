@@ -9,8 +9,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   FileText, Plus, ChevronRight, GripVertical, Trash2, Download, Eye,
   Copy, Search, Home, Key, ShieldCheck, AlertTriangle, DollarSign,
-  Clock, Users, PawPrint, Sofa, Hammer, Scale, BookOpen,
+  Clock, Users, PawPrint, Sofa, Hammer, Scale, BookOpen, FileSignature,
 } from "lucide-react";
+import CrmHero from "./CrmHero";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 
@@ -355,42 +356,41 @@ const ContractsTab = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h2 className="font-display text-xl font-bold text-foreground">Contratos</h2>
-          <p className="font-body text-sm text-muted-foreground">
-            Monte contratos personalizados selecionando cláusulas
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Select value={contractType} onValueChange={(v) => handleContractTypeChange(v as "venda" | "aluguel")}>
-            <SelectTrigger className="w-44 border-border/40 bg-card/50">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="venda">Compra e Venda</SelectItem>
-              <SelectItem value="aluguel">Locação</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button variant="outline" size="sm" onClick={loadTemplate} className="gap-1.5">
-            <FileText className="h-3.5 w-3.5" /> Carregar Template
-          </Button>
-          {selectedClauses.length > 0 && (
-            <>
-              <Button variant="outline" size="sm" onClick={() => setPreviewOpen(true)} className="gap-1.5">
-                <Eye className="h-3.5 w-3.5" /> Visualizar
-              </Button>
-              <Button variant="outline" size="sm" onClick={copyToClipboard} className="gap-1.5">
-                <Copy className="h-3.5 w-3.5" /> Copiar
-              </Button>
-              <Button size="sm" onClick={downloadAsTxt} className="gap-1.5 bg-gradient-to-r from-primary to-primary/80">
-                <Download className="h-3.5 w-3.5" /> Baixar
-              </Button>
-            </>
-          )}
-        </div>
-      </div>
+      <CrmHero
+        icon={FileSignature}
+        title="Contratos"
+        subtitle="Monte contratos personalizados selecionando cláusulas"
+        accent="sky"
+        actions={
+          <>
+            <Select value={contractType} onValueChange={(v) => handleContractTypeChange(v as "venda" | "aluguel")}>
+              <SelectTrigger className="w-44 border-border/40 bg-card/50">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="venda">Compra e Venda</SelectItem>
+                <SelectItem value="aluguel">Locação</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button variant="outline" size="sm" onClick={loadTemplate} className="gap-1.5">
+              <FileText className="h-3.5 w-3.5" /> Carregar Template
+            </Button>
+            {selectedClauses.length > 0 && (
+              <>
+                <Button variant="outline" size="sm" onClick={() => setPreviewOpen(true)} className="gap-1.5">
+                  <Eye className="h-3.5 w-3.5" /> Visualizar
+                </Button>
+                <Button variant="outline" size="sm" onClick={copyToClipboard} className="gap-1.5">
+                  <Copy className="h-3.5 w-3.5" /> Copiar
+                </Button>
+                <Button size="sm" onClick={downloadAsTxt} className="gap-1.5 bg-gradient-to-r from-primary to-primary/80">
+                  <Download className="h-3.5 w-3.5" /> Baixar
+                </Button>
+              </>
+            )}
+          </>
+        }
+      />
 
       {/* Main Layout */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">

@@ -14,8 +14,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
 import {
   Plus, Phone, MapPin, FileText, Users as UsersIcon, Calendar,
-  CheckCircle2, Circle, Clock, AlertTriangle, Trash2, Edit
+  CheckCircle2, Circle, Clock, AlertTriangle, Trash2, Edit, ListChecks
 } from "lucide-react";
+import CrmHero from "./CrmHero";
 
 const taskTypeLabels: Record<string, string> = {
   ligacao: "Ligação", visita: "Visita", documento: "Documento",
@@ -108,38 +109,45 @@ const TasksTab = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3 sm:gap-4">
-          <Select value={filter} onValueChange={setFilter}>
-            <SelectTrigger className="w-40 border-border/40 bg-card/50">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="active">Ativas ({tasks.filter((t: any) => t.status !== "concluida" && t.status !== "cancelada").length})</SelectItem>
-              <SelectItem value="completed">Concluídas ({tasks.filter((t: any) => t.status === "concluida").length})</SelectItem>
-              <SelectItem value="all">Todas ({tasks.length})</SelectItem>
-            </SelectContent>
-          </Select>
-          {overdueCount > 0 && (
-            <Badge variant="outline" className="border-destructive/40 bg-destructive/10 text-destructive">
-              <AlertTriangle className="mr-1 h-3 w-3" /> {overdueCount} atrasada{overdueCount > 1 ? "s" : ""}
-            </Badge>
-          )}
-        </div>
-        <Dialog open={showForm} onOpenChange={(open) => { setShowForm(open); if (!open) setEditTask(null); }}>
-          <DialogTrigger asChild>
-            <Button className="gap-2 bg-gradient-to-r from-primary to-primary/80 font-semibold shadow-lg shadow-primary/20">
-              <Plus className="h-4 w-4" /> Nova Tarefa
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-md border-border/50 bg-card">
-            <DialogHeader>
-              <DialogTitle className="font-display">{editTask ? "Editar Tarefa" : "Nova Tarefa"}</DialogTitle>
-            </DialogHeader>
-            <TaskForm brokerId={brokerId} isAdmin={role === "admin"} task={editTask} leads={leads} onSuccess={() => { setShowForm(false); setEditTask(null); queryClient.invalidateQueries({ queryKey: ["broker-tasks"] }); }} />
-          </DialogContent>
-        </Dialog>
+      <CrmHero
+        icon={ListChecks}
+        title="Tarefas"
+        subtitle="Gerencie follow-ups, ligações e atividades do dia"
+        accent="sky"
+        actions={
+          <Dialog open={showForm} onOpenChange={(open) => { setShowForm(open); if (!open) setEditTask(null); }}>
+            <DialogTrigger asChild>
+              <Button className="gap-2 bg-gradient-to-r from-primary to-primary/80 font-semibold shadow-lg shadow-primary/20">
+                <Plus className="h-4 w-4" /> Nova Tarefa
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md border-border/50 bg-card">
+              <DialogHeader>
+                <DialogTitle className="font-display">{editTask ? "Editar Tarefa" : "Nova Tarefa"}</DialogTitle>
+              </DialogHeader>
+              <TaskForm brokerId={brokerId} isAdmin={role === "admin"} task={editTask} leads={leads} onSuccess={() => { setShowForm(false); setEditTask(null); queryClient.invalidateQueries({ queryKey: ["broker-tasks"] }); }} />
+            </DialogContent>
+          </Dialog>
+        }
+      />
+
+      {/* Filters row */}
+      <div className="flex items-center gap-3 sm:gap-4">
+        <Select value={filter} onValueChange={setFilter}>
+          <SelectTrigger className="w-40 border-border/40 bg-card/50">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="active">Ativas ({tasks.filter((t: any) => t.status !== "concluida" && t.status !== "cancelada").length})</SelectItem>
+            <SelectItem value="completed">Concluídas ({tasks.filter((t: any) => t.status === "concluida").length})</SelectItem>
+            <SelectItem value="all">Todas ({tasks.length})</SelectItem>
+          </SelectContent>
+        </Select>
+        {overdueCount > 0 && (
+          <Badge variant="outline" className="border-destructive/40 bg-destructive/10 text-destructive">
+            <AlertTriangle className="mr-1 h-3 w-3" /> {overdueCount} atrasada{overdueCount > 1 ? "s" : ""}
+          </Badge>
+        )}
       </div>
 
       {/* Task list */}

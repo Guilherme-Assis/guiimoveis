@@ -10,6 +10,7 @@ import {
   ChevronLeft, ChevronRight, Bell, BellOff,
   Clock, MapPin, CheckSquare, CalendarDays, Phone, FileText
 } from "lucide-react";
+import CrmHero from "./CrmHero";
 
 interface CalendarEvent {
   id: string;
@@ -218,29 +219,26 @@ const CalendarTab = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-primary via-amber-300 to-primary bg-clip-text text-transparent">
-            Calendário
-          </h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Tarefas e visitas unificadas
-          </p>
-        </div>
-        <Button
-          variant={alertsEnabled ? "default" : "outline"}
-          size="sm"
-          onClick={toggleAlerts}
-          className={alertsEnabled
-            ? "bg-primary/20 border-primary/40 text-primary hover:bg-primary/30"
-            : "border-border/40 hover:border-primary/40"
-          }
-        >
-          {alertsEnabled ? <Bell className="h-4 w-4 mr-2" /> : <BellOff className="h-4 w-4 mr-2" />}
-          {alertsEnabled ? "Alertas ativos" : "Ativar alertas"}
-        </Button>
-      </div>
+      <CrmHero
+        icon={CalendarDays}
+        title="Calendário"
+        subtitle="Tarefas e visitas unificadas em uma agenda"
+        accent="amber"
+        actions={
+          <Button
+            variant={alertsEnabled ? "default" : "outline"}
+            size="sm"
+            onClick={toggleAlerts}
+            className={alertsEnabled
+              ? "bg-primary/20 border-primary/40 text-primary hover:bg-primary/30"
+              : "border-border/40 hover:border-primary/40"
+            }
+          >
+            {alertsEnabled ? <Bell className="h-4 w-4 mr-2" /> : <BellOff className="h-4 w-4 mr-2" />}
+            {alertsEnabled ? "Alertas ativos" : "Ativar alertas"}
+          </Button>
+        }
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Calendar Grid */}

@@ -5,7 +5,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
-import { Phone, Mail, DollarSign, MapPin, GripVertical } from "lucide-react";
+import { Phone, Mail, DollarSign, MapPin, GripVertical, LayoutGrid } from "lucide-react";
+import CrmHero from "./CrmHero";
 
 const COLUMNS: { id: string; label: string; color: string; dotColor: string }[] = [
   { id: "novo", label: "Novo", color: "border-t-sky-500", dotColor: "bg-sky-500" },
@@ -60,8 +61,15 @@ const KanbanTab = () => {
   const getLeadsByStatus = (status: string) => leads.filter((l: any) => l.status === status);
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <div className="flex gap-3 overflow-x-auto pb-4">
+    <div className="space-y-6">
+      <CrmHero
+        icon={LayoutGrid}
+        title="Pipeline de Leads"
+        subtitle="Arraste cards entre colunas para atualizar o status"
+        accent="violet"
+      />
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="flex gap-3 overflow-x-auto pb-4">
         {COLUMNS.map((col) => {
           const columnLeads = getLeadsByStatus(col.id);
           return (
@@ -137,8 +145,9 @@ const KanbanTab = () => {
             </div>
           );
         })}
-      </div>
-    </DragDropContext>
+        </div>
+      </DragDropContext>
+    </div>
   );
 };
 

@@ -20,6 +20,7 @@ import {
   Handshake, Plus, CheckCircle2, XCircle, Clock, ArrowRightLeft,
   Building2, User, Percent, MessageSquare, Filter,
 } from "lucide-react";
+import CrmHero from "./CrmHero";
 
 const statusLabels: Record<string, string> = {
   pendente: "Pendente", aceita: "Aceita", ativa: "Ativa",
@@ -105,6 +106,23 @@ const PartnershipsTab = () => {
 
   return (
     <div className="space-y-6">
+      <CrmHero
+        icon={Handshake}
+        title="Parcerias"
+        subtitle="Colabore com outros corretores e compartilhe comissões"
+        accent="emerald"
+        actions={
+          role === "broker" ? (
+            <Button
+              onClick={() => setShowPropose(true)}
+              className="gap-2 bg-gradient-to-r from-primary to-primary/80 font-semibold shadow-lg shadow-primary/20"
+            >
+              <Plus className="h-4 w-4" /> Propor Parceria
+            </Button>
+          ) : null
+        }
+      />
+
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {[
@@ -129,7 +147,7 @@ const PartnershipsTab = () => {
         ))}
       </div>
 
-      {/* Filters + New */}
+      {/* Filters */}
       <div className="flex flex-col gap-3 sm:flex-row">
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-full border-border/40 bg-card/50 sm:w-48">
@@ -142,14 +160,6 @@ const PartnershipsTab = () => {
             ))}
           </SelectContent>
         </Select>
-        {role === "broker" && (
-          <Button
-            onClick={() => setShowPropose(true)}
-            className="gap-2 bg-gradient-to-r from-primary to-primary/80 font-semibold shadow-lg shadow-primary/20"
-          >
-            <Plus className="h-4 w-4" /> Propor Parceria
-          </Button>
-        )}
       </div>
 
       {/* Partnership List */}

@@ -13,8 +13,9 @@ import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import {
   Plus, DollarSign, FileText, Calendar, Trash2, Edit,
-  CheckCircle2, XCircle, Clock, Send, Eye
+  CheckCircle2, XCircle, Clock, Send, Eye, Receipt
 } from "lucide-react";
+import CrmHero from "./CrmHero";
 import PdfProposalButton from "./PdfProposalButton";
 
 const proposalStatusLabels: Record<string, string> = {
@@ -94,32 +95,37 @@ const ProposalsTab = () => {
 
   return (
     <div className="space-y-6">
-      {/* Stats row */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-          {totalValue > 0 && (
-            <Badge variant="outline" className="border-primary/40 bg-primary/10 px-3 py-1 text-primary">
-              <DollarSign className="mr-1 h-3 w-3" /> Vendas: {formatCurrency(totalValue)}
-            </Badge>
-          )}
-          {pendingCount > 0 && (
-            <Badge variant="outline" className="border-amber-500/40 bg-amber-500/10 text-amber-300">
-              <Clock className="mr-1 h-3 w-3" /> {pendingCount} pendente{pendingCount > 1 ? "s" : ""}
-            </Badge>
-          )}
-        </div>
-        <Dialog open={showForm} onOpenChange={(open) => { setShowForm(open); if (!open) setEditProposal(null); }}>
-          <DialogTrigger asChild>
-            <Button className="gap-2 bg-gradient-to-r from-primary to-primary/80 font-semibold shadow-lg shadow-primary/20">
-              <Plus className="h-4 w-4" /> Nova Proposta
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-md border-border/50 bg-card">
-            <DialogHeader><DialogTitle className="font-display">{editProposal ? "Editar Proposta" : "Nova Proposta"}</DialogTitle></DialogHeader>
-            <ProposalForm brokerId={brokerId} isAdmin={role === "admin"} proposal={editProposal} leads={leads} properties={properties} onSuccess={() => { setShowForm(false); setEditProposal(null); queryClient.invalidateQueries({ queryKey: ["broker-proposals"] }); }} />
-          </DialogContent>
-        </Dialog>
-      </div>
+      <CrmHero
+        icon={Receipt}
+        title="Propostas"
+        subtitle="Envie, acompanhe e converta propostas em vendas"
+        accent="gold"
+        actions={
+          <>
+            {totalValue > 0 && (
+              <Badge variant="outline" className="border-primary/40 bg-primary/10 px-3 py-1 text-primary">
+                <DollarSign className="mr-1 h-3 w-3" /> Vendas: {formatCurrency(totalValue)}
+              </Badge>
+            )}
+            {pendingCount > 0 && (
+              <Badge variant="outline" className="border-amber-500/40 bg-amber-500/10 text-amber-300">
+                <Clock className="mr-1 h-3 w-3" /> {pendingCount} pendente{pendingCount > 1 ? "s" : ""}
+              </Badge>
+            )}
+            <Dialog open={showForm} onOpenChange={(open) => { setShowForm(open); if (!open) setEditProposal(null); }}>
+              <DialogTrigger asChild>
+                <Button className="gap-2 bg-gradient-to-r from-primary to-primary/80 font-semibold shadow-lg shadow-primary/20">
+                  <Plus className="h-4 w-4" /> Nova Proposta
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md border-border/50 bg-card">
+                <DialogHeader><DialogTitle className="font-display">{editProposal ? "Editar Proposta" : "Nova Proposta"}</DialogTitle></DialogHeader>
+                <ProposalForm brokerId={brokerId} isAdmin={role === "admin"} proposal={editProposal} leads={leads} properties={properties} onSuccess={() => { setShowForm(false); setEditProposal(null); queryClient.invalidateQueries({ queryKey: ["broker-proposals"] }); }} />
+              </DialogContent>
+            </Dialog>
+          </>
+        }
+      />
 
       {isLoading ? (
         <div className="flex justify-center py-12"><div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" /></div>

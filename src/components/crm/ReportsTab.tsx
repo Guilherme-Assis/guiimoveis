@@ -5,7 +5,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import { Download, FileSpreadsheet, FileText, TrendingUp, Users, CalendarDays, DollarSign } from "lucide-react";
+import { Download, FileSpreadsheet, FileText, TrendingUp, Users, CalendarDays, DollarSign, BarChart3 } from "lucide-react";
+import CrmHero from "./CrmHero";
 import jsPDF from "jspdf";
 
 const formatCurrency = (v: number) =>
@@ -167,22 +168,22 @@ const ReportsTab = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary via-amber-300 to-primary bg-clip-text text-transparent">
-            Relatórios
-          </h2>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1">Exporte seus dados de performance</p>
-        </div>
-        <div className="flex gap-2">
-          <Button onClick={exportPDF} variant="outline" size="sm" className="gap-2 border-primary/40 text-primary hover:bg-primary/10">
-            <FileText className="h-4 w-4" /> Exportar PDF
-          </Button>
-          <Button onClick={exportCSV} variant="outline" size="sm" className="gap-2 border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10">
-            <FileSpreadsheet className="h-4 w-4" /> Exportar CSV
-          </Button>
-        </div>
-      </div>
+      <CrmHero
+        icon={BarChart3}
+        title="Relatórios"
+        subtitle="Exporte seus dados de performance"
+        accent="violet"
+        actions={
+          <>
+            <Button onClick={exportPDF} variant="outline" size="sm" className="gap-2 border-primary/40 text-primary hover:bg-primary/10">
+              <FileText className="h-4 w-4" /> Exportar PDF
+            </Button>
+            <Button onClick={exportCSV} variant="outline" size="sm" className="gap-2 border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10">
+              <FileSpreadsheet className="h-4 w-4" /> Exportar CSV
+            </Button>
+          </>
+        }
+      />
 
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {summaryCards.map((card) => (

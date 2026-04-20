@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, Medal, Star, Eye, FileText, TrendingUp } from "lucide-react";
+import CrmHero from "./CrmHero";
 
 const formatCurrency = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
@@ -103,10 +104,12 @@ const BrokerPerformanceTab = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="font-display text-xl font-bold text-foreground">Performance dos Corretores</h2>
-        <p className="font-body text-sm text-muted-foreground">Ranking baseado em vendas, visitas e avaliações</p>
-      </div>
+      <CrmHero
+        icon={Trophy}
+        title="Performance dos Corretores"
+        subtitle="Ranking baseado em vendas, visitas e avaliações"
+        accent="amber"
+      />
 
       {performance.length === 0 ? (
         <Card className="border-dashed border-border/40">

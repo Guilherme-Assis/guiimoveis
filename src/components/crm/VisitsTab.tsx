@@ -12,8 +12,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import {
-  Plus, Calendar, MapPin, Star, Eye, Trash2, Edit, CheckCircle2, XCircle, Clock, AlertTriangle
+  Plus, Calendar, MapPin, Star, Eye, Trash2, Edit, CheckCircle2, XCircle, Clock, AlertTriangle, CalendarCheck
 } from "lucide-react";
+import CrmHero from "./CrmHero";
 
 const visitStatusLabels: Record<string, string> = {
   agendada: "Agendada", realizada: "Realizada", cancelada: "Cancelada", no_show: "No-show",
@@ -87,26 +88,32 @@ const VisitsTab = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          {upcomingCount > 0 && (
-            <Badge variant="outline" className="border-sky-500/40 bg-sky-500/10 text-sky-300">
-              <Calendar className="mr-1 h-3 w-3" /> {upcomingCount} agendada{upcomingCount > 1 ? "s" : ""}
-            </Badge>
-          )}
-        </div>
-        <Dialog open={showForm} onOpenChange={(open) => { setShowForm(open); if (!open) setEditVisit(null); }}>
-          <DialogTrigger asChild>
-            <Button className="gap-2 bg-gradient-to-r from-primary to-primary/80 font-semibold shadow-lg shadow-primary/20">
-              <Plus className="h-4 w-4" /> Agendar Visita
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-md border-border/50 bg-card">
-            <DialogHeader><DialogTitle className="font-display">{editVisit ? "Editar Visita" : "Agendar Visita"}</DialogTitle></DialogHeader>
-            <VisitForm brokerId={brokerId} isAdmin={role === "admin"} visit={editVisit} leads={leads} properties={properties} onSuccess={() => { setShowForm(false); setEditVisit(null); queryClient.invalidateQueries({ queryKey: ["lead-visits"] }); }} />
-          </DialogContent>
-        </Dialog>
-      </div>
+      <CrmHero
+        icon={CalendarCheck}
+        title="Visitas"
+        subtitle="Acompanhe agendamentos, feedbacks e nível de interesse"
+        accent="emerald"
+        actions={
+          <>
+            {upcomingCount > 0 && (
+              <Badge variant="outline" className="border-sky-500/40 bg-sky-500/10 text-sky-300">
+                <Calendar className="mr-1 h-3 w-3" /> {upcomingCount} agendada{upcomingCount > 1 ? "s" : ""}
+              </Badge>
+            )}
+            <Dialog open={showForm} onOpenChange={(open) => { setShowForm(open); if (!open) setEditVisit(null); }}>
+              <DialogTrigger asChild>
+                <Button className="gap-2 bg-gradient-to-r from-primary to-primary/80 font-semibold shadow-lg shadow-primary/20">
+                  <Plus className="h-4 w-4" /> Agendar Visita
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md border-border/50 bg-card">
+                <DialogHeader><DialogTitle className="font-display">{editVisit ? "Editar Visita" : "Agendar Visita"}</DialogTitle></DialogHeader>
+                <VisitForm brokerId={brokerId} isAdmin={role === "admin"} visit={editVisit} leads={leads} properties={properties} onSuccess={() => { setShowForm(false); setEditVisit(null); queryClient.invalidateQueries({ queryKey: ["lead-visits"] }); }} />
+              </DialogContent>
+            </Dialog>
+          </>
+        }
+      />
 
       {isLoading ? (
         <div className="flex justify-center py-12"><div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" /></div>
