@@ -110,17 +110,23 @@ const CRM = () => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/60">
-            <Sparkles className="h-5 w-5 text-primary-foreground" />
+    <div className="space-y-6 sm:space-y-8">
+      {/* Hero Header */}
+      <div className="relative overflow-hidden rounded-2xl border border-border/40 bg-gradient-to-br from-card via-card to-charcoal-deep p-6 sm:p-8">
+        <div className="absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-primary/5 to-transparent" />
+        <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
+        <div className="relative">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-primary" />
+            <span className="font-body text-[10px] sm:text-xs font-medium uppercase tracking-[0.2em] text-primary">
+              Central de Relacionamento
+            </span>
           </div>
-          <div>
-            <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-foreground">CRM</h1>
-            <p className="font-body text-xs sm:text-sm text-muted-foreground">Gestão completa de leads, tarefas, visitas e propostas</p>
-          </div>
+          <h1 className="mt-2 font-display text-3xl sm:text-4xl font-bold tracking-tight text-foreground">CRM</h1>
+          <p className="mt-2 max-w-xl font-body text-xs sm:text-sm leading-relaxed text-muted-foreground">
+            Gestão completa de leads, tarefas, visitas e propostas — tudo orquestrado em um único pipeline.
+          </p>
+          <div className="luxury-divider mt-6" />
         </div>
       </div>
 

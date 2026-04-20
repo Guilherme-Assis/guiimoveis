@@ -158,26 +158,35 @@ const DashboardTab = () => {
   }, [proposals]);
 
   const kpis = [
-    { label: "Total de Leads", value: totalLeads, icon: Users, color: "text-sky-400", bg: "from-sky-500/20 to-sky-600/10" },
-    { label: "Taxa de Conversão", value: `${conversionRate}%`, icon: Target, color: "text-primary", bg: "from-primary/20 to-primary/5" },
-    { label: "Vendas Aceitas", value: formatCurrency(totalSales), icon: DollarSign, color: "text-emerald-400", bg: "from-emerald-500/20 to-emerald-600/10" },
-    { label: "Visitas Realizadas", value: totalVisits, icon: Eye, color: "text-amber-400", bg: "from-amber-500/20 to-amber-600/10" },
+    { label: "Total de Leads", value: totalLeads, icon: Users, accent: "from-transparent via-sky-400 to-transparent" },
+    { label: "Taxa de Conversão", value: `${conversionRate}%`, icon: Target, accent: "from-transparent via-primary to-transparent" },
+    { label: "Vendas Aceitas", value: formatCurrency(totalSales), icon: DollarSign, accent: "from-transparent via-emerald-400 to-transparent" },
+    { label: "Visitas Realizadas", value: totalVisits, icon: Eye, accent: "from-transparent via-amber-400 to-transparent" },
   ];
 
   return (
-    <div className="space-y-6">
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+    <div className="space-y-6 sm:space-y-8">
+      {/* KPI Cards — luxury */}
+      <div className="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
         {kpis.map((kpi) => (
-          <Card key={kpi.label} className="border-border/40 transition-all hover:border-border/60">
-            <CardContent className="p-3 sm:p-5">
-              <div className="flex items-center justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="font-body text-[10px] sm:text-[11px] font-medium uppercase tracking-wider text-muted-foreground truncate">{kpi.label}</p>
-                  <p className="mt-1 sm:mt-2 font-display text-lg sm:text-2xl font-bold text-foreground truncate">{kpi.value}</p>
+          <Card
+            key={kpi.label}
+            className="group relative overflow-hidden border-border/40 bg-card transition-all duration-500 hover:border-primary/40 hover:shadow-[var(--shadow-gold)]"
+          >
+            <div className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r ${kpi.accent}`} />
+            <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-gradient-to-br from-primary/5 to-transparent blur-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+            <CardContent className="relative p-5 sm:p-6">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <p className="font-body text-[10px] sm:text-[11px] font-medium uppercase tracking-[0.15em] text-muted-foreground truncate">
+                    {kpi.label}
+                  </p>
+                  <p className="mt-2 sm:mt-3 font-display text-xl sm:text-3xl font-bold tracking-tight text-foreground truncate">
+                    {kpi.value}
+                  </p>
                 </div>
-                <div className={`flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${kpi.bg}`}>
-                  <kpi.icon className={`h-4 w-4 sm:h-5 sm:w-5 ${kpi.color}`} />
+                <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-gradient-to-br from-primary/15 to-primary/5 text-primary transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3">
+                  <kpi.icon className="h-5 w-5" />
                 </div>
               </div>
             </CardContent>
