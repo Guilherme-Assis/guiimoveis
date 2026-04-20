@@ -143,14 +143,19 @@ const PropertyViewsChart = () => {
           <CardContent className="p-5">
             <h4 className="mb-4 font-display text-sm font-semibold text-foreground">Visualizações por Dia</h4>
             <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={dailyViews} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
+              <BarChart data={dailyViews} barCategoryGap="28%" margin={{ top: 6, right: 6, left: -14, bottom: 0 }}>
                 <defs>
                   <linearGradient id="dailyViewsGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.95} />
-                    <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0.55} />
+                    <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.88} />
+                    <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0.42} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.25} vertical={false} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="hsl(var(--border))"
+                  opacity={0.18}
+                  vertical={false}
+                />
                 <XAxis
                   dataKey="name"
                   tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
@@ -162,30 +167,43 @@ const PropertyViewsChart = () => {
                   tickLine={false}
                   axisLine={false}
                   allowDecimals={false}
-                  width={32}
+                  width={30}
                 />
                 <Tooltip
-                  cursor={{ fill: "hsl(var(--primary) / 0.06)", radius: 6 }}
+                  cursor={false}
                   contentStyle={{
-                    background: "hsl(var(--card))",
+                    background: "hsl(var(--background))",
                     border: "1px solid hsl(var(--border))",
                     borderRadius: 12,
-                    boxShadow: "0 8px 24px -8px hsl(var(--primary) / 0.25)",
-                    padding: "8px 12px",
-                    fontSize: 12,
+                    boxShadow: "0 12px 32px -16px hsl(var(--foreground) / 0.24)",
+                    padding: "10px 12px",
                   }}
                   labelStyle={{
                     color: "hsl(var(--muted-foreground))",
                     fontSize: 10,
+                    fontWeight: 500,
                     textTransform: "uppercase",
-                    letterSpacing: "0.05em",
+                    letterSpacing: "0.08em",
                     marginBottom: 4,
                   }}
-                  itemStyle={{ color: "hsl(var(--foreground))", fontWeight: 600, padding: 0 }}
-                  formatter={(value: number) => [`${value} views`, ""]}
-                  separator=""
+                  itemStyle={{
+                    color: "hsl(var(--foreground))",
+                    fontSize: 12,
+                    fontWeight: 600,
+                    padding: 0,
+                  }}
+                  formatter={(value: number) => [String(value), "Visualizações"]}
                 />
-                <Bar dataKey="views" fill="url(#dailyViewsGradient)" radius={[6, 6, 0, 0]} name="Views" maxBarSize={32} />
+                <Bar
+                  dataKey="views"
+                  fill="url(#dailyViewsGradient)"
+                  radius={[8, 8, 0, 0]}
+                  maxBarSize={28}
+                  activeBar={{
+                    fill: "hsl(var(--primary))",
+                    fillOpacity: 0.92,
+                  }}
+                />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
