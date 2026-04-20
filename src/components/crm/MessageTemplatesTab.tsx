@@ -223,10 +223,11 @@ const MessageTemplatesTab = () => {
                   </Button>
                 </div>
               </form>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </div>
+              </DialogContent>
+            </Dialog>
+          </>
+        }
+      />
 
       {/* Filter */}
       <div className="flex gap-2">
