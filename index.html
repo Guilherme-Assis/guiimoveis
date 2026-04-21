@@ -51,22 +51,23 @@
         pointer-events: none;
       }
       #korretora-splash .ks-logo {
-        width: 96px;
-        height: 96px;
-        border-radius: 18px;
+        width: 110px;
+        height: 110px;
+        border-radius: 22px;
         display: flex;
         align-items: center;
         justify-content: center;
         background: linear-gradient(135deg, #d4af64, #e8c98a);
         box-shadow: 0 10px 40px -10px rgba(212, 175, 100, 0.45);
         animation: ks-pulse 1.8s ease-in-out infinite;
+        padding: 14px;
+        box-sizing: border-box;
       }
-      #korretora-splash .ks-logo span {
-        font-family: 'Playfair Display', Georgia, serif;
-        font-size: 56px;
-        font-weight: 700;
-        color: #0a0d14;
-        line-height: 1;
+      #korretora-splash .ks-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
       }
       #korretora-splash .ks-text {
         display: flex;
@@ -114,7 +115,7 @@
 
   <body>
     <div id="korretora-splash">
-      <div class="ks-logo"><span>K</span></div>
+      <div class="ks-logo"><img src="/logo-korretora.png" alt="KORRETORA" /></div>
       <div class="ks-text">
         <div class="ks-brand">KORRETORA</div>
         <div class="ks-tagline">Comunidade de Corretores</div>
