@@ -31,8 +31,9 @@
   <meta name="twitter:title" content="KORRETORA — Comunidade de Corretores">
   <meta property="og:description" content="A maior comunidade de corretores autônomos do Brasil">
   <meta name="twitter:description" content="A maior comunidade de corretores autônomos do Brasil">
+    <link rel="preload" as="image" href="/logo-korretora.png" fetchpriority="high" />
     <style>
-      /* Splash screen KORRETORA — visível antes do React montar */
+      /* Splash screen KORRETORA — render instantâneo (sem depender de imagem) */
       #korretora-splash {
         position: fixed;
         inset: 0;
@@ -41,10 +42,11 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 32px;
+        gap: 28px;
         background: linear-gradient(180deg, #0a0d14 0%, #14181f 100%);
         opacity: 1;
-        transition: opacity 0.5s ease-out;
+        transition: opacity 0.35s ease-out;
+        font-family: system-ui, -apple-system, sans-serif;
       }
       #korretora-splash.fade-out {
         opacity: 0;
@@ -76,19 +78,13 @@
         gap: 10px;
       }
       #korretora-splash .ks-brand {
-        font-family: 'Playfair Display', Georgia, serif;
         font-size: 28px;
         font-weight: 700;
         letter-spacing: 0.18em;
         line-height: 1;
-        background: linear-gradient(135deg, #d4af64, #e8c98a);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
         color: #d4af64;
       }
       #korretora-splash .ks-tagline {
-        font-family: 'Raleway', system-ui, sans-serif;
         font-size: 10px;
         text-transform: uppercase;
         letter-spacing: 0.32em;
@@ -96,8 +92,8 @@
         line-height: 1;
       }
       #korretora-splash .ks-spinner {
-        width: 28px;
-        height: 28px;
+        width: 26px;
+        height: 26px;
         border: 2px solid rgba(212, 175, 100, 0.18);
         border-top-color: #d4af64;
         border-radius: 50%;
