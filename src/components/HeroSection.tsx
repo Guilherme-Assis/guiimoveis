@@ -1,5 +1,5 @@
 import { Search, Building2, Users, MapPin, TrendingUp } from "lucide-react";
-import heroImage from "@/assets/hero-mansion.jpg";
+import heroImage from "@/assets/hero-mansion.webp";
 
 interface HeroSectionProps {
   onScrollToListings: () => void;
