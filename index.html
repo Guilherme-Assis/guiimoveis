@@ -31,9 +31,78 @@
   <meta name="twitter:title" content="KORRETORA — Comunidade de Corretores">
   <meta property="og:description" content="A maior comunidade de corretores autônomos do Brasil">
   <meta name="twitter:description" content="A maior comunidade de corretores autônomos do Brasil">
-</head>
+    <style>
+      /* Splash screen KORRETORA — visível antes do React montar */
+      #korretora-splash {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 32px;
+        background: linear-gradient(180deg, #0a0d14 0%, #14181f 100%);
+        opacity: 1;
+        transition: opacity 0.5s ease-out;
+      }
+      #korretora-splash.fade-out {
+        opacity: 0;
+        pointer-events: none;
+      }
+      #korretora-splash .ks-logo {
+        width: 96px;
+        height: 96px;
+        border-radius: 18px;
+        object-fit: cover;
+        box-shadow: 0 10px 40px -10px rgba(212, 175, 100, 0.35);
+        animation: ks-pulse 1.8s ease-in-out infinite;
+      }
+      #korretora-splash .ks-brand {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        background: linear-gradient(135deg, #d4af64, #e8c98a);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      #korretora-splash .ks-tagline {
+        font-family: 'Raleway', system-ui, sans-serif;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.32em;
+        color: rgba(232, 220, 196, 0.55);
+        margin-top: -20px;
+      }
+      #korretora-splash .ks-spinner {
+        width: 28px;
+        height: 28px;
+        border: 2px solid rgba(212, 175, 100, 0.18);
+        border-top-color: #d4af64;
+        border-radius: 50%;
+        animation: ks-spin 0.9s linear infinite;
+      }
+      @keyframes ks-pulse {
+        0%, 100% { transform: scale(1); box-shadow: 0 10px 40px -10px rgba(212, 175, 100, 0.35); }
+        50% { transform: scale(1.05); box-shadow: 0 14px 50px -10px rgba(212, 175, 100, 0.55); }
+      }
+      @keyframes ks-spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
 
   <body>
+    <div id="korretora-splash">
+      <img src="/logo-korretora.png" alt="KORRETORA" class="ks-logo" />
+      <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+        <div class="ks-brand">KORRETORA</div>
+        <div class="ks-tagline">Comunidade de Corretores</div>
+      </div>
+      <div class="ks-spinner"></div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
