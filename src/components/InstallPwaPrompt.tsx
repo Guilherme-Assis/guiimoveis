@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Download, X, Share, Plus } from "lucide-react";
-import logoKorretora from "@/assets/logo-korretora.png";
+const logoKorretora = "/logo-korretora.webp";
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];

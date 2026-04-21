@@ -1,5 +1,5 @@
 import { MapPin, Phone, Mail, Instagram, Facebook, Linkedin, MessageCircle, Heart, Building2, BookOpen, Shield } from "lucide-react";
-import logoKorretora from "@/assets/logo-korretora.png";
+const logoKorretora = "/logo-korretora.webp";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
