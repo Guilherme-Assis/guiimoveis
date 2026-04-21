@@ -25,40 +25,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [hasActiveSubscription, setHasActiveSubscription] = useState<boolean | null>(null);
 
   const fetchRole = async (userId: string) => {
-    const { data } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId);
+    // Paralelizar todas as queries — antes eram sequenciais (3 round-trips)
+    const nowIso = new Date().toISOString();
+    const [rolesRes, brokerRes] = await Promise.all([
+      supabase.from("user_roles").select("role").eq("user_id", userId),
+      supabase.from("brokers").select("id").eq("user_id", userId).maybeSingle(),
+    ]);
+
+    const data = rolesRes.data;
+    setBrokerId(brokerRes.data?.id || null);
+
     if (data && data.length > 0) {
       const roles = data.map((d) => d.role as "admin" | "broker");
       const r = roles.includes("admin") ? "admin" : roles[0];
       setRole(r);
 
-      // Admins always have access
       if (r === "admin") {
         setHasActiveSubscription(true);
       } else {
-        // Check subscription for non-admins
         const { data: subs } = await supabase
           .from("subscriptions")
-          .select("id, status, expires_at")
+          .select("id")
           .eq("user_id", userId)
           .eq("status", "ativa" as any)
-          .gte("expires_at", new Date().toISOString())
-          .lte("starts_at", new Date().toISOString())
+          .gte("expires_at", nowIso)
+          .lte("starts_at", nowIso)
           .limit(1);
         setHasActiveSubscription(subs && subs.length > 0);
       }
-
-      const { data: brokerData } = await supabase
-        .from("brokers")
-        .select("id")
-        .eq("user_id", userId)
-        .maybeSingle();
-      setBrokerId(brokerData?.id || null);
     } else {
       setRole(null);
-      setBrokerId(null);
       setHasActiveSubscription(false);
     }
   };

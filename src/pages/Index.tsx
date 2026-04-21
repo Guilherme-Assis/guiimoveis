@@ -115,7 +115,9 @@ const Index = () => {
     queryKey: ["properties", filters, currentPage],
     queryFn: () => fetchProperties(filters, currentPage),
     staleTime: 2 * 60 * 1000, // 2 min
+    gcTime: 10 * 60 * 1000,
     placeholderData: (prev) => prev, // keep previous data while loading
+    refetchOnWindowFocus: false,
   });
 
   const dbProperties = listingData?.properties ?? [];
