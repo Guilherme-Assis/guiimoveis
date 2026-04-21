@@ -38,7 +38,16 @@ const PropertyChatWidget = lazy(() => import("./components/PropertyChatWidget"))
 const CompareBar = lazy(() => import("./components/CompareBar"));
 const InstallPwaPrompt = lazy(() => import("./components/InstallPwaPrompt"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60 * 1000,
+      gcTime: 5 * 60 * 1000,
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 const PageLoader = () => (
   <div className="flex min-h-screen items-center justify-center bg-background">
