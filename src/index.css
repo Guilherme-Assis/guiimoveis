@@ -179,3 +179,16 @@
     background: linear-gradient(90deg, transparent, hsl(40 60% 55% / 0.4), transparent);
   }
 }
+
+/* White-labeling: Hide Lovable branding elements */
+a[href*="lovable.dev"],
+iframe[src*="lovable.dev"],
+div[style*="Edit with Lovable"],
+.lovable-badge {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  z-index: -9999 !important;
+}
