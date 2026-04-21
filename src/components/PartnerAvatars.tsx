@@ -53,35 +53,40 @@ const PartnerAvatars = ({ propertyId, openForPartnership }: PartnerAvatarsProps)
   useEffect(() => {
     if (!containerRef.current || !partners?.length) return;
 
+    let rafId = 0;
     const measure = () => {
-      const containerWidth = containerRef.current?.offsetWidth ?? 0;
-      const availableForAvatars = containerWidth - ICON_WIDTH;
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        const containerWidth = containerRef.current?.offsetWidth ?? 0;
+        const availableForAvatars = containerWidth - ICON_WIDTH;
 
-      if (partners.length <= 1) {
-        setMaxVisible(partners.length);
-        return;
-      }
+        if (partners.length <= 1) {
+          setMaxVisible(partners.length);
+          return;
+        }
 
-      // Each avatar after the first takes (AVATAR_SIZE - OVERLAP) px
-      // If we need overflow bubble, reserve space for it
-      const calcFit = (reserveOverflow: boolean) => {
-        const reserved = reserveOverflow ? OVERFLOW_WIDTH - OVERLAP : 0;
-        const usable = availableForAvatars - AVATAR_SIZE - reserved; // first avatar full size
-        return 1 + Math.max(0, Math.floor(usable / (AVATAR_SIZE - OVERLAP)));
-      };
+        const calcFit = (reserveOverflow: boolean) => {
+          const reserved = reserveOverflow ? OVERFLOW_WIDTH - OVERLAP : 0;
+          const usable = availableForAvatars - AVATAR_SIZE - reserved;
+          return 1 + Math.max(0, Math.floor(usable / (AVATAR_SIZE - OVERLAP)));
+        };
 
-      const fitAll = calcFit(false);
-      if (fitAll >= partners.length) {
-        setMaxVisible(partners.length);
-      } else {
-        setMaxVisible(Math.max(1, calcFit(true)));
-      }
+        const fitAll = calcFit(false);
+        if (fitAll >= partners.length) {
+          setMaxVisible(partners.length);
+        } else {
+          setMaxVisible(Math.max(1, calcFit(true)));
+        }
+      });
     };
 
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(containerRef.current);
-    return () => ro.disconnect();
+    return () => {
+      cancelAnimationFrame(rafId);
+      ro.disconnect();
+    };
   }, [partners]);
 
   if (!partners?.length) return null;
