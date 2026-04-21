@@ -29,8 +29,8 @@ const BUDGET_MAP: Record<string, number> = { "Até R$ 300 mil": 300000, "R$ 300-
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/property-chat`;
 
-export default function PropertyChatWidget() {
-  const [open, setOpen] = useState(false);
+export default function PropertyChatWidget({ defaultOpen = false }: { defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
