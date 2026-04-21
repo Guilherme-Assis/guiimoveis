@@ -1,5 +1,4 @@
 import { memo } from "react";
-import { motion } from "framer-motion";
 import { Bed, Bath, Car, Maximize, MapPin, PawPrint, GitCompareArrows, Check, Handshake, Sparkles } from "lucide-react";
 import { Property, formatPrice } from "@/data/properties";
 import { Link } from "react-router-dom";
@@ -43,18 +42,8 @@ const PropertyCardComponent = ({ property, index }: PropertyCardProps) => {
 
   const isNew = property.isHighlight;
 
-  // First 6 cards render immediately (no animation) to prioritize LCP.
-  // Below-the-fold cards keep a subtle entrance.
-  const isAboveFold = index < 6;
-
   return (
-    <motion.div
-      className="h-full"
-      initial={isAboveFold ? false : { opacity: 0, y: 20 }}
-      whileInView={isAboveFold ? undefined : { opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.4, delay: 0 }}
-    >
+    <div className="h-full">
       <Link
         to={linkTo}
         className="group flex h-full flex-col overflow-hidden border border-border bg-card transition-all duration-500 hover:border-primary/30 hover:shadow-[var(--shadow-gold)] hover:scale-[1.02]"
@@ -178,7 +167,7 @@ const PropertyCardComponent = ({ property, index }: PropertyCardProps) => {
           </div>
         </div>
       </Link>
-    </motion.div>
+    </div>
   );
 };
 
