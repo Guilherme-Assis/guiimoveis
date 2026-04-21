@@ -63,8 +63,9 @@ const PropertyCardComponent = ({ property, index }: PropertyCardProps) => {
             loading={index < 3 ? "eager" : "lazy"}
             decoding="async"
             fetchPriority={index < 3 ? "high" : "auto" as any}
-            width={1024}
-            height={768}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
+            width={800}
+            height={600}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
           <div className="absolute left-4 top-4 flex items-center gap-2">
