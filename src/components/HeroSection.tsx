@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Search, Building2, Users, MapPin, TrendingUp } from "lucide-react";
 import heroImage from "@/assets/hero-mansion.jpg";
 
@@ -62,11 +61,7 @@ const HeroSection = ({ onScrollToListings }: HeroSectionProps) => {
           <span className="text-xs uppercase tracking-widest text-muted-foreground font-body">
             Scroll
           </span>
-          <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ repeat: Infinity, duration: 2 }}
-            className="h-8 w-[1px] bg-gradient-gold"
-          />
+          <div className="h-8 w-[1px] bg-gradient-gold animate-pulse" />
         </div>
       </div>
 
@@ -74,15 +69,8 @@ const HeroSection = ({ onScrollToListings }: HeroSectionProps) => {
       <div className="relative z-10 border-t border-border/30 bg-card/80 backdrop-blur-md">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-2 gap-4 py-8 md:grid-cols-4 md:gap-8 md:py-12">
-            {stats.map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="flex flex-col items-center gap-2 text-center"
-              >
+            {stats.map((stat) => (
+              <div key={stat.label} className="flex flex-col items-center gap-2 text-center">
                 <stat.icon className="h-6 w-6 text-primary" />
                 <span className="font-display text-2xl font-bold text-foreground md:text-3xl">
                   {stat.value}
@@ -90,7 +78,7 @@ const HeroSection = ({ onScrollToListings }: HeroSectionProps) => {
                 <span className="font-body text-xs uppercase tracking-widest text-muted-foreground">
                   {stat.label}
                 </span>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
