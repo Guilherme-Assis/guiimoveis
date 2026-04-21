@@ -53,7 +53,9 @@ function requestSignedUrl(key: string, cb: () => void) {
   if (!getCached(key) && !pendingBatch.has(key)) {
     pendingBatch.add(key);
     if (batchTimer) clearTimeout(batchTimer);
-    batchTimer = setTimeout(flushBatch, 50);
+    // Microtask-level batching — flushes at end of current event loop instead of waiting 50ms.
+    // This dramatically reduces LCP for images that depend on signed URLs.
+    batchTimer = setTimeout(flushBatch, 0);
   }
 
   return () => { listeners.get(key)?.delete(cb); };

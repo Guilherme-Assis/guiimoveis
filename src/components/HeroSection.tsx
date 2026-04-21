@@ -1,8 +1,6 @@
 import { motion } from "framer-motion";
 import { Search, Building2, Users, MapPin, TrendingUp } from "lucide-react";
-import { useS3Image } from "@/hooks/useS3Image";
-
-const heroImageUrl = "https://s3.sa-east-1.amazonaws.com/gui-imoveis/properties/hero-mansion.jpg";
+import heroImage from "@/assets/hero-mansion.jpg";
 
 interface HeroSectionProps {
   onScrollToListings: () => void;
@@ -16,7 +14,6 @@ const stats = [
 ];
 
 const HeroSection = ({ onScrollToListings }: HeroSectionProps) => {
-  const heroImage = useS3Image(heroImageUrl);
   return (
     <section className="relative min-h-screen w-full overflow-hidden">
       {/* Background Image */}
@@ -36,12 +33,7 @@ const HeroSection = ({ onScrollToListings }: HeroSectionProps) => {
 
       {/* Content */}
       <div className="relative z-10 flex h-screen flex-col items-center justify-center px-6 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          className="max-w-4xl"
-        >
+        <div className="max-w-4xl">
           <p className="mb-4 text-sm font-body uppercase tracking-[0.3em] text-primary drop-shadow-lg">
             Comunidade de Corretores Autônomos
           </p>
@@ -55,26 +47,18 @@ const HeroSection = ({ onScrollToListings }: HeroSectionProps) => {
             A maior comunidade de corretores autônomos do Brasil. Divulgue seus imóveis,
             encontre parceiros e feche mais negócios juntos.
           </p>
-        </motion.div>
+        </div>
 
-        <motion.button
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
+        <button
           onClick={onScrollToListings}
           className="group flex items-center gap-3 bg-gradient-gold px-6 py-3 sm:px-8 sm:py-4 font-body text-xs sm:text-sm font-semibold uppercase tracking-widest text-primary-foreground transition-all hover:shadow-[var(--shadow-gold)] hover:scale-105"
         >
           <Search className="h-4 w-4" />
           Explorar Imóveis
-        </motion.button>
+        </button>
 
         {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-          className="absolute bottom-10 flex flex-col items-center gap-2"
-        >
+        <div className="absolute bottom-10 flex flex-col items-center gap-2">
           <span className="text-xs uppercase tracking-widest text-muted-foreground font-body">
             Scroll
           </span>
@@ -83,7 +67,7 @@ const HeroSection = ({ onScrollToListings }: HeroSectionProps) => {
             transition={{ repeat: Infinity, duration: 2 }}
             className="h-8 w-[1px] bg-gradient-gold"
           />
-        </motion.div>
+        </div>
       </div>
 
       {/* Stats Section */}
