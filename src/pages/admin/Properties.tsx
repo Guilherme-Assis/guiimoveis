@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Plus, Pencil, Trash2, Eye, EyeOff, Upload, Loader2, X, Images } from "lucide-react";
 import S3Thumbnail from "@/components/S3Thumbnail";
+import { convertToWebp } from "@/lib/imageOptimize";
 
 type DbProperty = {
   id: string;
