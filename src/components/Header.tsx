@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import logoKorretora from "@/assets/logo-korretora.png";
+const logoKorretora = "/logo-korretora.webp";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Phone, Menu, X, Heart, MapPin as MapPinIcon, BookOpen, Building2, User, LogOut, LayoutDashboard } from "lucide-react";
@@ -111,7 +111,7 @@ const Header = () => {
       <div className="container mx-auto flex items-center justify-between px-4 sm:px-6">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 shrink-0">
-          <img src={logoKorretora} alt="KORRETORA" className="h-14 lg:h-16 w-auto" />
+          <img src={logoKorretora} alt="KORRETORA" width="64" height="64" fetchPriority="high" decoding="async" className="h-14 lg:h-16 w-auto" />
         </Link>
 
         {/* Desktop Navigation */}

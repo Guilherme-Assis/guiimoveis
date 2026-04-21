@@ -1,5 +1,5 @@
 import { MapPin, Phone, Mail, Instagram, Facebook, Linkedin, MessageCircle, Heart, Building2, BookOpen, Shield } from "lucide-react";
-import logoKorretora from "@/assets/logo-korretora.png";
+const logoKorretora = "/logo-korretora.webp";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
@@ -10,7 +10,7 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <Link to="/" className="mb-4 inline-block">
-              <img src={logoKorretora} alt="KORRETORA" className="h-16 w-auto" />
+              <img src={logoKorretora} alt="KORRETORA" width="64" height="64" loading="lazy" decoding="async" className="h-16 w-auto" />
             </Link>
             <p className="font-body text-sm leading-relaxed text-muted-foreground">
               Comunidade de corretores autônomos. Divulgue imóveis, encontre
