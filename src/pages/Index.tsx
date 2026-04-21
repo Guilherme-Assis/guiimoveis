@@ -123,10 +123,14 @@ const Index = () => {
   const dbProperties = listingData?.properties ?? [];
   const totalCount = listingData?.totalCount ?? 0;
 
-  // Reset page when filters change
+  // Reset page when filters change (skip initial mount to avoid saving defaults)
+  const isFirstFilterRun = useRef(true);
   useEffect(() => {
+    if (isFirstFilterRun.current) {
+      isFirstFilterRun.current = false;
+      return;
+    }
     setCurrentPage(1);
-    // Save non-default filters as recent search
     addSearch(filters);
   }, [filters]);
 

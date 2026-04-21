@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { motion } from "framer-motion";
 import { Bed, Bath, Car, Maximize, MapPin, PawPrint, GitCompareArrows, Check, Handshake, Sparkles } from "lucide-react";
 import { Property, formatPrice } from "@/data/properties";
@@ -12,7 +13,7 @@ interface PropertyCardProps {
   index: number;
 }
 
-const PropertyCard = ({ property, index }: PropertyCardProps) => {
+const PropertyCardComponent = ({ property, index }: PropertyCardProps) => {
   const resolvedImage = useS3Image(property.image);
   const { addToCompare, removeFromCompare, isInCompare } = useCompare();
   const inCompare = isInCompare(property.id);
@@ -59,7 +60,9 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
             src={resolvedImage}
             alt={property.title}
             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-            loading="lazy"
+            loading={index < 3 ? "eager" : "lazy"}
+            decoding="async"
+            fetchPriority={index < 3 ? "high" : "auto" as any}
             width={1024}
             height={768}
           />
@@ -183,5 +186,9 @@ const PropertyCard = ({ property, index }: PropertyCardProps) => {
     </motion.div>
   );
 };
+
+const PropertyCard = memo(PropertyCardComponent, (prev, next) =>
+  prev.property.id === next.property.id && prev.index === next.index
+);
 
 export default PropertyCard;
