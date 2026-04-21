@@ -27,6 +27,9 @@ const HeroSection = ({ onScrollToListings }: HeroSectionProps) => {
           className="h-full w-full object-cover"
           width={1920}
           height={1080}
+          loading="eager"
+          decoding="async"
+          {...({ fetchpriority: "high" } as any)}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
       </div>
