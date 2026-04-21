@@ -4,14 +4,11 @@ import "./index.css";
 
 createRoot(document.getElementById("root")!).render(<App />);
 
-// Remove o splash screen do PWA após o React montar
+// Remove o splash imediatamente após o React montar (sem delays artificiais)
 requestAnimationFrame(() => {
   const splash = document.getElementById("korretora-splash");
   if (splash) {
-    // Pequeno delay para garantir transição suave
-    setTimeout(() => {
-      splash.classList.add("fade-out");
-      setTimeout(() => splash.remove(), 500);
-    }, 300);
+    splash.classList.add("fade-out");
+    setTimeout(() => splash.remove(), 350);
   }
 });
