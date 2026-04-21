@@ -43,13 +43,17 @@ const PropertyCardComponent = ({ property, index }: PropertyCardProps) => {
 
   const isNew = property.isHighlight;
 
+  // First 6 cards render immediately (no animation) to prioritize LCP.
+  // Below-the-fold cards keep a subtle entrance.
+  const isAboveFold = index < 6;
+
   return (
     <motion.div
       className="h-full"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={isAboveFold ? false : { opacity: 0, y: 20 }}
+      whileInView={isAboveFold ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.4, delay: Math.min(index * 0.05, 0.3) }}
+      transition={{ duration: 0.4, delay: 0 }}
     >
       <Link
         to={linkTo}
@@ -69,23 +73,13 @@ const PropertyCardComponent = ({ property, index }: PropertyCardProps) => {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
           <div className="absolute left-4 top-4 flex items-center gap-2">
-            <motion.span
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-              className="bg-gradient-gold px-3 py-1 font-body text-xs font-semibold uppercase tracking-wider text-primary-foreground"
-            >
+            <span className="bg-gradient-gold px-3 py-1 font-body text-xs font-semibold uppercase tracking-wider text-primary-foreground">
               {statusLabels[property.status]}
-            </motion.span>
+            </span>
             {isNew && (
-              <motion.span
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.4, type: "spring" }}
-                className="flex items-center gap-1 bg-primary/90 px-2 py-1 font-body text-[10px] font-semibold uppercase tracking-wider text-primary-foreground backdrop-blur-sm"
-              >
+              <span className="flex items-center gap-1 bg-primary/90 px-2 py-1 font-body text-[10px] font-semibold uppercase tracking-wider text-primary-foreground backdrop-blur-sm">
                 <Sparkles className="h-3 w-3" /> Destaque
-              </motion.span>
+              </span>
             )}
             {isRental && property.furnished && (
               <span className="bg-primary/80 px-2 py-1 font-body text-[10px] font-semibold uppercase tracking-wider text-primary-foreground backdrop-blur-sm">

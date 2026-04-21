@@ -98,10 +98,7 @@ const Header = () => {
   );
 
   return (
-    <motion.header
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.6 }}
+    <header
       className={`fixed left-0 right-0 top-0 z-50 transition-all duration-500 ${
         scrolled
           ? "header-glass py-2 lg:py-3"
@@ -222,7 +219,7 @@ const Header = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.header>
+    </header>
   );
 };
 
