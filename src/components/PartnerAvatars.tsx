@@ -81,7 +81,11 @@ const PartnerAvatars = ({ propertyId, openForPartnership }: PartnerAvatarsProps)
     };
 
     measure();
-    const ro = new ResizeObserver(measure);
+    // Defer ResizeObserver callbacks to next frame to avoid forced reflow
+    // during the browser's layout phase.
+    const ro = new ResizeObserver(() => {
+      requestAnimationFrame(measure);
+    });
     ro.observe(containerRef.current);
     return () => {
       cancelAnimationFrame(rafId);
