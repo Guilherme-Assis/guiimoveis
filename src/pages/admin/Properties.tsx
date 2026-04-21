@@ -107,16 +107,19 @@ const Properties = () => {
     setDialogOpen(true);
   };
 
-  const uploadImageToS3 = async (file: File): Promise<string | null> => {
+  const uploadImageToS3 = async (originalFile: File): Promise<string | null> => {
     const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/avif"];
-    if (!allowedTypes.includes(file.type)) {
-      toast({ title: "Formato inválido", description: `${file.name}: Use JPG, PNG, WebP ou AVIF.`, variant: "destructive" });
+    if (!allowedTypes.includes(originalFile.type)) {
+      toast({ title: "Formato inválido", description: `${originalFile.name}: Use JPG, PNG, WebP ou AVIF.`, variant: "destructive" });
       return null;
     }
-    if (file.size > 10 * 1024 * 1024) {
-      toast({ title: "Arquivo muito grande", description: `${file.name}: Máximo 10MB.`, variant: "destructive" });
+    if (originalFile.size > 10 * 1024 * 1024) {
+      toast({ title: "Arquivo muito grande", description: `${originalFile.name}: Máximo 10MB.`, variant: "destructive" });
       return null;
     }
+
+    // Converte para WebP otimizado (redimensiona até 1920px) antes de subir
+    const file = await convertToWebp(originalFile);
 
     const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
     const session = (await supabase.auth.getSession()).data.session;
