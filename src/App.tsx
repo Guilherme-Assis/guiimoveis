@@ -36,6 +36,7 @@ const CRM = lazy(() => import("./pages/admin/CRM"));
 const Users = lazy(() => import("./pages/admin/Users"));
 const PropertyChatWidget = lazy(() => import("./components/PropertyChatWidget"));
 const CompareBar = lazy(() => import("./components/CompareBar"));
+const InstallPwaPrompt = lazy(() => import("./components/InstallPwaPrompt"));
 
 const queryClient = new QueryClient();
 
@@ -109,6 +110,7 @@ const App = () => (
             <Suspense fallback={null}>
               <CompareBar />
               <PropertyChatWidget />
+              <InstallPwaPrompt />
             </Suspense>
           </BrowserRouter>
         </TooltipProvider>
