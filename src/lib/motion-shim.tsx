@@ -1,4 +1,4 @@
-import { createElement, forwardRef, Fragment, type ComponentPropsWithoutRef, type ElementType, type ReactNode } from "react";
+import { createElement, forwardRef, Fragment, type ElementType, type ReactNode } from "react";
 
 /**
  * Lightweight drop-in replacement for framer-motion.
@@ -58,22 +58,18 @@ function stripMotionProps(props: Record<string, any>) {
   return cleaned;
 }
 
-type MotionComponent<T extends ElementType> = React.ForwardRefExoticComponent<
-  ComponentPropsWithoutRef<T> & Record<string, any> & React.RefAttributes<any>
->;
+const cache = new Map<string, any>();
 
-const cache = new Map<string, MotionComponent<any>>();
-
-function makeMotion<T extends ElementType>(tag: T): MotionComponent<T> {
+function makeMotion(tag: ElementType): any {
   const key = String(tag);
   if (cache.has(key)) return cache.get(key)!;
   const Comp = forwardRef<any, any>((props, ref) => {
     const cleaned = stripMotionProps(props);
     return createElement(tag as any, { ...cleaned, ref });
   });
-  Comp.displayName = `motion.${key}`;
+  (Comp as any).displayName = `motion.${key}`;
   cache.set(key, Comp);
-  return Comp as MotionComponent<T>;
+  return Comp;
 }
 
 // Proxy: motion.div, motion.section, motion.h1 ... all return a stripped component
