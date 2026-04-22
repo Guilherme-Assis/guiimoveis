@@ -1,1 +1,4 @@
 project_id = "dhbmkqulpxsqigbgmeen"
+
+[functions.s3-admin-overwrite]
+verify_jwt = false
