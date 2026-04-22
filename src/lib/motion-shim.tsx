@@ -111,4 +111,5 @@ export const domAnimation = {};
 export const domMax = {};
 export const m = motion;
 
-export default { motion, AnimatePresence };
+// Default export must mirror the motion proxy itself so `import m from "framer-motion"; m.div` works
+export default motion;
