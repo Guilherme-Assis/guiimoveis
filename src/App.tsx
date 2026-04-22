@@ -47,14 +47,7 @@ const queryClient = new QueryClient({
   },
 });
 
-const PageLoader = () => (
-  <div className="flex min-h-screen items-center justify-center bg-background">
-    <div className="flex flex-col items-center gap-3">
-      <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-      <p className="font-body text-sm text-muted-foreground">Carregando...</p>
-    </div>
-  </div>
-);
+const PageLoader = () => <KorretoraLoader status="Carregando página..." />;
 
 const ProtectedRoute = ({ children, allowedRoles }: { children: ReactNode; allowedRoles?: string[] }) => {
   const { user, loading, role, hasActiveSubscription } = useAuth();
