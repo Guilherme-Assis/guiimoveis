@@ -51,10 +51,10 @@ const PageLoader = () => <KorretoraLoader status="Carregando página..." />;
 
 const ProtectedRoute = ({ children, allowedRoles }: { children: ReactNode; allowedRoles?: string[] }) => {
   const { user, loading, role, hasActiveSubscription } = useAuth();
-  if (loading) return <div className="flex min-h-screen items-center justify-center bg-background"><p className="font-body text-muted-foreground">Carregando...</p></div>;
+  if (loading) return <KorretoraLoader status="Validando sessão..." />;
   if (!user) return <Navigate to="/login" replace />;
   if (allowedRoles && role && !allowedRoles.includes(role)) return <Navigate to="/admin" replace />;
-  if (!role) return <div className="flex min-h-screen items-center justify-center bg-background"><p className="font-body text-muted-foreground">Sem permissão de acesso.</p></div>;
+  if (!role) return <KorretoraLoader status="Sem permissão de acesso." />;
   if (role !== "admin" && hasActiveSubscription === false) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
