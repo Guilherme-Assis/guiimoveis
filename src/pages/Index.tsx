@@ -66,8 +66,27 @@ const fetchFilterOptions = async () => {
   return (data || []) as { city: string; state: string; location: string }[];
 };
 
+// Verifica se filtros são os padrão (sem nenhum filtro aplicado)
+const isDefaultFilters = (f: FilterState) => {
+  return !f.type && !f.status && !f.city && !f.state && !f.neighborhood &&
+    !f.minBedrooms && !f.minPrice && !f.maxPrice && !f.minArea && !f.maxArea &&
+    !f.acceptsPets && !f.furnished && (!f.amenities || f.amenities.length === 0) &&
+    (!f.sortBy || f.sortBy === "default");
+};
+
 // Fetch properties with filters & pagination
 const fetchProperties = async (filters: FilterState, page: number) => {
+  // Atalho: usa dados pré-carregados pelo splash quando estamos na primeira página sem filtros
+  if (page === 1 && isDefaultFilters(filters)) {
+    const pre = await consumePreload();
+    if (pre?.listing && Array.isArray(pre.listing)) {
+      return {
+        properties: (pre.listing as any[]).map(mapRow),
+        totalCount: pre.totalCount ?? pre.listing.length,
+      };
+    }
+  }
+
   let query = supabase
     .from("db_properties")
     .select(LISTING_COLUMNS, { count: "exact" })
