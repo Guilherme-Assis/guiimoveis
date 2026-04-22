@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { forwardRef, useRef, useState, useEffect } from "react";
 import { usePropertyPartners, PartnerAvatar } from "@/hooks/usePropertyPartners";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Users } from "lucide-react";
@@ -14,31 +14,36 @@ const getInitials = (name: string) => {
   return name.slice(0, 2).toUpperCase();
 };
 
-const AvatarCircle = ({ partner, index, total }: { partner: PartnerAvatar; index: number; total: number }) => (
-  <TooltipProvider delayDuration={200}>
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <div
-          className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-card bg-primary/20 text-[10px] font-semibold text-primary ring-1 ring-primary/30 transition-transform hover:scale-110 hover:z-10"
-          style={{ marginLeft: index > 0 ? `-${OVERLAP}px` : "0", zIndex: total - index }}
-        >
-          {partner.avatarUrl ? (
-            <img
-              src={partner.avatarUrl}
-              alt={partner.displayName}
-              className="h-full w-full rounded-full object-cover"
-            />
-          ) : (
-            getInitials(partner.displayName)
-          )}
-        </div>
-      </TooltipTrigger>
-      <TooltipContent side="top" className="text-xs">
-        {partner.displayName}
-      </TooltipContent>
-    </Tooltip>
-  </TooltipProvider>
+const AvatarCircle = forwardRef<HTMLDivElement, { partner: PartnerAvatar; index: number; total: number }>(
+  ({ partner, index, total }, ref) => (
+    <TooltipProvider delayDuration={200}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div
+            ref={ref}
+            className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-card bg-primary/20 text-[10px] font-semibold text-primary ring-1 ring-primary/30 transition-transform hover:z-10 hover:scale-110"
+            style={{ marginLeft: index > 0 ? `-${OVERLAP}px` : "0", zIndex: total - index }}
+          >
+            {partner.avatarUrl ? (
+              <img
+                src={partner.avatarUrl}
+                alt={partner.displayName}
+                className="h-full w-full rounded-full object-cover"
+              />
+            ) : (
+              getInitials(partner.displayName)
+            )}
+          </div>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="text-xs">
+          {partner.displayName}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  )
 );
+
+AvatarCircle.displayName = "AvatarCircle";
 
 interface PartnerAvatarsProps {
   propertyId: string;
