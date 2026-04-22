@@ -5,6 +5,7 @@ import { ArrowLeft, Calendar } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import KorretoraLoader from "@/components/KorretoraLoader";
 
 const BlogPost = () => {
   const { slug } = useParams();
@@ -26,11 +27,7 @@ const BlogPost = () => {
   }, [slug]);
 
   if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <p className="font-body text-muted-foreground">Carregando...</p>
-      </div>
-    );
+    return <KorretoraLoader status="Carregando post..." />;
   }
 
   if (!post) {

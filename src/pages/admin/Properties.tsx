@@ -13,6 +13,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import KorretoraLoader from "@/components/KorretoraLoader";
 import { Switch } from "@/components/ui/switch";
 import { Plus, Pencil, Trash2, Eye, EyeOff, Upload, Loader2, X, Images } from "lucide-react";
 import S3Thumbnail from "@/components/S3Thumbnail";
@@ -275,7 +276,7 @@ const Properties = () => {
       </div>
 
       {loading ? (
-        <p className="font-body text-muted-foreground">Carregando...</p>
+        <KorretoraLoader compact status="Carregando imóveis..." />
       ) : properties.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <p className="font-display text-xl text-foreground">Nenhum imóvel cadastrado</p>

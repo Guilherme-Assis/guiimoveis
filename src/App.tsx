@@ -10,6 +10,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import LazyCompareBar from "@/components/LazyCompareBar";
 import LazyPropertyChatWidget from "@/components/LazyPropertyChatWidget";
 import LazyInstallPwaPrompt from "@/components/LazyInstallPwaPrompt";
+import KorretoraLoader from "@/components/KorretoraLoader";
 import Index from "./pages/Index";
 
 const PropertyDetail = lazy(() => import("./pages/PropertyDetail"));
@@ -46,21 +47,14 @@ const queryClient = new QueryClient({
   },
 });
 
-const PageLoader = () => (
-  <div className="flex min-h-screen items-center justify-center bg-background">
-    <div className="flex flex-col items-center gap-3">
-      <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-      <p className="font-body text-sm text-muted-foreground">Carregando...</p>
-    </div>
-  </div>
-);
+const PageLoader = () => <KorretoraLoader status="Carregando página..." />;
 
 const ProtectedRoute = ({ children, allowedRoles }: { children: ReactNode; allowedRoles?: string[] }) => {
   const { user, loading, role, hasActiveSubscription } = useAuth();
-  if (loading) return <div className="flex min-h-screen items-center justify-center bg-background"><p className="font-body text-muted-foreground">Carregando...</p></div>;
+  if (loading) return <KorretoraLoader status="Validando sessão..." />;
   if (!user) return <Navigate to="/login" replace />;
   if (allowedRoles && role && !allowedRoles.includes(role)) return <Navigate to="/admin" replace />;
-  if (!role) return <div className="flex min-h-screen items-center justify-center bg-background"><p className="font-body text-muted-foreground">Sem permissão de acesso.</p></div>;
+  if (!role) return <KorretoraLoader status="Sem permissão de acesso." />;
   if (role !== "admin" && hasActiveSubscription === false) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">

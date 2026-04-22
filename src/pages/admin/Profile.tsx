@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { ExternalLink, Copy, Check } from "lucide-react";
+import KorretoraLoader from "@/components/KorretoraLoader";
 
 const Profile = () => {
   const { user, role, brokerId } = useAuth();
@@ -62,7 +63,7 @@ const Profile = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  if (loading) return <p className="font-body text-muted-foreground">Carregando...</p>;
+  if (loading) return <KorretoraLoader compact status="Carregando perfil..." />;
 
   return (
     <div className="max-w-xl">

@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Plus, Pencil, Trash2, Eye, EyeOff } from "lucide-react";
+import KorretoraLoader from "@/components/KorretoraLoader";
 
 interface Post {
   id: string;
@@ -120,7 +121,7 @@ const BlogAdmin = () => {
       </div>
 
       {loading ? (
-        <p className="font-body text-muted-foreground">Carregando...</p>
+        <KorretoraLoader compact status="Carregando posts..." />
       ) : posts.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <p className="font-display text-xl text-foreground">Nenhum post ainda</p>

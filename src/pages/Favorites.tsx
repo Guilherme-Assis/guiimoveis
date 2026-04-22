@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
+import KorretoraLoader from "@/components/KorretoraLoader";
 
 const Favorites = () => {
   const { user, loading: authLoading } = useAuth();
@@ -91,11 +92,7 @@ const Favorites = () => {
   });
 
   if (authLoading || loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <p className="font-body text-muted-foreground">Carregando...</p>
-      </div>
-    );
+    return <KorretoraLoader status="Carregando favoritos..." />;
   }
 
   if (!user) {
