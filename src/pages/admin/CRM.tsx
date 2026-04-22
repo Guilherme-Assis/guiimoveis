@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,19 +19,26 @@ import {
   BarChart3, Columns3, Download, Award, MessageSquare
 } from "lucide-react";
 import LeadDetail from "@/components/crm/LeadDetail";
-import TasksTab from "@/components/crm/TasksTab";
-import VisitsTab from "@/components/crm/VisitsTab";
-import ProposalsTab from "@/components/crm/ProposalsTab";
-import CalendarTab from "@/components/crm/CalendarTab";
-import DashboardTab from "@/components/crm/DashboardTab";
-import KanbanTab from "@/components/crm/KanbanTab";
 
-import ReportsTab from "@/components/crm/ReportsTab";
-import CommissionsTab from "@/components/crm/CommissionsTab";
-import MessageTemplatesTab from "@/components/crm/MessageTemplatesTab";
-import ContractsTab from "@/components/crm/ContractsTab";
-import BrokerPerformanceTab from "@/components/crm/BrokerPerformanceTab";
-import PartnershipsTab from "@/components/crm/PartnershipsTab";
+// Lazy load das abas — só carrega quando necessário (era ~700KB sempre)
+const TasksTab = lazy(() => import("@/components/crm/TasksTab"));
+const VisitsTab = lazy(() => import("@/components/crm/VisitsTab"));
+const ProposalsTab = lazy(() => import("@/components/crm/ProposalsTab"));
+const CalendarTab = lazy(() => import("@/components/crm/CalendarTab"));
+const DashboardTab = lazy(() => import("@/components/crm/DashboardTab"));
+const KanbanTab = lazy(() => import("@/components/crm/KanbanTab"));
+const ReportsTab = lazy(() => import("@/components/crm/ReportsTab"));
+const CommissionsTab = lazy(() => import("@/components/crm/CommissionsTab"));
+const MessageTemplatesTab = lazy(() => import("@/components/crm/MessageTemplatesTab"));
+const ContractsTab = lazy(() => import("@/components/crm/ContractsTab"));
+const BrokerPerformanceTab = lazy(() => import("@/components/crm/BrokerPerformanceTab"));
+const PartnershipsTab = lazy(() => import("@/components/crm/PartnershipsTab"));
+
+const TabFallback = () => (
+  <div className="flex items-center justify-center py-16">
+    <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+  </div>
+);
 
 const statusLabels: Record<string, string> = {
   novo: "Novo", em_contato: "Em Contato", qualificado: "Qualificado",
@@ -239,19 +246,22 @@ const CRM = () => {
         </div>
       )}
 
-      {activeTab === "dashboard" && <DashboardTab />}
-      {activeTab === "kanban" && <KanbanTab />}
-      {activeTab === "tasks" && <TasksTab />}
-      {activeTab === "visits" && <VisitsTab />}
-      {activeTab === "proposals" && <ProposalsTab />}
-      {activeTab === "calendar" && <CalendarTab />}
-      
-      {activeTab === "reports" && <ReportsTab />}
-      {activeTab === "commissions" && <CommissionsTab />}
-      {activeTab === "templates" && <MessageTemplatesTab />}
-      {activeTab === "contracts" && <ContractsTab />}
-      {activeTab === "performance" && <BrokerPerformanceTab />}
-      {activeTab === "partnerships" && <PartnershipsTab />}
+      {activeTab !== "leads" && (
+        <Suspense fallback={<TabFallback />}>
+          {activeTab === "dashboard" && <DashboardTab />}
+          {activeTab === "kanban" && <KanbanTab />}
+          {activeTab === "tasks" && <TasksTab />}
+          {activeTab === "visits" && <VisitsTab />}
+          {activeTab === "proposals" && <ProposalsTab />}
+          {activeTab === "calendar" && <CalendarTab />}
+          {activeTab === "reports" && <ReportsTab />}
+          {activeTab === "commissions" && <CommissionsTab />}
+          {activeTab === "templates" && <MessageTemplatesTab />}
+          {activeTab === "contracts" && <ContractsTab />}
+          {activeTab === "performance" && <BrokerPerformanceTab />}
+          {activeTab === "partnerships" && <PartnershipsTab />}
+        </Suspense>
+      )}
     </div>
   );
 };
