@@ -26,16 +26,25 @@ export default defineConfig(({ mode }) => ({
     cssCodeSplit: true,
     sourcemap: false,
     minify: "esbuild",
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
-        // Stability first: let Vite/Rollup decide chunk boundaries for React/Radix.
-        // The previous manual chunking introduced a circular dependency between
-        // react-vendor and radix-vendor in production, which broke publish runtime.
+        // Isola libs pesadas em chunks dedicados — só baixam quando a feature é usada.
+        // React + Radix continuam no chunk principal (evita ciclo de dep que quebrou produção).
         manualChunks(id) {
           if (!id.includes("node_modules")) return;
+          if (id.includes("recharts") || id.includes("d3-")) return "charts-vendor";
+          if (id.includes("jspdf") || id.includes("html2canvas") || id.includes("dompurify")) return "pdf-vendor";
+          if (id.includes("leaflet") || id.includes("@react-leaflet")) return "maps-vendor";
+          if (id.includes("@hello-pangea/dnd")) return "dnd-vendor";
+          if (id.includes("react-markdown") || id.includes("remark") || id.includes("micromark") || id.includes("mdast") || id.includes("unist") || id.includes("hast")) return "markdown-vendor";
+          if (id.includes("date-fns") || id.includes("react-day-picker")) return "date-vendor";
           if (id.includes("lucide-react")) return "icons-vendor";
           if (id.includes("@fontsource")) return "fonts";
+          if (id.includes("@supabase")) return "supabase-vendor";
+          if (id.includes("@tanstack")) return "query-vendor";
+          if (id.includes("embla-carousel")) return "carousel-vendor";
+          if (id.includes("qrcode")) return "qr-vendor";
         },
       },
     },
