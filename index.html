@@ -128,31 +128,80 @@
     </div>
     <div id="root"></div>
     <script>
-      // Busca stats reais para o splash (sem depender do bundle React)
+      // Splash + PRELOAD: busca stats e dados iniciais do Index em paralelo,
+      // disponibilizando-os para o React via window.__KORRETORA_PRELOAD__.
       (function(){
         var SUPABASE_URL = "https://dhbmkqulpxsqigbgmeen.supabase.co";
         var ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRoYm1rcXVscHhzcWlnYmdtZWVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NzQ1MzIsImV4cCI6MjA5MDU1MDUzMn0.1QG2QMzWa4I15PYADF_UoDp6oIO__euGB2Cw012kTss";
-        function fetchCount(table, filter){
-          return fetch(SUPABASE_URL + "/rest/v1/" + table + "?select=id" + (filter ? "&" + filter : ""), {
-            headers: { apikey: ANON, Authorization: "Bearer " + ANON, Prefer: "count=exact", Range: "0-0" }
-          }).then(function(r){
-            var cr = r.headers.get("content-range") || "";
-            var m = cr.match(/\/(\d+)$/);
-            return m ? parseInt(m[1], 10) : 0;
-          }).catch(function(){ return 0; });
+        var H = { apikey: ANON, Authorization: "Bearer " + ANON };
+
+        function jsonGet(path, extraHeaders){
+          var headers = Object.assign({}, H, extraHeaders || {});
+          return fetch(SUPABASE_URL + "/rest/v1/" + path, { headers: headers })
+            .then(function(r){ return r.json().then(function(data){ return { data: data, headers: r.headers }; }); })
+            .catch(function(){ return { data: [], headers: null }; });
         }
-        Promise.all([
-          fetchCount("brokers", "is_active=eq.true"),
-          fetchCount("db_properties", "availability=eq.available")
-        ]).then(function(res){
+
+        // Só pré-carrega dados pesados na home (rota raiz)
+        var isHome = location.pathname === "/" || location.pathname === "/index.html";
+
+        var LISTING_COLS = "id,slug,title,type,status,price,location,city,state,bedrooms,bathrooms,parking_spaces,area,land_area,image_url,is_highlight,rental_price,accepts_pets,furnished,features,open_for_partnership";
+
+        var brokersCountP = fetch(SUPABASE_URL + "/rest/v1/brokers?select=id&is_active=eq.true", {
+          headers: Object.assign({}, H, { Prefer: "count=exact", Range: "0-0" })
+        }).then(function(r){ var m = (r.headers.get("content-range") || "").match(/\/(\d+)$/); return m ? parseInt(m[1], 10) : 0; }).catch(function(){ return 0; });
+
+        var propsCountP = fetch(SUPABASE_URL + "/rest/v1/db_properties?select=id&availability=eq.available", {
+          headers: Object.assign({}, H, { Prefer: "count=exact", Range: "0-0" })
+        }).then(function(r){
+          var m = (r.headers.get("content-range") || "").match(/\/(\d+)$/);
+          return m ? parseInt(m[1], 10) : 0;
+        }).catch(function(){ return 0; });
+
+        var listingP = isHome ? fetch(
+          SUPABASE_URL + "/rest/v1/db_properties?select=" + LISTING_COLS +
+          "&availability=eq.available&order=is_highlight.desc,created_at.desc&limit=18",
+          { headers: H }
+        ).then(function(r){ return r.json(); }).catch(function(){ return null; }) : Promise.resolve(null);
+
+        var optionsP = isHome ? fetch(
+          SUPABASE_URL + "/rest/v1/db_properties?select=city,state,location&availability=eq.available",
+          { headers: H }
+        ).then(function(r){ return r.json(); }).catch(function(){ return null; }) : Promise.resolve(null);
+
+        // Atualiza splash assim que counts chegarem
+        Promise.all([brokersCountP, propsCountP]).then(function(res){
           var b = res[0], p = res[1];
           var be = document.getElementById("ks-brokers");
           var pe = document.getElementById("ks-properties");
           if (be) be.textContent = b + " corretor" + (b === 1 ? "" : "es") + " ativo" + (b === 1 ? "" : "s");
           if (pe) pe.textContent = p + " imóve" + (p === 1 ? "l" : "is") + " cadastrado" + (p === 1 ? "" : "s");
         });
+
+        // Expõe TUDO ao React (promise resolvendo o payload)
+        window.__KORRETORA_PRELOAD__ = Promise.all([listingP, optionsP, propsCountP]).then(function(res){
+          return { listing: res[0], options: res[1], totalCount: res[2] };
+        });
       })();
     </script>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Service Worker — cache de chunks JS/CSS/fontes/imagens já baixadas.
+      // NÃO registra em iframe/preview (evita problemas com a edição ao vivo).
+      (function(){
+        if (!("serviceWorker" in navigator)) return;
+        var inIframe = false; try { inIframe = window.self !== window.top; } catch(e) { inIframe = true; }
+        var host = location.hostname;
+        var isPreview = host.includes("id-preview--") || host.includes("lovableproject.com");
+        if (inIframe || isPreview) {
+          // Limpa qualquer SW residual em ambientes preview
+          navigator.serviceWorker.getRegistrations().then(function(regs){ regs.forEach(function(r){ r.unregister(); }); });
+          return;
+        }
+        window.addEventListener("load", function(){
+          navigator.serviceWorker.register("/sw.js").catch(function(){});
+        });
+      })();
+    </script>
   </body>
 </html>

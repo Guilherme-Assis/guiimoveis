@@ -43,8 +43,22 @@ const mapRow = (p: any): Property & { rentalPrice: number; acceptsPets: boolean;
 
 const LISTING_COLUMNS = "id,slug,title,type,status,price,location,city,state,bedrooms,bathrooms,parking_spaces,area,land_area,image_url,is_highlight,rental_price,accepts_pets,furnished,features,open_for_partnership";
 
+// Lê dados pré-carregados pelo splash (index.html) — síncrono, somente uma vez
+const consumePreload = (() => {
+  let cache: { listing: any; options: any; totalCount: number } | null | undefined;
+  return async () => {
+    if (cache !== undefined) return cache;
+    const w = window as any;
+    if (!w.__KORRETORA_PRELOAD__) { cache = null; return null; }
+    try { cache = await w.__KORRETORA_PRELOAD__; } catch { cache = null; }
+    return cache;
+  };
+})();
+
 // Fetch filter options (cities/states/neighborhoods)
 const fetchFilterOptions = async () => {
+  const pre = await consumePreload();
+  if (pre?.options) return pre.options as { city: string; state: string; location: string }[];
   const { data } = await supabase
     .from("db_properties")
     .select("city,state,location")
@@ -52,8 +66,27 @@ const fetchFilterOptions = async () => {
   return (data || []) as { city: string; state: string; location: string }[];
 };
 
+// Verifica se filtros são os padrão (sem nenhum filtro aplicado)
+const isDefaultFilters = (f: FilterState) => {
+  return !f.type && !f.status && !f.city && !f.state && !f.neighborhood &&
+    !f.minBedrooms && !f.minPrice && !f.maxPrice && !f.minArea && !f.maxArea &&
+    !f.acceptsPets && !f.furnished && (!f.amenities || f.amenities.length === 0) &&
+    (!f.sortBy || f.sortBy === "default");
+};
+
 // Fetch properties with filters & pagination
 const fetchProperties = async (filters: FilterState, page: number) => {
+  // Atalho: usa dados pré-carregados pelo splash quando estamos na primeira página sem filtros
+  if (page === 1 && isDefaultFilters(filters)) {
+    const pre = await consumePreload();
+    if (pre?.listing && Array.isArray(pre.listing)) {
+      return {
+        properties: (pre.listing as any[]).map(mapRow),
+        totalCount: pre.totalCount ?? pre.listing.length,
+      };
+    }
+  }
+
   let query = supabase
     .from("db_properties")
     .select(LISTING_COLUMNS, { count: "exact" })
