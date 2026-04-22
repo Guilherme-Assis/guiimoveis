@@ -43,8 +43,22 @@ const mapRow = (p: any): Property & { rentalPrice: number; acceptsPets: boolean;
 
 const LISTING_COLUMNS = "id,slug,title,type,status,price,location,city,state,bedrooms,bathrooms,parking_spaces,area,land_area,image_url,is_highlight,rental_price,accepts_pets,furnished,features,open_for_partnership";
 
+// Lê dados pré-carregados pelo splash (index.html) — síncrono, somente uma vez
+const consumePreload = (() => {
+  let cache: { listing: any; options: any; totalCount: number } | null | undefined;
+  return async () => {
+    if (cache !== undefined) return cache;
+    const w = window as any;
+    if (!w.__KORRETORA_PRELOAD__) { cache = null; return null; }
+    try { cache = await w.__KORRETORA_PRELOAD__; } catch { cache = null; }
+    return cache;
+  };
+})();
+
 // Fetch filter options (cities/states/neighborhoods)
 const fetchFilterOptions = async () => {
+  const pre = await consumePreload();
+  if (pre?.options) return pre.options as { city: string; state: string; location: string }[];
   const { data } = await supabase
     .from("db_properties")
     .select("city,state,location")
