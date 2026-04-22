@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
+import KorretoraLoader from "@/components/KorretoraLoader";
 
 const Favorites = () => {
   const { user, loading: authLoading } = useAuth();

@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Pencil, Trash2, UserCheck, UserX, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
+import KorretoraLoader from "@/components/KorretoraLoader";
 
 type Broker = {
   id: string;
@@ -160,7 +161,7 @@ const Brokers = () => {
       </div>
 
       {loading ? (
-        <p className="font-body text-muted-foreground">Carregando...</p>
+        <KorretoraLoader compact status="Carregando corretores..." />
       ) : brokers.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <p className="font-display text-xl text-foreground">Nenhum corretor cadastrado</p>

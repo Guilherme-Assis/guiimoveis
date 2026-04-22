@@ -13,6 +13,7 @@ import VirtualTourViewer from "@/components/VirtualTourViewer";
 import FavoriteButton from "@/components/FavoriteButton";
 import PropertyLocationMap from "@/components/PropertyLocationMap";
 import PropertyImageGallery from "@/components/PropertyImageGallery";
+import KorretoraLoader from "@/components/KorretoraLoader";
 import SocialShare from "@/components/SocialShare";
 import NeighborhoodRating from "@/components/NeighborhoodRating";
 import FloorPlanGallery from "@/components/FloorPlanGallery";
@@ -144,11 +145,7 @@ const PropertyDetail = () => {
   }, [property]);
 
   if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <p className="font-body text-muted-foreground">Carregando...</p>
-      </div>
-    );
+    return <KorretoraLoader status="Carregando imóvel..." />;
   }
 
   if (!property) {
