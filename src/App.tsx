@@ -10,6 +10,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import LazyCompareBar from "@/components/LazyCompareBar";
 import LazyPropertyChatWidget from "@/components/LazyPropertyChatWidget";
 import LazyInstallPwaPrompt from "@/components/LazyInstallPwaPrompt";
+import KorretoraLoader from "@/components/KorretoraLoader";
 import Index from "./pages/Index";
 
 const PropertyDetail = lazy(() => import("./pages/PropertyDetail"));
