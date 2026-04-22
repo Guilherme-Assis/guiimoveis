@@ -37,10 +37,10 @@ export default defineConfig(({ mode }) => ({
           if (id.includes("@supabase")) return "supabase-vendor";
           if (id.includes("@tanstack/react-query")) return "query-vendor";
           if (id.includes("lucide-react")) return "icons-vendor";
-          // Cada componente Radix vira seu próprio chunk para permitir tree-shaking real
-          // entre as páginas que carregam apenas alguns deles.
-          const radixMatch = id.match(/@radix-ui\/(react-[^/]+)/);
-          if (radixMatch) return `radix-${radixMatch[1]}`;
+          // Todos os pacotes @radix-ui em um único chunk — separá-los quebra
+          // utilitários internos (ex: react-use-is-hydrated) que dependem do
+          // React estar no mesmo escopo de módulo.
+          if (id.includes("@radix-ui")) return "radix-vendor";
           if (id.includes("@fontsource")) return "fonts";
         },
       },
