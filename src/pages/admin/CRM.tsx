@@ -246,19 +246,22 @@ const CRM = () => {
         </div>
       )}
 
-      {activeTab === "dashboard" && <DashboardTab />}
-      {activeTab === "kanban" && <KanbanTab />}
-      {activeTab === "tasks" && <TasksTab />}
-      {activeTab === "visits" && <VisitsTab />}
-      {activeTab === "proposals" && <ProposalsTab />}
-      {activeTab === "calendar" && <CalendarTab />}
-      
-      {activeTab === "reports" && <ReportsTab />}
-      {activeTab === "commissions" && <CommissionsTab />}
-      {activeTab === "templates" && <MessageTemplatesTab />}
-      {activeTab === "contracts" && <ContractsTab />}
-      {activeTab === "performance" && <BrokerPerformanceTab />}
-      {activeTab === "partnerships" && <PartnershipsTab />}
+      {activeTab !== "leads" && (
+        <Suspense fallback={<TabFallback />}>
+          {activeTab === "dashboard" && <DashboardTab />}
+          {activeTab === "kanban" && <KanbanTab />}
+          {activeTab === "tasks" && <TasksTab />}
+          {activeTab === "visits" && <VisitsTab />}
+          {activeTab === "proposals" && <ProposalsTab />}
+          {activeTab === "calendar" && <CalendarTab />}
+          {activeTab === "reports" && <ReportsTab />}
+          {activeTab === "commissions" && <CommissionsTab />}
+          {activeTab === "templates" && <MessageTemplatesTab />}
+          {activeTab === "contracts" && <ContractsTab />}
+          {activeTab === "performance" && <BrokerPerformanceTab />}
+          {activeTab === "partnerships" && <PartnershipsTab />}
+        </Suspense>
+      )}
     </div>
   );
 };
