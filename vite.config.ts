@@ -16,6 +16,8 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      // Substitui framer-motion por um shim leve (~1KB) que apenas remove props de animação.
+      "framer-motion": path.resolve(__dirname, "./src/lib/motion-shim.tsx"),
     },
     dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
   },
@@ -27,20 +29,19 @@ export default defineConfig(({ mode }) => ({
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
-        manualChunks: {
-          "react-vendor": ["react", "react-dom", "react-router-dom"],
-          "supabase-vendor": ["@supabase/supabase-js"],
-          "ui-vendor": [
-            "@radix-ui/react-dialog",
-            "@radix-ui/react-dropdown-menu",
-            "@radix-ui/react-popover",
-            "@radix-ui/react-select",
-            "@radix-ui/react-tooltip",
-            "@radix-ui/react-tabs",
-          ],
-          "motion-vendor": ["framer-motion"],
-          "query-vendor": ["@tanstack/react-query"],
-          "icons-vendor": ["lucide-react"],
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return;
+          if (id.includes("react-router") || /node_modules\/(react|react-dom|scheduler)\//.test(id)) {
+            return "react-vendor";
+          }
+          if (id.includes("@supabase")) return "supabase-vendor";
+          if (id.includes("@tanstack/react-query")) return "query-vendor";
+          if (id.includes("lucide-react")) return "icons-vendor";
+          // Cada componente Radix vira seu próprio chunk para permitir tree-shaking real
+          // entre as páginas que carregam apenas alguns deles.
+          const radixMatch = id.match(/@radix-ui\/(react-[^/]+)/);
+          if (radixMatch) return `radix-${radixMatch[1]}`;
+          if (id.includes("@fontsource")) return "fonts";
         },
       },
     },
