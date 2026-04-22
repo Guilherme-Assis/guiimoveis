@@ -127,6 +127,32 @@
       </div>
     </div>
     <div id="root"></div>
+    <script>
+      // Busca stats reais para o splash (sem depender do bundle React)
+      (function(){
+        var SUPABASE_URL = "https://dhbmkqulpxsqigbgmeen.supabase.co";
+        var ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRoYm1rcXVscHhzcWlnYmdtZWVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NzQ1MzIsImV4cCI6MjA5MDU1MDUzMn0.1QG2QMzWa4I15PYADF_UoDp6oIO__euGB2Cw012kTss";
+        function fetchCount(table, filter){
+          return fetch(SUPABASE_URL + "/rest/v1/" + table + "?select=id" + (filter ? "&" + filter : ""), {
+            headers: { apikey: ANON, Authorization: "Bearer " + ANON, Prefer: "count=exact", Range: "0-0" }
+          }).then(function(r){
+            var cr = r.headers.get("content-range") || "";
+            var m = cr.match(/\/(\d+)$/);
+            return m ? parseInt(m[1], 10) : 0;
+          }).catch(function(){ return 0; });
+        }
+        Promise.all([
+          fetchCount("brokers", "is_active=eq.true"),
+          fetchCount("db_properties", "availability=eq.available")
+        ]).then(function(res){
+          var b = res[0], p = res[1];
+          var be = document.getElementById("ks-brokers");
+          var pe = document.getElementById("ks-properties");
+          if (be) be.textContent = b + " corretor" + (b === 1 ? "" : "es") + " ativo" + (b === 1 ? "" : "s");
+          if (pe) pe.textContent = p + " imóve" + (p === 1 ? "l" : "is") + " cadastrado" + (p === 1 ? "" : "s");
+        });
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
