@@ -29,18 +29,12 @@ export default defineConfig(({ mode }) => ({
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
+        // Stability first: let Vite/Rollup decide chunk boundaries for React/Radix.
+        // The previous manual chunking introduced a circular dependency between
+        // react-vendor and radix-vendor in production, which broke publish runtime.
         manualChunks(id) {
           if (!id.includes("node_modules")) return;
-          if (id.includes("react-router") || /node_modules\/(react|react-dom|scheduler)\//.test(id)) {
-            return "react-vendor";
-          }
-          if (id.includes("@supabase")) return "supabase-vendor";
-          if (id.includes("@tanstack/react-query")) return "query-vendor";
           if (id.includes("lucide-react")) return "icons-vendor";
-          // Todos os pacotes @radix-ui em um único chunk — separá-los quebra
-          // utilitários internos (ex: react-use-is-hydrated) que dependem do
-          // React estar no mesmo escopo de módulo.
-          if (id.includes("@radix-ui")) return "radix-vendor";
           if (id.includes("@fontsource")) return "fonts";
         },
       },
