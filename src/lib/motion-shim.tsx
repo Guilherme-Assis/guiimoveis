@@ -72,11 +72,33 @@ function makeMotion(tag: ElementType): any {
   return Comp;
 }
 
-// Proxy: motion.div, motion.section, motion.h1 ... all return a stripped component
+// Proxy: motion.div, motion.section, motion.h1 ... all return a stripped component.
+// IMPORTANT: ignore symbol props and ESM/Promise/React internals so dynamic import()
+// and React element type checks don't mistake this object for a thenable or component.
+const PASSTHROUGH = new Set([
+  "then", // critical: ESM dynamic import checks .then — returning a function makes it look like a Promise
+  "default",
+  "__esModule",
+  "$$typeof",
+  "prototype",
+  "constructor",
+  "toString",
+  "valueOf",
+  "length",
+  "name",
+  "displayName",
+  "render",
+]);
+
 export const motion: any = new Proxy(
   {},
   {
-    get: (_t, prop: string) => makeMotion(prop as any),
+    get: (_t, prop) => {
+      if (typeof prop !== "string") return undefined;
+      if (PASSTHROUGH.has(prop)) return undefined;
+      return makeMotion(prop as any);
+    },
+    has: () => false,
   }
 );
 
@@ -89,4 +111,5 @@ export const domAnimation = {};
 export const domMax = {};
 export const m = motion;
 
-export default { motion, AnimatePresence };
+// Default export must mirror the motion proxy itself so `import m from "framer-motion"; m.div` works
+export default motion;
