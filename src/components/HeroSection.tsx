@@ -15,19 +15,22 @@ const stats = [
 const HeroSection = ({ onScrollToListings }: HeroSectionProps) => {
   return (
     <section className="relative min-h-screen w-full overflow-hidden">
-      {/* Background Image */}
+      {/* Background Video/Image */}
       <div className="absolute inset-0">
-        <img
-          src={heroImage}
-          alt="Mansão de luxo ao entardecer"
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
           className="h-full w-full object-cover"
-          width={1920}
-          height={1080}
-          loading="eager"
-          decoding="async"
-          {...({ fetchpriority: "high" } as any)}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
+          poster={heroImage}
+        >
+          <source 
+            src="https://assets.mixkit.co/videos/preview/mixkit-interior-of-a-modern-luxury-living-room-4431-large.mp4" 
+            type="video/mp4" 
+          />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/70 to-background" />
       </div>
 
       {/* Content */}
