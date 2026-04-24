@@ -8,6 +8,7 @@ interface AuthContextType {
   loading: boolean;
   role: "admin" | "broker" | null;
   brokerId: string | null;
+  brokerSlug: string | null;
   hasActiveSubscription: boolean | null;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, fullName: string) => Promise<void>;
@@ -22,6 +23,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<"admin" | "broker" | null>(null);
   const [brokerId, setBrokerId] = useState<string | null>(null);
+  const [brokerSlug, setBrokerSlug] = useState<string | null>(null);
   const [hasActiveSubscription, setHasActiveSubscription] = useState<boolean | null>(null);
 
   const fetchRole = async (userId: string) => {
@@ -29,11 +31,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const nowIso = new Date().toISOString();
     const [rolesRes, brokerRes] = await Promise.all([
       supabase.from("user_roles").select("role").eq("user_id", userId),
-      supabase.from("brokers").select("id").eq("user_id", userId).maybeSingle(),
+      supabase.from("brokers").select("id, slug").eq("user_id", userId).maybeSingle(),
     ]);
 
     const data = rolesRes.data;
     setBrokerId(brokerRes.data?.id || null);
+    setBrokerSlug(brokerRes.data?.slug || null);
 
     if (data && data.length > 0) {
       const roles = data.map((d) => d.role as "admin" | "broker");
@@ -69,6 +72,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         } else {
           setRole(null);
           setBrokerId(null);
+          setBrokerSlug(null);
           setHasActiveSubscription(null);
         }
         setLoading(false);
@@ -105,11 +109,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await supabase.auth.signOut();
     setRole(null);
     setBrokerId(null);
+    setBrokerSlug(null);
     setHasActiveSubscription(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, role, brokerId, hasActiveSubscription, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, role, brokerId, brokerSlug, hasActiveSubscription, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   );

@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useAuth } from "@/hooks/useAuth";
-import { BookOpen, Building2, Heart, LayoutDashboard, LogOut, MapPin as MapPinIcon, Menu, Phone, User, X } from "lucide-react";
+import { BookOpen, Building2, ExternalLink, Heart, LayoutDashboard, LogOut, MapPin as MapPinIcon, Menu, Phone, User, X } from "lucide-react";
 
 const logoKorretora = "/logo-korretora.webp";
 const HeaderUserMenu = lazy(() => import("@/components/HeaderUserMenu"));
@@ -11,7 +11,7 @@ const HeaderUserMenu = lazy(() => import("@/components/HeaderUserMenu"));
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { user, role, signOut, loading } = useAuth();
+  const { user, role, brokerId, brokerSlug, signOut, loading } = useAuth();
   const location = useLocation();
 
   useEffect(() => {
@@ -62,7 +62,7 @@ const Header = () => {
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex xl:gap-3">
-          {!loading && (user ? <Suspense fallback={null}><HeaderUserMenu displayName={displayName} initials={initials} avatarUrl={avatarUrl} email={user.email} role={role} onSignOut={signOut} /></Suspense> : <Link to="/login" className="font-body text-xs uppercase tracking-wider text-primary transition-colors hover:text-primary/80 xl:text-sm">Entrar</Link>)}
+          {!loading && (user ? <Suspense fallback={null}><HeaderUserMenu displayName={displayName} initials={initials} avatarUrl={avatarUrl} email={user.email} role={role} brokerId={brokerId} brokerSlug={brokerSlug} onSignOut={signOut} /></Suspense> : <Link to="/login" className="font-body text-xs uppercase tracking-wider text-primary transition-colors hover:text-primary/80 xl:text-sm">Entrar</Link>)}
           <ThemeToggle />
           <a href="tel:+5511999999999" className="hidden items-center gap-2 font-body text-sm text-muted-foreground transition-colors hover:text-primary xl:flex"><Phone className="h-3.5 w-3.5" /> (11) 99999-9999</a>
         </div>
@@ -100,6 +100,11 @@ const Header = () => {
               </div>
               {role && <Link to="/admin" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary"><LayoutDashboard className="h-3.5 w-3.5 text-primary" /> Painel Admin</Link>}
               <Link to="/admin/profile" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary"><User className="h-3.5 w-3.5 text-primary" /> Meu Perfil</Link>
+              {(brokerSlug || brokerId) && (
+                <Link to={`/corretor/${brokerSlug || brokerId}`} onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
+                  <ExternalLink className="h-3.5 w-3.5 text-primary" /> Perfil Público
+                </Link>
+              )}
               <button onClick={() => { void signOut(); setMobileOpen(false); }} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-destructive"><LogOut className="h-3.5 w-3.5" /> Sair</button>
             </> : <Link to="/login" onClick={() => setMobileOpen(false)} className="font-body text-sm uppercase tracking-wider text-primary">Área Restrita</Link>)}
 
