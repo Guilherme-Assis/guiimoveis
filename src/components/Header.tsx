@@ -100,6 +100,11 @@ const Header = () => {
               </div>
               {role && <Link to="/admin" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary"><LayoutDashboard className="h-3.5 w-3.5 text-primary" /> Painel Admin</Link>}
               <Link to="/admin/profile" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary"><User className="h-3.5 w-3.5 text-primary" /> Meu Perfil</Link>
+              {(brokerSlug || brokerId) && (
+                <Link to={`/corretor/${brokerSlug || brokerId}`} onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-foreground transition-colors hover:text-primary">
+                  <ExternalLink className="h-3.5 w-3.5 text-primary" /> Perfil Público
+                </Link>
+              )}
               <button onClick={() => { void signOut(); setMobileOpen(false); }} className="flex items-center gap-2 font-body text-sm uppercase tracking-wider text-destructive"><LogOut className="h-3.5 w-3.5" /> Sair</button>
             </> : <Link to="/login" onClick={() => setMobileOpen(false)} className="font-body text-sm uppercase tracking-wider text-primary">Área Restrita</Link>)}
 
