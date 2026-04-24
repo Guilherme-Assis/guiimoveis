@@ -203,6 +203,11 @@ const ENDPOINTS: Endpoint[] = [
     tags: ["CRM"],
   },
   {
+    method: "DELETE", path: "/proposals/{id}", summary: "Remover proposta", auth: true,
+    description: "Remove uma proposta.",
+    tags: ["CRM"],
+  },
+  {
     method: "GET", path: "/visits", summary: "Listar visitas", auth: true,
     description: "Retorna visitas agendadas/realizadas.",
     tags: ["CRM"],
@@ -217,6 +222,11 @@ const ENDPOINTS: Endpoint[] = [
     method: "PATCH", path: "/visits/{id}", summary: "Atualizar visita", auth: true,
     description: "Atualiza status ou feedback da visita.",
     requestBody: { status: "realizada", feedback: "Cliente muito interessado", interest_level: 5 },
+    tags: ["CRM"],
+  },
+  {
+    method: "DELETE", path: "/visits/{id}", summary: "Remover visita", auth: true,
+    description: "Remove um agendamento de visita.",
     tags: ["CRM"],
   },
   {
@@ -237,6 +247,11 @@ const ENDPOINTS: Endpoint[] = [
     tags: ["CRM"],
   },
   {
+    method: "DELETE", path: "/tasks/{id}", summary: "Remover tarefa", auth: true,
+    description: "Remove uma tarefa.",
+    tags: ["CRM"],
+  },
+  {
     method: "GET", path: "/interactions", summary: "Listar interações", auth: true,
     description: "Retorna interações com leads.",
     tags: ["CRM"],
@@ -248,6 +263,17 @@ const ENDPOINTS: Endpoint[] = [
     tags: ["CRM"],
   },
   {
+    method: "PATCH", path: "/interactions/{id}", summary: "Atualizar interação", auth: true,
+    description: "Atualiza dados de uma interação registrada.",
+    requestBody: { description: "Nova descrição..." },
+    tags: ["CRM"],
+  },
+  {
+    method: "DELETE", path: "/interactions/{id}", summary: "Remover interação", auth: true,
+    description: "Remove o registro de uma interação.",
+    tags: ["CRM"],
+  },
+  {
     method: "GET", path: "/templates", summary: "Listar templates", auth: true,
     description: "Retorna templates de mensagem do corretor.",
     tags: ["CRM"],
@@ -256,6 +282,17 @@ const ENDPOINTS: Endpoint[] = [
     method: "POST", path: "/templates", summary: "Criar template", auth: true,
     description: "Cria um template de mensagem.",
     requestBody: { broker_id: "uuid", name: "Boas-vindas", category: "whatsapp", stage: "novo", body: "Olá {nome}, tudo bem?" },
+    tags: ["CRM"],
+  },
+  {
+    method: "PATCH", path: "/templates/{id}", summary: "Atualizar template", auth: true,
+    description: "Atualiza um template de mensagem.",
+    requestBody: { body: "Olá {nome}, como vai?" },
+    tags: ["CRM"],
+  },
+  {
+    method: "DELETE", path: "/templates/{id}", summary: "Remover template", auth: true,
+    description: "Remove um template de mensagem.",
     tags: ["CRM"],
   },
   // === Parcerias ===
@@ -302,6 +339,16 @@ const ENDPOINTS: Endpoint[] = [
     method: "POST", path: "/partnership-transactions", summary: "Registrar transação", auth: true,
     description: "Registra uma transação de comissão de parceria. Apenas admins.",
     requestBody: { partnership_id: "uuid", total_commission_value: 25500, owner_amount: 15300, partner_amount: 10200, lead_id: "uuid" },
+    tags: ["Parcerias"],
+  },
+  {
+    method: "PATCH", path: "/partnership-transactions/{id}", summary: "Atualizar transação", auth: true,
+    description: "Atualiza dados de uma transação. Apenas admins.",
+    tags: ["Parcerias"],
+  },
+  {
+    method: "DELETE", path: "/partnership-transactions/{id}", summary: "Remover transação", auth: true,
+    description: "Remove registro de transação. Apenas admins.",
     tags: ["Parcerias"],
   },
   // === Assinaturas ===
@@ -361,6 +408,17 @@ const ENDPOINTS: Endpoint[] = [
     requestBody: { broker_id: "uuid", user_id: "uuid", rating: 5, comment: "Excelente atendimento!" },
     tags: ["Avaliações"],
   },
+  {
+    method: "PATCH", path: "/reviews/{id}", summary: "Atualizar avaliação", auth: true,
+    description: "Atualiza comentário ou nota de uma avaliação.",
+    requestBody: { rating: 4, comment: "Bom atendimento" },
+    tags: ["Avaliações"],
+  },
+  {
+    method: "DELETE", path: "/reviews/{id}", summary: "Remover avaliação", auth: true,
+    description: "Remove uma avaliação.",
+    tags: ["Avaliações"],
+  },
   // === Blog ===
   {
     method: "GET", path: "/blog-posts", summary: "Listar posts do blog", auth: false,
@@ -371,6 +429,17 @@ const ENDPOINTS: Endpoint[] = [
     method: "POST", path: "/blog-posts", summary: "Criar post", auth: true,
     description: "Cria um novo post. Apenas admins.",
     requestBody: { author_id: "uuid", title: "Dicas de compra", slug: "dicas-de-compra", content: "Conteúdo do post...", is_published: true },
+    tags: ["Blog"],
+  },
+  {
+    method: "PATCH", path: "/blog-posts/{id}", summary: "Atualizar post", auth: true,
+    description: "Atualiza conteúdo ou status de um post.",
+    requestBody: { is_published: false },
+    tags: ["Blog"],
+  },
+  {
+    method: "DELETE", path: "/blog-posts/{id}", summary: "Remover post", auth: true,
+    description: "Remove um post do blog.",
     tags: ["Blog"],
   },
   // === Analytics ===
@@ -386,6 +455,16 @@ const ENDPOINTS: Endpoint[] = [
     queryParams: [{ name: "days", type: "number", description: "Período em dias (default: 30)" }],
     tags: ["Analytics"],
   },
+  {
+    method: "GET", path: "/property-views", summary: "Listar visualizações", auth: true,
+    description: "Retorna log completo de visualizações. Apenas admins.",
+    tags: ["Analytics"],
+  },
+  {
+    method: "DELETE", path: "/property-views/{id}", summary: "Remover log de view", auth: true,
+    description: "Remove um registro de visualização.",
+    tags: ["Analytics"],
+  },
   // === Perfis ===
   {
     method: "GET", path: "/profiles", summary: "Listar perfis", auth: true,
@@ -398,10 +477,26 @@ const ENDPOINTS: Endpoint[] = [
     requestBody: { display_name: "João Silva", phone: "11999999999", bio: "Corretor há 10 anos" },
     tags: ["Usuário"],
   },
+  {
+    method: "DELETE", path: "/profiles/{id}", summary: "Remover perfil", auth: true,
+    description: "Remove um perfil de usuário. Apenas admins.",
+    tags: ["Usuário"],
+  },
   // === Roles ===
   {
     method: "GET", path: "/roles", summary: "Listar roles", auth: true,
     description: "Retorna roles do usuário autenticado.",
+    tags: ["Usuário"],
+  },
+  {
+    method: "POST", path: "/roles", summary: "Atribuir role", auth: true,
+    description: "Atribui uma nova role a um usuário.",
+    requestBody: { user_id: "uuid", role: "admin" },
+    tags: ["Usuário"],
+  },
+  {
+    method: "DELETE", path: "/roles/{id}", summary: "Remover role", auth: true,
+    description: "Remove uma role de um usuário.",
     tags: ["Usuário"],
   },
   // === Storage ===
