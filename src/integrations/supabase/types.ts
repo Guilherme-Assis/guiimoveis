@@ -892,6 +892,52 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_broker_properties_with_proposals: {
+        Args: { _broker_id: string }
+        Returns: {
+          accepts_pets: boolean | null
+          area: number
+          availability: Database["public"]["Enums"]["property_availability"]
+          available_from: string | null
+          bathrooms: number
+          bedrooms: number
+          broker_id: string | null
+          city: string
+          condominium_fee: number | null
+          created_at: string
+          description: string | null
+          features: string[] | null
+          furnished: boolean | null
+          id: string
+          image_url: string | null
+          images: string[] | null
+          iptu: number | null
+          is_highlight: boolean
+          land_area: number
+          latitude: number | null
+          location: string
+          longitude: number | null
+          min_contract_months: number | null
+          neighborhood_data: Json | null
+          open_for_partnership: boolean
+          parking_spaces: number
+          price: number
+          rental_price: number | null
+          slug: string | null
+          state: string
+          status: Database["public"]["Enums"]["property_status"]
+          title: string
+          type: Database["public"]["Enums"]["property_type"]
+          updated_at: string
+          virtual_tour_url: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "db_properties"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       get_property_by_slug: {
         Args: { _slug: string }
         Returns: {
