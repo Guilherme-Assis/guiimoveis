@@ -523,6 +523,13 @@ const ENDPOINTS: Endpoint[] = [
   },
   // === IA & outros ===
   {
+    method: "POST", path: "—", summary: "Dados do bairro (neighborhood-data)", auth: false,
+    description: "Endpoint separado: /functions/v1/neighborhood-data. Obtém dados de infraestrutura do bairro (escolas, parques, etc.) via Overpass API.",
+    requestBody: { property_id: "uuid", latitude: -23.55, longitude: -46.63, radius: 1000 },
+    responseExample: { schools: { rating: 4, count: 5, label: "Escolas", description: "Instituições de ensino próximas" } },
+    tags: ["IA"],
+  },
+  {
     method: "POST", path: "—", summary: "Chat com IA (property-chat)", auth: false,
     description: "Endpoint separado: /functions/v1/property-chat. Chat com IA para buscar imóveis.",
     requestBody: { messages: [{ role: "user", content: "Quero um apartamento em SP" }], filters: { city: "São Paulo" } },
