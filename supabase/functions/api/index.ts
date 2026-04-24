@@ -109,7 +109,7 @@ function parsePath(url: URL): { resource: string; id: string | null; action: str
   const parts = url.pathname.replace(/^\/api\//, "").split("/").filter(Boolean);
   const resource = parts[0] || "";
   const second = parts[1] || null;
-    const actions = ["search", "stats", "by-slug", "counts", "login", "refresh", "me", "signup", "active"];
+    const actions = ["search", "stats", "by-slug", "counts", "login", "refresh", "me", "signup", "active", "register-device", "register-live-activity", "logout-device"];
   if (second && actions.includes(second)) {
     return { resource, id: null, action: second };
   }
@@ -395,6 +395,84 @@ serve(async (req) => {
     }
 
     return errorResponse("Unknown upload action. Use: POST /upload/get_upload_url, POST /upload/get_read_url, GET /upload/list", 400);
+  }
+
+  // === MOBILE ENDPOINTS ===
+  if (resource === "mobile") {
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) return errorResponse("Authorization required", 401);
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const mobileClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const { data: { user }, error: authErr } = await mobileClient.auth.getUser();
+    if (authErr || !user) return errorResponse("Invalid or expired token", 401);
+
+    if (action === "register-device" && method === "POST") {
+      try {
+        const body = await req.json();
+        const { user_id, apns_device_token, platform } = body;
+        if (user_id !== user.id) return errorResponse("User ID mismatch", 403);
+        if (!apns_device_token || !platform) return errorResponse("Missing required fields", 400);
+
+        const { error } = await mobileClient
+          .from("mobile_devices")
+          .upsert(
+            { user_id, apns_device_token, platform, is_active: true, last_seen_at: new Date().toISOString() },
+            { onConflict: "user_id, apns_device_token" }
+          );
+
+        if (error) return errorResponse(error.message, 500);
+        return jsonResponse({ success: true });
+      } catch {
+        return errorResponse("Invalid request body", 400);
+      }
+    }
+
+    if (action === "register-live-activity" && method === "POST") {
+      try {
+        const body = await req.json();
+        const { user_id, activity_id, live_activity_push_token, platform } = body;
+        if (user_id !== user.id) return errorResponse("User ID mismatch", 403);
+        if (!activity_id || !live_activity_push_token || !platform) return errorResponse("Missing required fields", 400);
+
+        const { error } = await mobileClient
+          .from("mobile_live_activities")
+          .upsert(
+            { user_id, activity_id, live_activity_push_token, platform, status: "active", last_seen_at: new Date().toISOString() },
+            { onConflict: "activity_id" }
+          );
+
+        if (error) return errorResponse(error.message, 500);
+        return jsonResponse({ success: true });
+      } catch {
+        return errorResponse("Invalid request body", 400);
+      }
+    }
+
+    if (action === "logout-device" && method === "POST") {
+      try {
+        const body = await req.json();
+        const { apns_device_token } = body;
+        if (!apns_device_token) return errorResponse("apns_device_token is required", 400);
+
+        const { error } = await mobileClient
+          .from("mobile_devices")
+          .update({ is_active: false, updated_at: new Date().toISOString() })
+          .eq("user_id", user.id)
+          .eq("apns_device_token", apns_device_token);
+
+        if (error) return errorResponse(error.message, 500);
+        return jsonResponse({ success: true });
+      } catch {
+        return errorResponse("Invalid request body", 400);
+      }
+    }
+
+    return errorResponse("Unknown mobile action. Use: POST /mobile/register-device, POST /mobile/register-live-activity, POST /mobile/logout-device", 404);
   }
 
   // Validate resource
