@@ -638,6 +638,75 @@ export type Database = {
           },
         ]
       }
+      mobile_devices: {
+        Row: {
+          apns_device_token: string
+          created_at: string
+          id: string
+          is_active: boolean
+          last_seen_at: string | null
+          platform: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          apns_device_token: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_seen_at?: string | null
+          platform: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          apns_device_token?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_seen_at?: string | null
+          platform?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      mobile_live_activities: {
+        Row: {
+          activity_id: string
+          created_at: string
+          id: string
+          last_seen_at: string | null
+          live_activity_push_token: string
+          platform: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activity_id: string
+          created_at?: string
+          id?: string
+          last_seen_at?: string | null
+          live_activity_push_token: string
+          platform: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activity_id?: string
+          created_at?: string
+          id?: string
+          last_seen_at?: string | null
+          live_activity_push_token?: string
+          platform?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       partnership_transactions: {
         Row: {
           closed_at: string
