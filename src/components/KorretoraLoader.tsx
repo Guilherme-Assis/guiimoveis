@@ -58,11 +58,7 @@ const KorretoraLoader = ({
 
   return (
     <div
-      className={
-        compact
-          ? "kload kload--compact"
-          : "kload kload--full"
-      }
+      className={compact ? "kload kload--compact" : "kload kload--full"}
       role="status"
       aria-live="polite"
       aria-label="Carregando KORRETORA"
@@ -72,28 +68,46 @@ const KorretoraLoader = ({
       {/* skyline */}
       <svg className="kload-skyline" viewBox="0 0 1440 180" preserveAspectRatio="xMidYMax meet" aria-hidden>
         <g fill="#c9a227">
-          <rect x="0" y="80" width="40" height="100" /><rect x="5" y="60" width="30" height="20" />
-          <rect x="50" y="50" width="60" height="130" /><rect x="55" y="30" width="50" height="22" /><rect x="60" y="20" width="10" height="12" />
+          <rect x="0" y="80" width="40" height="100" />
+          <rect x="5" y="60" width="30" height="20" />
+          <rect x="50" y="50" width="60" height="130" />
+          <rect x="55" y="30" width="50" height="22" />
+          <rect x="60" y="20" width="10" height="12" />
           <rect x="120" y="90" width="35" height="90" />
-          <rect x="165" y="40" width="70" height="140" /><rect x="170" y="20" width="60" height="22" /><rect x="178" y="8" width="8" height="14" />
+          <rect x="165" y="40" width="70" height="140" />
+          <rect x="170" y="20" width="60" height="22" />
+          <rect x="178" y="8" width="8" height="14" />
           <rect x="245" y="70" width="45" height="110" />
-          <rect x="300" y="55" width="55" height="125" /><rect x="305" y="35" width="45" height="22" />
+          <rect x="300" y="55" width="55" height="125" />
+          <rect x="305" y="35" width="45" height="22" />
           <rect x="365" y="90" width="30" height="90" />
-          <rect x="405" y="45" width="65" height="135" /><rect x="410" y="28" width="55" height="19" /><rect x="416" y="14" width="9" height="16" />
+          <rect x="405" y="45" width="65" height="135" />
+          <rect x="410" y="28" width="55" height="19" />
+          <rect x="416" y="14" width="9" height="16" />
           <rect x="480" y="75" width="40" height="105" />
           <rect x="530" y="60" width="50" height="120" />
-          <rect x="590" y="42" width="75" height="138" /><rect x="595" y="22" width="65" height="22" /><rect x="602" y="10" width="10" height="14" />
+          <rect x="590" y="42" width="75" height="138" />
+          <rect x="595" y="22" width="65" height="22" />
+          <rect x="602" y="10" width="10" height="14" />
           <rect x="675" y="80" width="38" height="100" />
-          <rect x="723" y="55" width="58" height="125" /><rect x="728" y="34" width="48" height="23" />
+          <rect x="723" y="55" width="58" height="125" />
+          <rect x="728" y="34" width="48" height="23" />
           <rect x="791" y="65" width="44" height="115" />
-          <rect x="845" y="48" width="62" height="132" /><rect x="850" y="28" width="52" height="22" /><rect x="857" y="14" width="9" height="16" />
+          <rect x="845" y="48" width="62" height="132" />
+          <rect x="850" y="28" width="52" height="22" />
+          <rect x="857" y="14" width="9" height="16" />
           <rect x="917" y="78" width="36" height="102" />
-          <rect x="963" y="52" width="56" height="128" /><rect x="968" y="32" width="46" height="22" />
+          <rect x="963" y="52" width="56" height="128" />
+          <rect x="968" y="32" width="46" height="22" />
           <rect x="1029" y="70" width="42" height="110" />
-          <rect x="1081" y="44" width="68" height="136" /><rect x="1086" y="24" width="58" height="22" /><rect x="1092" y="10" width="10" height="16" />
+          <rect x="1081" y="44" width="68" height="136" />
+          <rect x="1086" y="24" width="58" height="22" />
+          <rect x="1092" y="10" width="10" height="16" />
           <rect x="1159" y="82" width="37" height="98" />
           <rect x="1206" y="58" width="52" height="122" />
-          <rect x="1268" y="46" width="66" height="134" /><rect x="1273" y="26" width="56" height="22" /><rect x="1280" y="12" width="9" height="16" />
+          <rect x="1268" y="46" width="66" height="134" />
+          <rect x="1273" y="26" width="56" height="22" />
+          <rect x="1280" y="12" width="9" height="16" />
           <rect x="1344" y="75" width="40" height="105" />
           <rect x="1394" y="55" width="46" height="125" />
         </g>
@@ -104,17 +118,39 @@ const KorretoraLoader = ({
         <div className="kload-stage">
           <svg className="kload-orbit kload-orbit-1" viewBox="0 0 148 148" aria-hidden>
             <circle cx="74" cy="74" r="68" stroke="rgba(201,162,39,0.07)" strokeWidth="1" fill="none" />
-            <circle cx="74" cy="74" r="68" stroke="#c9a227" strokeWidth="1.5" strokeDasharray="50 380" strokeLinecap="round" opacity=".7" fill="none" />
+            <circle
+              cx="74"
+              cy="74"
+              r="68"
+              stroke="#c9a227"
+              strokeWidth="1.5"
+              strokeDasharray="50 380"
+              strokeLinecap="round"
+              opacity=".7"
+              fill="none"
+            />
             <circle cx="74" cy="6" r="4" fill="#c9a227" opacity=".9" />
           </svg>
           <svg className="kload-orbit kload-orbit-2" viewBox="0 0 128 128" aria-hidden>
             <circle cx="64" cy="64" r="58" stroke="rgba(201,162,39,0.05)" strokeWidth="1" fill="none" />
-            <circle cx="64" cy="64" r="58" stroke="#c9a227" strokeWidth="1" strokeDasharray="24 340" strokeLinecap="round" opacity=".35" fill="none" />
+            <circle
+              cx="64"
+              cy="64"
+              r="58"
+              stroke="#c9a227"
+              strokeWidth="1"
+              strokeDasharray="24 340"
+              strokeLinecap="round"
+              opacity=".35"
+              fill="none"
+            />
             <circle cx="64" cy="6" r="3" fill="#c9a227" opacity=".5" />
           </svg>
           <img className="kload-logo" src={logo} alt="KORRETORA" />
         </div>
-        <div className="kload-brand">KO<em>RR</em>ETORA</div>
+        <div className="kload-brand">
+          KO<em>RR</em>ETORA
+        </div>
         <div className="kload-tagline">COMUNIDADE DE CORRETORES</div>
       </div>
 
