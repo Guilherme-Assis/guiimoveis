@@ -414,14 +414,13 @@ serve(async (req) => {
     if (action === "register-device" && method === "POST") {
       try {
         const body = await req.json();
-        const { user_id, apns_device_token, platform } = body;
-        if (user_id !== user.id) return errorResponse("User ID mismatch", 403);
+        const { apns_device_token, platform } = body;
         if (!apns_device_token || !platform) return errorResponse("Missing required fields", 400);
 
         const { error } = await mobileClient
           .from("mobile_devices")
           .upsert(
-            { user_id, apns_device_token, platform, is_active: true, last_seen_at: new Date().toISOString() },
+            { user_id: user.id, apns_device_token, platform, is_active: true, last_seen_at: new Date().toISOString() },
             { onConflict: "user_id, apns_device_token" }
           );
 
@@ -435,14 +434,13 @@ serve(async (req) => {
     if (action === "register-live-activity" && method === "POST") {
       try {
         const body = await req.json();
-        const { user_id, activity_id, live_activity_push_token, platform } = body;
-        if (user_id !== user.id) return errorResponse("User ID mismatch", 403);
+        const { activity_id, live_activity_push_token, platform } = body;
         if (!activity_id || !live_activity_push_token || !platform) return errorResponse("Missing required fields", 400);
 
         const { error } = await mobileClient
           .from("mobile_live_activities")
           .upsert(
-            { user_id, activity_id, live_activity_push_token, platform, status: "active", last_seen_at: new Date().toISOString() },
+            { user_id: user.id, activity_id, live_activity_push_token, platform, status: "active", last_seen_at: new Date().toISOString() },
             { onConflict: "activity_id" }
           );
 
@@ -504,8 +502,8 @@ serve(async (req) => {
         mobile: {
           description: "Mobile device and live activity management - requires Bearer token",
           endpoints: [
-            { method: "POST", path: "/mobile/register-device", body: '{ "user_id": "...", "apns_device_token": "...", "platform": "ios" }', returns: "{ success: true }" },
-            { method: "POST", path: "/mobile/register-live-activity", body: '{ "user_id": "...", "activity_id": "...", "live_activity_push_token": "...", "platform": "ios" }', returns: "{ success: true }" },
+            { method: "POST", path: "/mobile/register-device", body: '{ "apns_device_token": "...", "platform": "ios" }', returns: "{ success: true }" },
+            { method: "POST", path: "/mobile/register-live-activity", body: '{ "activity_id": "...", "live_activity_push_token": "...", "platform": "ios" }', returns: "{ success: true }" },
             { method: "POST", path: "/mobile/logout-device", body: '{ "apns_device_token": "..." }', returns: "{ success: true }" },
           ],
         },
