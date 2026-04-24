@@ -11,7 +11,7 @@ const HeaderUserMenu = lazy(() => import("@/components/HeaderUserMenu"));
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { user, role, signOut, loading } = useAuth();
+  const { user, role, brokerId, brokerSlug, signOut, loading } = useAuth();
   const location = useLocation();
 
   useEffect(() => {
