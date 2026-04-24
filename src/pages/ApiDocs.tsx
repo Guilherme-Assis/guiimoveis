@@ -564,6 +564,7 @@ const TAG_COLORS: Record<string, string> = {
   "Analytics": "bg-cyan-500/10 text-cyan-400",
   "IA": "bg-purple-500/10 text-purple-400",
   "Storage": "bg-orange-500/10 text-orange-400",
+  "Mobile": "bg-blue-500/10 text-blue-400",
 };
 
 const STATUS_COLORS: Record<number, string> = {

@@ -1145,6 +1145,7 @@ export type Database = {
           display_name: string
         }[]
       }
+      get_property_stats: { Args: never; Returns: Json }
       get_property_view_counts: {
         Args: { days_back?: number }
         Returns: {
