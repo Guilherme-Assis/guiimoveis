@@ -84,6 +84,39 @@ const PropertyDetail = () => {
     }
   };
 
+  const handleInterestSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!property?.id || !broker?.id) return;
+    if (!leadForm.name || !leadForm.phone) {
+      toast({ title: "Campos obrigatórios", description: "Por favor, preencha seu nome e telefone.", variant: "destructive" });
+      return;
+    }
+
+    setSubmittingLead(true);
+    try {
+      const { error } = await supabase.from("broker_leads").insert({
+        broker_id: broker.id,
+        name: leadForm.name,
+        email: leadForm.email || null,
+        phone: leadForm.phone,
+        notes: `Interesse no imóvel: ${property.title}. Mensagem: ${leadForm.message || 'Sem mensagem.'}`,
+        source: 'site' as any,
+        status: 'novo' as any,
+        priority: 'media' as any
+      });
+
+      if (error) throw error;
+
+      toast({ title: "Interesse enviado! 🚀", description: "O corretor entrará em contato em breve." });
+      setInterestOpen(false);
+      setLeadForm({ name: "", email: "", phone: "", message: "" });
+    } catch (err: any) {
+      toast({ title: "Erro ao enviar interesse", description: err.message || "Tente novamente.", variant: "destructive" });
+    } finally {
+      setSubmittingLead(false);
+    }
+  };
+
   useEffect(() => {
     const load = async () => {
       if (!slug) return;
@@ -189,7 +222,6 @@ const PropertyDetail = () => {
   const iptu = Number(property.iptu) || 0;
   const displayPrice = isRental && rentalPrice > 0 ? rentalPrice : Number(property.price);
 
-  // Detect floor plan images (images that contain "planta" in the URL or last images if more than 4)
   const allImages = property.images || [];
   const floorPlans = allImages.filter((img: string) => img.toLowerCase().includes("planta") || img.toLowerCase().includes("floor"));
 
@@ -266,7 +298,6 @@ const PropertyDetail = () => {
                 )}
               </div>
 
-              {/* Rental details section */}
               {isRental && (
                 <div className="my-6 flex flex-wrap gap-4 rounded border border-border bg-secondary/30 p-4">
                   {property.min_contract_months > 0 && (
@@ -358,20 +389,15 @@ const PropertyDetail = () => {
                 </div>
               )}
 
-              {/* Floor Plans */}
               <FloorPlanGallery floorPlans={floorPlans} title={property.title} />
-
-              {/* Neighborhood Rating */}
               <NeighborhoodRating neighborhood={property.location} city={property.city} neighborhoodData={property.neighborhood_data} />
 
-              {/* Virtual Tour */}
               {property.virtual_tour_url && (
                 <div className="mb-10">
                   <VirtualTourViewer url={property.virtual_tour_url} title={property.title} />
                 </div>
               )}
 
-              {/* Location Map */}
               <PropertyLocationMap
                 latitude={property.latitude ? Number(property.latitude) : null}
                 longitude={property.longitude ? Number(property.longitude) : null}
@@ -391,7 +417,7 @@ const PropertyDetail = () => {
                     <h3 className="mb-4 font-display text-xl font-semibold text-foreground">
                       Corretor Responsável
                     </h3>
-                    {user ? (
+                    {(user || isPublicView) ? (
                       <>
                         <Link to={broker.slug ? `/corretor/${broker.slug}` : "#"} className="flex items-center gap-4 mb-4 group/broker cursor-pointer">
                           {brokerProfile?.avatar_url ? (
@@ -440,21 +466,31 @@ const PropertyDetail = () => {
                               <Phone className="h-4 w-4" /> Ligar
                             </a>
                           )}
-                          {canPropose && property.open_for_partnership && (
-                            existingPartnership ? (
-                              <div className="flex items-center gap-2 rounded-md border border-amber-500/50 bg-amber-50 px-4 py-3 dark:bg-amber-950/30">
-                                <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600" />
-                                <span className="font-body text-sm text-amber-800 dark:text-amber-300">
-                                  Você já possui uma proposta de parceria <strong>{existingPartnership.status === 'pendente' ? 'pendente' : existingPartnership.status === 'aceita' ? 'aceita' : 'ativa'}</strong> para este imóvel.
-                                </span>
-                              </div>
-                            ) : (
-                              <button
-                                onClick={() => setPartnershipOpen(true)}
-                                className="flex items-center justify-center gap-2 border-2 border-dashed border-primary/50 py-3 font-body text-sm font-semibold uppercase tracking-wider text-primary transition-all hover:border-primary hover:bg-primary/5"
-                              >
-                                <Handshake className="h-4 w-4" /> Propor Parceria
-                              </button>
+                          
+                          {isPublicView ? (
+                            <button
+                              onClick={() => setInterestOpen(true)}
+                              className="flex items-center justify-center gap-2 bg-primary py-3 font-body text-sm font-semibold uppercase tracking-wider text-primary-foreground transition-all hover:bg-primary/90"
+                            >
+                              <Send className="h-4 w-4" /> Tenho Interesse
+                            </button>
+                          ) : (
+                            canPropose && property.open_for_partnership && (
+                              existingPartnership ? (
+                                <div className="flex items-center gap-2 rounded-md border border-amber-500/50 bg-amber-50 px-4 py-3 dark:bg-amber-950/30">
+                                  <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600" />
+                                  <span className="font-body text-sm text-amber-800 dark:text-amber-300">
+                                    Você já possui uma proposta de parceria <strong>{existingPartnership.status === 'pendente' ? 'pendente' : existingPartnership.status === 'aceita' ? 'aceita' : 'ativa'}</strong> para este imóvel.
+                                  </span>
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={() => setPartnershipOpen(true)}
+                                  className="flex items-center justify-center gap-2 border-2 border-dashed border-primary/50 py-3 font-body text-sm font-semibold uppercase tracking-wider text-primary transition-all hover:border-primary hover:bg-primary/5"
+                                >
+                                  <Handshake className="h-4 w-4" /> Propor Parceria
+                                </button>
+                              )
                             )
                           )}
                         </div>
@@ -494,7 +530,6 @@ const PropertyDetail = () => {
                   </div>
                 )}
 
-                {/* Show Rental Cost Calculator for rentals, Mortgage Calculator for sales */}
                 {isRental ? (
                   <RentalCostCalculator
                     rentalPrice={rentalPrice > 0 ? rentalPrice : displayPrice}
@@ -557,6 +592,74 @@ const PropertyDetail = () => {
               {submittingPartnership ? "Enviando..." : "Enviar Proposta de Parceria"}
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Lead Interest Dialog */}
+      <Dialog open={interestOpen} onOpenChange={setInterestOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 font-display">
+              <Send className="h-5 w-5 text-primary" /> Tenho Interesse
+            </DialogTitle>
+            <DialogDescription>
+              Preencha seus dados abaixo e o corretor responsável entrará em contato com você.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleInterestSubmit} className="space-y-4 pt-2">
+            <div className="space-y-2">
+              <label className="font-body text-sm font-medium text-foreground">Nome Completo *</label>
+              <Input
+                required
+                value={leadForm.name}
+                onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
+                placeholder="Seu nome"
+                className="bg-secondary/30"
+              />
+            </div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <label className="font-body text-sm font-medium text-foreground">E-mail</label>
+                <Input
+                  type="email"
+                  value={leadForm.email}
+                  onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
+                  placeholder="seu@email.com"
+                  className="bg-secondary/30"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="font-body text-sm font-medium text-foreground">Telefone / WhatsApp *</label>
+                <Input
+                  required
+                  value={leadForm.phone}
+                  onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
+                  placeholder="(00) 00000-0000"
+                  className="bg-secondary/30"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="font-body text-sm font-medium text-foreground">Mensagem (opcional)</label>
+              <Textarea
+                value={leadForm.message}
+                onChange={(e) => setLeadForm({ ...leadForm, message: e.target.value })}
+                placeholder="Gostaria de agendar uma visita ou saber mais..."
+                rows={3}
+                className="bg-secondary/30"
+              />
+            </div>
+            <Button
+              type="submit"
+              disabled={submittingLead}
+              className="w-full bg-gradient-gold font-body text-sm font-semibold uppercase tracking-wider text-primary-foreground shadow-lg shadow-primary/20"
+            >
+              {submittingLead ? "Enviando..." : "Enviar Interesse"}
+            </Button>
+            <p className="text-center font-body text-[10px] text-muted-foreground">
+              Ao enviar, você concorda com nossos termos de privacidade.
+            </p>
+          </form>
         </DialogContent>
       </Dialog>
     </div>
