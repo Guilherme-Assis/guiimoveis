@@ -69,7 +69,8 @@ const Properties = () => {
     setLoading(true);
     let query = supabase.from("db_properties").select("id,title,type,status,availability,price,location,city,state,bedrooms,bathrooms,parking_spaces,area,land_area,description,features,image_url,images,is_highlight,slug,broker_id,latitude,longitude,virtual_tour_url,rental_price,condominium_fee,iptu,min_contract_months,accepts_pets,furnished,available_from,open_for_partnership").order("created_at", { ascending: false });
     if (role === "broker" && brokerId) {
-      query = query.eq("broker_id", brokerId);
+      // Usando .or para incluir imóveis do corretor OU imóveis com proposta aceita por ele
+      query = query.or(`broker_id.eq.${brokerId},id.in.(select property_id from broker_proposals where broker_id = ${brokerId} and status = 'aceita')`);
     }
     const { data } = await query;
     setProperties((data as DbProperty[]) || []);
