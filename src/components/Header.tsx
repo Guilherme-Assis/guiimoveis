@@ -62,7 +62,7 @@ const Header = () => {
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex xl:gap-3">
-          {!loading && (user ? <Suspense fallback={null}><HeaderUserMenu displayName={displayName} initials={initials} avatarUrl={avatarUrl} email={user.email} role={role} onSignOut={signOut} /></Suspense> : <Link to="/login" className="font-body text-xs uppercase tracking-wider text-primary transition-colors hover:text-primary/80 xl:text-sm">Entrar</Link>)}
+          {!loading && (user ? <Suspense fallback={null}><HeaderUserMenu displayName={displayName} initials={initials} avatarUrl={avatarUrl} email={user.email} role={role} brokerId={brokerId} brokerSlug={brokerSlug} onSignOut={signOut} /></Suspense> : <Link to="/login" className="font-body text-xs uppercase tracking-wider text-primary transition-colors hover:text-primary/80 xl:text-sm">Entrar</Link>)}
           <ThemeToggle />
           <a href="tel:+5511999999999" className="hidden items-center gap-2 font-body text-sm text-muted-foreground transition-colors hover:text-primary xl:flex"><Phone className="h-3.5 w-3.5" /> (11) 99999-9999</a>
         </div>
