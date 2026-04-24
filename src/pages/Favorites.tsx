@@ -95,19 +95,8 @@ const Favorites = () => {
     return <KorretoraLoader status="Carregando favoritos..." />;
   }
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <div className="flex flex-col items-center justify-center py-40 text-center">
-          <Heart className="mb-4 h-12 w-12 text-muted-foreground/30" />
-          <p className="font-display text-2xl text-foreground">Faça login para ver seus favoritos</p>
-          <Link to="/login" className="mt-4 font-body text-primary hover:underline">Entrar</Link>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
+  // A proteção agora é feita via ProtectedRoute no App.tsx
+
 
   return (
     <div className="min-h-screen bg-background">

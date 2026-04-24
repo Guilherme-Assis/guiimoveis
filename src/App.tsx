@@ -90,11 +90,11 @@ const App = () => (
                   <Route path="/login" element={<Login />} />
                   <Route path="/blog" element={<Blog />} />
                   <Route path="/blog/:slug" element={<BlogPost />} />
-                  <Route path="/favoritos" element={<Favorites />} />
+                  <Route path="/favoritos" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
                   <Route path="/mapa" element={<MapSearch />} />
                   <Route path="/imoveis/:citySlug" element={<CityProperties />} />
                   <Route path="/lancamentos" element={<Lancamentos />} />
-                  <Route path="/comparar" element={<Compare />} />
+                  <Route path="/comparar" element={<ProtectedRoute><Compare /></ProtectedRoute>} />
                   <Route path="/api-docs" element={<ApiDocs />} />
                   <Route path="/admin" element={<ProtectedRoute><AdminLayout><Dashboard /></AdminLayout></ProtectedRoute>} />
                   <Route path="/admin/properties" element={<ProtectedRoute><AdminLayout><Properties /></AdminLayout></ProtectedRoute>} />

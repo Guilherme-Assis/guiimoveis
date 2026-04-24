@@ -222,6 +222,13 @@ export type Database = {
             foreignKeyName: "broker_proposals_property_id_fkey"
             columns: ["property_id"]
             isOneToOne: false
+            referencedRelation: "broker_assigned_properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "broker_proposals_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
             referencedRelation: "db_properties"
             referencedColumns: ["id"]
           },
@@ -507,6 +514,13 @@ export type Database = {
             foreignKeyName: "favorites_property_id_fkey"
             columns: ["property_id"]
             isOneToOne: false
+            referencedRelation: "broker_assigned_properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "favorites_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
             referencedRelation: "db_properties"
             referencedColumns: ["id"]
           },
@@ -562,6 +576,13 @@ export type Database = {
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "broker_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_property_visits_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "broker_assigned_properties"
             referencedColumns: ["id"]
           },
           {
@@ -724,6 +745,13 @@ export type Database = {
             foreignKeyName: "partnerships_property_id_fkey"
             columns: ["property_id"]
             isOneToOne: false
+            referencedRelation: "broker_assigned_properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partnerships_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
             referencedRelation: "db_properties"
             referencedColumns: ["id"]
           },
@@ -792,6 +820,13 @@ export type Database = {
             foreignKeyName: "property_views_property_id_fkey"
             columns: ["property_id"]
             isOneToOne: false
+            referencedRelation: "broker_assigned_properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_views_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
             referencedRelation: "db_properties"
             referencedColumns: ["id"]
           },
@@ -853,7 +888,65 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      broker_assigned_properties: {
+        Row: {
+          accepts_pets: boolean | null
+          area: number | null
+          availability:
+            | Database["public"]["Enums"]["property_availability"]
+            | null
+          available_from: string | null
+          bathrooms: number | null
+          bedrooms: number | null
+          broker_id: string | null
+          city: string | null
+          condominium_fee: number | null
+          created_at: string | null
+          description: string | null
+          features: string[] | null
+          furnished: boolean | null
+          id: string | null
+          image_url: string | null
+          images: string[] | null
+          iptu: number | null
+          is_highlight: boolean | null
+          land_area: number | null
+          latitude: number | null
+          location: string | null
+          longitude: number | null
+          min_contract_months: number | null
+          neighborhood_data: Json | null
+          open_for_partnership: boolean | null
+          parking_spaces: number | null
+          price: number | null
+          proposal_status: Database["public"]["Enums"]["proposal_status"] | null
+          proposing_broker_id: string | null
+          rental_price: number | null
+          slug: string | null
+          state: string | null
+          status: Database["public"]["Enums"]["property_status"] | null
+          title: string | null
+          type: Database["public"]["Enums"]["property_type"] | null
+          updated_at: string | null
+          virtual_tour_url: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "broker_proposals_broker_id_fkey"
+            columns: ["proposing_broker_id"]
+            isOneToOne: false
+            referencedRelation: "brokers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "db_properties_broker_id_fkey"
+            columns: ["broker_id"]
+            isOneToOne: false
+            referencedRelation: "brokers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       generate_slug: { Args: { input: string }; Returns: string }
@@ -891,6 +984,52 @@ export type Database = {
           is_active: boolean
           user_id: string
         }[]
+      }
+      get_broker_properties_with_proposals: {
+        Args: { _broker_id: string }
+        Returns: {
+          accepts_pets: boolean | null
+          area: number
+          availability: Database["public"]["Enums"]["property_availability"]
+          available_from: string | null
+          bathrooms: number
+          bedrooms: number
+          broker_id: string | null
+          city: string
+          condominium_fee: number | null
+          created_at: string
+          description: string | null
+          features: string[] | null
+          furnished: boolean | null
+          id: string
+          image_url: string | null
+          images: string[] | null
+          iptu: number | null
+          is_highlight: boolean
+          land_area: number
+          latitude: number | null
+          location: string
+          longitude: number | null
+          min_contract_months: number | null
+          neighborhood_data: Json | null
+          open_for_partnership: boolean
+          parking_spaces: number
+          price: number
+          rental_price: number | null
+          slug: string | null
+          state: string
+          status: Database["public"]["Enums"]["property_status"]
+          title: string
+          type: Database["public"]["Enums"]["property_type"]
+          updated_at: string
+          virtual_tour_url: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "db_properties"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       get_property_by_slug: {
         Args: { _slug: string }

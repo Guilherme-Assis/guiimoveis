@@ -33,11 +33,7 @@ const BrokerProfile = () => {
         setBroker(b);
         const { data: profileData } = await supabase.rpc("get_public_profile", { _user_id: b.user_id });
         setProfile(profileData?.[0] || null);
-        const { data: propData } = await supabase
-          .from("db_properties")
-          .select("id,slug,title,type,status,price,location,city,state,bedrooms,bathrooms,parking_spaces,area,land_area,description,features,image_url,images,is_highlight,open_for_partnership")
-          .eq("broker_id", b.id)
-          .eq("availability", "available");
+        const { data: propData } = await supabase.rpc("get_broker_properties_with_proposals", { _broker_id: b.id });
         const props = propData || [];
         setProperties(props);
         setPartnershipCount(props.filter((p: any) => p.open_for_partnership).length);
