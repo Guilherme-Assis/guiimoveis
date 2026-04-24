@@ -524,21 +524,21 @@ const ENDPOINTS: Endpoint[] = [
   // === Mobile ===
   {
     method: "POST", path: "/mobile/register-device", summary: "Registrar dispositivo", auth: true,
-    description: "Registra o token de push APNS para notificações mobile.",
-    requestBody: { user_id: "uuid", apns_device_token: "token...", platform: "ios" },
+    description: "Registra o token de push APNS para notificações mobile. O user_id é extraído automaticamente do JWT.",
+    requestBody: { apns_device_token: "token...", platform: "ios" },
     responseExample: { success: true },
     tags: ["Mobile"],
   },
   {
     method: "POST", path: "/mobile/register-live-activity", summary: "Registrar Live Activity", auth: true,
-    description: "Registra o token de push para uma Live Activity do iOS.",
-    requestBody: { user_id: "uuid", activity_id: "uuid", live_activity_push_token: "token...", platform: "ios" },
+    description: "Registra o token de push para uma Live Activity do iOS. O user_id é extraído automaticamente do JWT.",
+    requestBody: { activity_id: "uuid", live_activity_push_token: "token...", platform: "ios" },
     responseExample: { success: true },
     tags: ["Mobile"],
   },
   {
     method: "POST", path: "/mobile/logout-device", summary: "Remover dispositivo", auth: true,
-    description: "Inativa um token de dispositivo no logout.",
+    description: "Inativa um token de dispositivo no logout. Afeta apenas os tokens do usuário autenticado.",
     requestBody: { apns_device_token: "token..." },
     responseExample: { success: true },
     tags: ["Mobile"],
