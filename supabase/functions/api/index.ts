@@ -501,6 +501,14 @@ serve(async (req) => {
           ],
           usage: "1. POST /upload/get_upload_url with filename → get upload_url. 2. PUT file binary to upload_url. 3. Use public_url as image reference in properties.",
         },
+        mobile: {
+          description: "Mobile device and live activity management - requires Bearer token",
+          endpoints: [
+            { method: "POST", path: "/mobile/register-device", body: '{ "user_id": "...", "apns_device_token": "...", "platform": "ios" }', returns: "{ success: true }" },
+            { method: "POST", path: "/mobile/register-live-activity", body: '{ "user_id": "...", "activity_id": "...", "live_activity_push_token": "...", "platform": "ios" }', returns: "{ success: true }" },
+            { method: "POST", path: "/mobile/logout-device", body: '{ "apns_device_token": "..." }', returns: "{ success: true }" },
+          ],
+        },
         endpoints: Object.keys(RESOURCE_TABLE).map((r) => ({
           resource: r,
           table: RESOURCE_TABLE[r],
