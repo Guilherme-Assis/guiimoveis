@@ -28,17 +28,31 @@ import { useToast } from "@/hooks/use-toast";
 
 const PropertyDetail = () => {
   const { slug } = useParams();
+  const [searchParams] = useSearchParams();
+  const isPublicView = searchParams.get("public") === "true";
   const { user, role, brokerId } = useAuth();
   const { toast } = useToast();
   const [property, setProperty] = useState<any>(null);
   const [broker, setBroker] = useState<any>(null);
   const [brokerProfile, setBrokerProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  
+  // Partnership states
   const [partnershipOpen, setPartnershipOpen] = useState(false);
   const [partnerSplit, setPartnerSplit] = useState([50]);
   const [partnerMessage, setPartnerMessage] = useState("");
   const [submittingPartnership, setSubmittingPartnership] = useState(false);
   const [existingPartnership, setExistingPartnership] = useState<any>(null);
+
+  // Lead states
+  const [interestOpen, setInterestOpen] = useState(false);
+  const [submittingLead, setSubmittingLead] = useState(false);
+  const [leadForm, setLeadForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: ""
+  });
 
   const isOwnProperty = brokerId && broker?.id === brokerId;
   const canPropose = brokerId && broker && !isOwnProperty;
