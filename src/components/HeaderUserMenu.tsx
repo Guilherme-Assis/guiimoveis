@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { LayoutDashboard, LogOut, User } from "lucide-react";
+import { ExternalLink, LayoutDashboard, LogOut, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -15,6 +15,8 @@ interface HeaderUserMenuProps {
   avatarUrl?: string | null;
   email?: string;
   role: "admin" | "broker" | null;
+  brokerSlug: string | null;
+  brokerId: string | null;
   onSignOut: () => void;
 }
 
@@ -24,6 +26,8 @@ export default function HeaderUserMenu({
   avatarUrl,
   email,
   role,
+  brokerSlug,
+  brokerId,
   onSignOut,
 }: HeaderUserMenuProps) {
   return (
@@ -60,6 +64,13 @@ export default function HeaderUserMenu({
             <User className="h-4 w-4" /> Meu Perfil
           </Link>
         </DropdownMenuItem>
+        {(brokerSlug || brokerId) && (
+          <DropdownMenuItem asChild>
+            <Link to={`/corretor/${brokerSlug || brokerId}`} className="flex cursor-pointer items-center gap-2">
+              <ExternalLink className="h-4 w-4" /> Ver Perfil Público
+            </Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={onSignOut} className="flex cursor-pointer items-center gap-2 text-destructive focus:text-destructive">
           <LogOut className="h-4 w-4" /> Sair
