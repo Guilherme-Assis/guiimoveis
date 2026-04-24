@@ -153,6 +153,11 @@ const ENDPOINTS: Endpoint[] = [
     requestBody: { company_name: "Nova Imobiliária", commission_rate: 6.0 },
     tags: ["Corretores"],
   },
+  {
+    method: "DELETE", path: "/brokers/{id}", summary: "Remover corretor", auth: true,
+    description: "Remove um corretor. Apenas admins.",
+    tags: ["Corretores"],
+  },
   // === CRM ===
   {
     method: "GET", path: "/leads", summary: "Listar leads", auth: true,
