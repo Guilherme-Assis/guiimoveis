@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useAuth } from "@/hooks/useAuth";
-import { BookOpen, Building2, Heart, LayoutDashboard, LogOut, MapPin as MapPinIcon, Menu, Phone, User, X } from "lucide-react";
+import { BookOpen, Building2, ExternalLink, Heart, LayoutDashboard, LogOut, MapPin as MapPinIcon, Menu, Phone, User, X } from "lucide-react";
 
 const logoKorretora = "/logo-korretora.webp";
 const HeaderUserMenu = lazy(() => import("@/components/HeaderUserMenu"));
