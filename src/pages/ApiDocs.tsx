@@ -521,6 +521,28 @@ const ENDPOINTS: Endpoint[] = [
     responseExample: { data: "<ListBucketResult>...</ListBucketResult>" },
     tags: ["Storage"],
   },
+  // === Mobile ===
+  {
+    method: "POST", path: "/mobile/register-device", summary: "Registrar dispositivo", auth: true,
+    description: "Registra o token de push APNS para notificações mobile.",
+    requestBody: { user_id: "uuid", apns_device_token: "token...", platform: "ios" },
+    responseExample: { success: true },
+    tags: ["Mobile"],
+  },
+  {
+    method: "POST", path: "/mobile/register-live-activity", summary: "Registrar Live Activity", auth: true,
+    description: "Registra o token de push para uma Live Activity do iOS.",
+    requestBody: { user_id: "uuid", activity_id: "uuid", live_activity_push_token: "token...", platform: "ios" },
+    responseExample: { success: true },
+    tags: ["Mobile"],
+  },
+  {
+    method: "POST", path: "/mobile/logout-device", summary: "Remover dispositivo", auth: true,
+    description: "Inativa um token de dispositivo no logout.",
+    requestBody: { apns_device_token: "token..." },
+    responseExample: { success: true },
+    tags: ["Mobile"],
+  },
   // === IA & outros ===
   {
     method: "POST", path: "—", summary: "Dados do bairro (neighborhood-data)", auth: false,
@@ -564,6 +586,7 @@ const TAG_COLORS: Record<string, string> = {
   "Analytics": "bg-cyan-500/10 text-cyan-400",
   "IA": "bg-purple-500/10 text-purple-400",
   "Storage": "bg-orange-500/10 text-orange-400",
+  "Mobile": "bg-blue-500/10 text-blue-400",
 };
 
 const STATUS_COLORS: Record<number, string> = {

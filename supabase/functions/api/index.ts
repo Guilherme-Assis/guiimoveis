@@ -642,6 +642,12 @@ serve(async (req) => {
       return jsonResponse({ data });
     }
 
+    if (resource === "properties" && action === "stats") {
+      const { data, error } = await supabase.rpc("get_property_stats");
+      if (error) return errorResponse(error.message, 400);
+      return jsonResponse(data);
+    }
+
     // === CRUD OPERATIONS ===
     const selectCols = params.get("select") || "*";
     const limit = Math.min(parseInt(params.get("limit") || "50"), 100);
